@@ -1,0 +1,27 @@
+---
+import type { EvidenceItem } from '../../lib/evidence';
+import { t } from '../../i18n';
+const { items } = Astro.props as { items: EvidenceItem[] };
+const ui = t(Astro.currentLocale);
+---
+
+<section
+  aria-labelledby="spec-summary-title"
+  class="spec-summary max-w-content mt-7 border-t-2 pt-5"
+>
+  <h2 id="spec-summary-title" class="font-ui text-lg font-bold">
+    At a glance
+  </h2>
+  <dl class="mt-3">
+    {items.map((item) => (
+      <div class="spec-summary-row">
+        <dt>{item.claim}</dt>
+        <dd>{item.value}</dd>
+      </div>
+    ))}
+  </dl>
+  <p class="mt-4 text-sm">Supplier-stated. Confirm the weight unit and project suitability.</p>
+  <p class="mt-4">
+    <a href="/enquiry">{ui.prepareEnquiry}</a> · <a href="#source-notes">Read the evidence</a>
+  </p>
+</section>

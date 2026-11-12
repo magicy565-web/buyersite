@@ -1,0 +1,25 @@
+---
+import type { EvidenceItem } from '../../lib/evidence';
+import { t } from '../../i18n';
+const { items } = Astro.props as { items: EvidenceItem[] };
+const ui = t(Astro.currentLocale);
+---
+
+<section aria-label="Source notes" class="mt-12 border-t-2 pt-6">
+  <h2>{ui.sourceNotes}</h2>
+  <dl>
+    {items.map((item) => (
+      <div class="mt-5">
+        <dt class="font-bold">{item.claim}</dt>
+        <dd>{item.value}</dd>
+        <dd>
+          <a href={item.source_url}>{ui.supplierSource}</a> · {ui.supplierStated} · {ui.reviewDate}
+        </dd>
+      </div>
+    ))}
+  </dl>
+  <p class="mt-6">{ui.unknownTerms}</p>
+  <p>
+    <a href="/enquiry">{ui.prepareEnquiry}</a>
+  </p>
+</section>

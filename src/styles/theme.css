@@ -1,0 +1,108 @@
+/*
+  theme.css -- your overrides. This is the file to edit to retheme the site.
+
+  Every token lives in src/styles/tokens.css with its default value. Declarations
+  here are unlayered, so they win without specificity tricks.
+
+  Colors are defined with light-dark(). Overriding with a plain color changes
+  light and dark mode at once; use light-dark(<light>, <dark>) to keep them apart.
+  Webfonts are loaded in astro.config.mjs; use overrides here for system fonts.
+
+  Every pair you change is checked by `pnpm check:contrast`, light and dark.
+
+  Example:
+
+  :root {
+    --primary: light-dark(#8c1f2f, #e08792);
+    --font-body: Charter, 'Iowan Old Style', Georgia, serif;
+    --radius: 0;
+  }
+*/
+
+:root {
+}
+
+/* Preserve theme type and palette; keep navigation usable at narrow widths. */
+header nav {
+  flex-wrap: wrap;
+}
+header nav a {
+  padding-block: 0.5rem;
+}
+.article-body :where(a) {
+  overflow-wrap: anywhere;
+}
+.buyer-dialog {
+  width: min(38rem, calc(100% - 2rem));
+  max-height: 85dvh;
+  padding: 1.5rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+.buyer-dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+.buyer-dialog input,
+.buyer-dialog textarea,
+.enquiry-field {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid currentColor;
+  background: var(--background);
+  color: var(--foreground);
+}
+.buyer-dialog button,
+.buyer-action {
+  padding: 0.75rem 1rem;
+  border: 1px solid currentColor;
+  cursor: pointer;
+}
+
+.header-action {
+  padding: 0.625rem 0.75rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.cover-actions a {
+  color: var(--on-plate);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  padding-block: 0.5rem;
+}
+.spec-summary-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+  padding-block: 0.5rem;
+}
+.spec-summary-row dt {
+  font-weight: 600;
+}
+.spec-summary-row dd {
+  overflow-wrap: anywhere;
+}
+#source-notes {
+  scroll-margin-top: 12rem;
+}
+.buyer-dialog {
+  overflow-y: auto;
+}
+.buyer-dialog[open] {
+  margin: auto;
+  border: 2px solid var(--foreground);
+}
+.buyer-dialog :disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+@media (max-width: 480px) {
+  .buyer-cover {
+    min-height: 30rem;
+  }
+  .spec-summary-row {
+    grid-template-columns: 1fr;
+    gap: 0.125rem;
+  }
+}

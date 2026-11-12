@@ -1,0 +1,77 @@
+{
+  "articles": [
+    {
+      "slug": "silver-wool-fabric",
+      "desk": "materials",
+      "title": "Silver wool fabric: establish the specification",
+      "deck": "A material review for interior buyers. Confirm the exact construction and project conditions before requesting an offer.",
+      "type": "product-editorial",
+      "refs": [
+        "silver-composition",
+        "silver-width",
+        "silver-weight"
+      ],
+      "sections": [
+        [
+          "Start with the exact fabric",
+          "The Silver product page lists wool composition, width and a weight notation. Treat these as supplier statements for this item, rather than a specification for every Burel fabric."
+        ],
+        [
+          "Before requesting a quote",
+          "Confirm the weight unit, usable width, required quantity and intended installation. Trade price, MOQ, stock and project lead time remain unconfirmed."
+        ]
+      ]
+    },
+    {
+      "slug": "burel-factory",
+      "desk": "suppliers",
+      "title": "Burel Factory: a mill to evaluate for your project",
+      "deck": "A supplier profile for material buyers reviewing wool textiles and interior applications.",
+      "type": "supplier-profile",
+      "refs": [
+        "mill-location"
+      ],
+      "sections": [
+        [
+          "Who is behind the material",
+          "Burel Factory describes itself as a Portuguese wool brand and working textile mill in Manteigas. Its range includes fabric and finished interior products."
+        ],
+        [
+          "Qualification still required",
+          "No supplier onboarding, factory audit or commercial relationship has been completed for this review. Request the project-specific technical sheet and quotation before shortlisting."
+        ]
+      ]
+    },
+    {
+      "slug": "burel-project-brief",
+      "desk": "guides",
+      "title": "Specify the application before comparing offers",
+      "deck": "Prepare a useful enquiry around material, installation and commercial conditions.",
+      "type": "buyer-guide",
+      "refs": [
+        "sample-policy",
+        "batch-policy"
+      ],
+      "sections": [
+        [
+          "Choose a procurement route",
+          "Fabric by the metre suits buyers who arrange fabrication. A finished piece shifts fabrication to the supplier. A bespoke interior solution needs a project brief and installation details. These are procurement routes to assess, not confirmed offers."
+        ],
+        [
+          "Compare on the same basis",
+          "Ask about samples and their cost. For colour-critical work, confirm dye-lot planning. Obtain matching quotation terms for quantity, destination and delivery. Retail and spatial-project return policies differ: request the applicable written terms."
+        ]
+      ]
+    }
+  ],
+  "product_id": "burel-silver",
+  "supplier_id": "burel-factory",
+  "media": [
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0550/0964/0503/files/prata-botanica2.jpg?v=1710519014",
+      "file": "silver.jpg",
+      "source_url": "https://burelfactory.com/en/products/prata",
+      "permission": "public-source-review-only"
+    }
+  ]
+}
