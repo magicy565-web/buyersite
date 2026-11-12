@@ -40,7 +40,7 @@ const ui = t(Astro.currentLocale ?? site.locale);
 <Base nameplate={false} description={site.description} image={lead?.data.hero}>
   {lead && (
     <Plate
-      class="flex min-h-[38rem] flex-col justify-between gap-12 px-4 py-8 sm:min-h-[85vh] sm:py-12"
+      class="buyer-cover flex min-h-[32rem] flex-col justify-between gap-8 px-4 py-8 sm:min-h-[75vh] sm:py-12"
       image={lead.data.hero}
       alt={lead.data.heroAlt}
       credit={lead.data.heroCredit}
@@ -49,21 +49,23 @@ const ui = t(Astro.currentLocale ?? site.locale);
     >
       {/* The masthead sits at the head of the plate and the cover lines at its foot, the
             way they do on a cover, which also leaves the picture a band of its own between. */}
-      <a
-        class="font-ui text-spot max-w-wide mx-auto block w-full text-[clamp(3.25rem,12vw,8.5rem)] leading-[0.8] font-black tracking-[-0.045em] no-underline"
-        href="/"
-      >
+      <h1 class="font-ui text-spot max-w-wide mx-auto block w-full text-[clamp(3.25rem,12vw,8.5rem)] leading-[0.8] font-black tracking-[-0.045em] no-underline">
         {site.name}
-      </a>
+      </h1>
 
       <div class="max-w-wide mx-auto w-full">
         <PlateHead
+          as="h2"
           kicker={lead.kicker}
           title={lead.data.title}
           deck={lead.data.deck}
           href={lead.href}
         />
 
+        <div class="cover-actions mt-6 flex flex-wrap gap-4">
+          <a href={lead.href}>{ui.reviewMaterial}</a>
+          <a href="/enquiry">{ui.prepareEnquiry}</a>
+        </div>
         {coverLines.overlay && <CoverLines class="mt-10 max-w-[32rem]" items={lines} />}
       </div>
     </Plate>

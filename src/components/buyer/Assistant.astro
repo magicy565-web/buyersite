@@ -1,47 +1,121 @@
-<button type="button" id="assistant-open" class="buyer-action">Ask about this material</button>
+---
+import { t } from '../../i18n';
+const ui = t(Astro.currentLocale);
+---
+
+<button type="button" data-assistant-open class="buyer-action">
+  {ui.askSourcing}
+</button>
 <dialog id="buyer-assistant" class="buyer-dialog" aria-labelledby="assistant-title">
-<h2 id="assistant-title">Sourcing assistant</h2>
-<p id="assistant-status">AI is not connected in this review. Read the source notes or prepare an enquiry.</p>
-<div id="assistant-messages" role="log" aria-live="polite"></div>
-<form id="assistant-form"><label for="assistant-question">Your question</label><textarea id="assistant-question" maxlength="2000" required disabled></textarea><button id="assistant-send" disabled>Send question</button></form>
-<p><a href="/guides/burel-project-brief">Read the buying guide</a> · <a href="/enquiry">Prepare an enquiry</a></p>
-<form method="dialog"><button>Close</button></form>
+  <h2 id="assistant-title">Sourcing assistant</h2>
+  <p id="assistant-status">
+    AI is not connected in this review. Read the source notes or prepare an enquiry.
+  </p>
+  <div id="assistant-messages" role="log" aria-live="polite"></div>
+  <form id="assistant-form">
+    <label for="assistant-question">Your question</label>
+    <textarea id="assistant-question" maxlength="2000" required disabled></textarea>
+    <button id="assistant-send" disabled>
+      Send question
+    </button>
+  </form>
+  <p>
+    <a href="/guides/burel-project-brief">Read the buying guide</a> ·{' '}
+    <a href="/enquiry">Prepare an enquiry</a>
+  </p>
+  <form method="dialog">
+    <button>Close</button>
+  </form>
 </dialog>
 <script>
-const panel = document.querySelector<HTMLDialogElement>('#buyer-assistant')!;
-const opener = document.querySelector<HTMLButtonElement>('#assistant-open')!;
-opener.addEventListener('click', () => panel.showModal());
-panel.addEventListener('close', () => opener.focus());
-const form = document.querySelector<HTMLFormElement>('#assistant-form')!;
-const input = document.querySelector<HTMLTextAreaElement>('#assistant-question')!;
-const send = document.querySelector<HTMLButtonElement>('#assistant-send')!;
-const status = document.querySelector<HTMLElement>('#assistant-status')!;
-const log = document.querySelector<HTMLElement>('#assistant-messages')!;
-// Runtime-neutral public gateway. No supplier/tenant secrets or automatic RFQ submission.
-const configured = import.meta.env.PUBLIC_ASSISTANT_API_BASE;
-const slug = 'material-notes';
-let session: string | undefined;
-let base: URL | undefined;
-if (configured) { try { const u = new URL(configured, location.origin); if (u.protocol === 'https:' || u.origin === location.origin) base = u; } catch {} }
-if (base) { input.disabled = false; send.disabled = false; status.textContent = 'Answers require the configured sourcing service. Commercial terms need supplier confirmation.'; }
-function message(text: string, role: string) { const p = document.createElement('p'); p.textContent = role + ': ' + text; log.append(p); }
-form.addEventListener('submit', async event => {
- event.preventDefault(); if (!base || send.disabled) return;
- const question = input.value.trim(); if (!question) return;
- send.disabled = true; input.disabled = true; message(question, 'You');
- const endpoint = (path: string) => new URL(base!.pathname.replace(/\/$/, '') + '/v1/public-sites/' + slug + path, base!.origin);
- try {
-  if (!session) {
-   const r = await fetch(endpoint('/sessions'), { signal:AbortSignal.timeout(20000), method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({page_url:location.href,locale:document.documentElement.lang}) });
-   if (!r.ok) throw Error('Could not start a conversation. Please retry later.');
-   const data = await r.json(); if (typeof data.session_id !== 'string' || !data.session_id) throw Error('Invalid session response.'); session = data.session_id;
+  const panel = document.querySelector<HTMLDialogElement>('#buyer-assistant')!;
+  const openers = document.querySelectorAll<HTMLButtonElement>('[data-assistant-open]');
+  let returnFocus: HTMLButtonElement | undefined;
+  openers.forEach((opener) =>
+    opener.addEventListener('click', () => {
+      returnFocus = opener;
+      panel.showModal();
+    }),
+  );
+  panel.addEventListener('close', () => returnFocus?.focus());
+  const form = document.querySelector<HTMLFormElement>('#assistant-form')!;
+  const input = document.querySelector<HTMLTextAreaElement>('#assistant-question')!;
+  const send = document.querySelector<HTMLButtonElement>('#assistant-send')!;
+  const status = document.querySelector<HTMLElement>('#assistant-status')!;
+  const log = document.querySelector<HTMLElement>('#assistant-messages')!;
+  // Runtime-neutral public gateway. No supplier/tenant secrets or automatic RFQ submission.
+  const configured = import.meta.env.PUBLIC_ASSISTANT_API_BASE;
+  const slug = 'material-notes';
+  let session: string | undefined;
+  let base: URL | undefined;
+  if (configured) {
+    try {
+      const u = new URL(configured, location.origin);
+      if (u.protocol === 'https:' || u.origin === location.origin) base = u;
+    } catch {}
   }
-  const r = await fetch(endpoint('/chat'), {signal:AbortSignal.timeout(20000),method:'POST',headers:{'Content-Type':'application/json','X-Visitor-Session':session!},body:JSON.stringify({message:question,page_url:location.href,product_context:location.pathname.startsWith('/materials/') ? 'burel-silver' : null})});
-  if (r.status === 401 || r.status === 403) session = undefined;
-  if (!r.ok) throw Error(r.status === 429 ? 'Please wait before retrying.' : 'Assistant unavailable. Your enquiry has not been sent.');
-  const data = await r.json(); if (typeof data.answer !== 'string') throw Error('Unsupported assistant response.');
-  message(data.answer, 'Assistant'); input.value = '';
- } catch (error) { message(error instanceof Error ? error.message : 'Connection failed.', 'Service'); }
- finally { send.disabled = false; input.disabled = false; input.focus(); }
-});
+  if (base) {
+    input.disabled = false;
+    send.disabled = false;
+    status.textContent =
+      'Answers require the configured sourcing service. Commercial terms need supplier confirmation.';
+  }
+  function message(text: string, role: string) {
+    const p = document.createElement('p');
+    p.textContent = role + ': ' + text;
+    log.append(p);
+  }
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!base || send.disabled) return;
+    const question = input.value.trim();
+    if (!question) return;
+    send.disabled = true;
+    input.disabled = true;
+    message(question, 'You');
+    const endpoint = (path: string) =>
+      new URL(base!.pathname.replace(/\/$/, '') + '/v1/public-sites/' + slug + path, base!.origin);
+    try {
+      if (!session) {
+        const r = await fetch(endpoint('/sessions'), {
+          signal: AbortSignal.timeout(20000),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ page_url: location.href, locale: document.documentElement.lang }),
+        });
+        if (!r.ok) throw Error('Could not start a conversation. Please retry later.');
+        const data = await r.json();
+        if (typeof data.session_id !== 'string' || !data.session_id)
+          throw Error('Invalid session response.');
+        session = data.session_id;
+      }
+      const r = await fetch(endpoint('/chat'), {
+        signal: AbortSignal.timeout(20000),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Visitor-Session': session! },
+        body: JSON.stringify({
+          message: question,
+          page_url: location.href,
+          product_context: location.pathname.startsWith('/materials/') ? 'burel-silver' : null,
+        }),
+      });
+      if (r.status === 401 || r.status === 403) session = undefined;
+      if (!r.ok)
+        throw Error(
+          r.status === 429
+            ? 'Please wait before retrying.'
+            : 'Assistant unavailable. Your enquiry has not been sent.',
+        );
+      const data = await r.json();
+      if (typeof data.answer !== 'string') throw Error('Unsupported assistant response.');
+      message(data.answer, 'Assistant');
+      input.value = '';
+    } catch (error) {
+      message(error instanceof Error ? error.message : 'Connection failed.', 'Service');
+    } finally {
+      send.disabled = false;
+      input.disabled = false;
+      input.focus();
+    }
+  });
 </script>

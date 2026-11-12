@@ -6,6 +6,15 @@
 // Interpolated strings are functions so a translation can put the number where its own
 // grammar wants it, and so plural rules stay with the language that has them.
 export default {
+  askSourcing: 'Ask a sourcing question',
+  prepareEnquiry: 'Prepare an enquiry',
+  reviewMaterial: 'Review the material',
+  sourceNotes: 'Specifications and source notes',
+  supplierSource: 'Supplier source',
+  supplierStated: 'Supplier-stated',
+  reviewDate: 'Reviewed November 12, 2026',
+  unknownTerms:
+    'MOQ, trade pricing, availability and project delivery require a current written offer.',
   // Layout
   skip: 'Skip to content',
   desks: 'Desks', // the header nav, named for what is in it

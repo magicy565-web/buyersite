@@ -60,7 +60,9 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
       {ui.skip}
     </a>
 
-    <p class="max-w-wide mx-auto px-4 py-3 text-sm">Private sourcing review · Image rights pending · <a href="/colophon">Sources and scope</a></p>
+    <p class="max-w-wide mx-auto px-4 py-3 text-sm">
+      Private sourcing review · Image rights pending · <a href="/colophon">Sources and scope</a>
+    </p>
 
     {/* One line, hairline rule under it. The desks are the navigation; there is nothing else
         in it, because everything else about this magazine is on the page below. */}
@@ -89,6 +91,12 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
               </a>
             ))}
           </nav>
+          <a class="header-action" href="/enquiry">
+            {ui.prepareEnquiry}
+          </a>
+          <button class="header-action" type="button" data-assistant-open>
+            {ui.askSourcing}
+          </button>
           {features.darkMode && <ThemeToggle />}
         </div>
       </div>
@@ -96,7 +104,9 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
 
     <main id="main" tabindex="-1" class="flex-1 outline-none">
       <slot />
-      <div class="max-w-wide mx-auto px-4 py-8"><Assistant /></div>
+      <div class="max-w-wide mx-auto px-4 py-8">
+        <Assistant />
+      </div>
     </main>
 
     <footer class="border-foreground mt-16 border-t-[3px] sm:mt-24">

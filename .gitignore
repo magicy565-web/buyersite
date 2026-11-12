@@ -28,3 +28,6 @@ pnpm-debug.log*
 # Rights-restricted private review assets, fetched only when building locally
 src/assets/review/
 .generated/
+
+playwright-report/
+test-results/

@@ -1,3 +1,4 @@
+import en from './en';
 import type { Strings } from './index';
 
 // The chrome, in Korean. A second language is here so the shape of a translation is settled
@@ -6,6 +7,7 @@ import type { Strings } from './index';
 //
 // Korean has no plural agreement, so the count strings read the same at one and at many.
 const ko: Strings = {
+  ...en,
   skip: '본문으로 건너뛰기',
   desks: '부서',
 

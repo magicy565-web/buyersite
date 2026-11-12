@@ -6,6 +6,9 @@
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import SpecSummary from '../../components/buyer/SpecSummary.astro';
+import evidence from '../../data/evidence.json';
+import { resolveEvidence } from '../../lib/evidence';
 import Evidence from '../../components/buyer/Evidence.astro';
 import Author from '../../components/common/Author.astro';
 import Plate from '../../components/common/Plate.astro';
@@ -38,6 +41,7 @@ const ui = t(locale);
 const item = await present(article, locale);
 const { Content } = await render(article);
 const authors = await getAuthors(article);
+const sourceNotes = resolveEvidence(item.data.evidenceRefs, evidence);
 
 const essay = item.data.format === 'photoessay';
 const blocks = item.data.rail ?? [];
@@ -125,6 +129,11 @@ const jsonLd = [
       </p>
     </div>
   </div>
+  {item.data.pageType === 'product-editorial' && (
+    <div class:list={[shell, 'mx-auto px-4']}>
+      <SpecSummary items={sourceNotes} />
+    </div>
+  )}
   {
     /* The essay's picture is already the head of the page; the others set theirs under the
        headline, at the full width of the body and its rail where there is a rail to match. */
@@ -165,7 +174,9 @@ const jsonLd = [
         scrolling inside its own box. */}
     <div class="article-body max-w-content min-w-0">
       <Content />
-      <Evidence refs={item.data.evidenceRefs} />
+      <div id="source-notes">
+        <Evidence items={sourceNotes} />
+      </div>
     </div>
     {rail && (
       <Rail

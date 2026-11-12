@@ -23,10 +23,86 @@
 }
 
 /* Preserve theme type and palette; keep navigation usable at narrow widths. */
-header nav { flex-wrap: wrap; }
-header nav a { padding-block: .5rem; }
-.article-body :where(a) { overflow-wrap: anywhere; }
-.buyer-dialog { width: min(38rem, calc(100% - 2rem)); max-height: 85dvh; padding: 1.5rem; background: var(--background); color: var(--foreground); }
-.buyer-dialog::backdrop { background: rgb(0 0 0 / .45); }
-.buyer-dialog input, .buyer-dialog textarea, .enquiry-field { display: block; width:100%; padding:.75rem; border:1px solid currentColor; background:var(--background); color:var(--foreground); }
-.buyer-dialog button, .buyer-action { padding:.75rem 1rem; border:1px solid currentColor; cursor:pointer; }
+header nav {
+  flex-wrap: wrap;
+}
+header nav a {
+  padding-block: 0.5rem;
+}
+.article-body :where(a) {
+  overflow-wrap: anywhere;
+}
+.buyer-dialog {
+  width: min(38rem, calc(100% - 2rem));
+  max-height: 85dvh;
+  padding: 1.5rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+.buyer-dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+.buyer-dialog input,
+.buyer-dialog textarea,
+.enquiry-field {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid currentColor;
+  background: var(--background);
+  color: var(--foreground);
+}
+.buyer-dialog button,
+.buyer-action {
+  padding: 0.75rem 1rem;
+  border: 1px solid currentColor;
+  cursor: pointer;
+}
+
+.header-action {
+  padding: 0.625rem 0.75rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.cover-actions a {
+  color: var(--on-plate);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  padding-block: 0.5rem;
+}
+.spec-summary-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+  padding-block: 0.5rem;
+}
+.spec-summary-row dt {
+  font-weight: 600;
+}
+.spec-summary-row dd {
+  overflow-wrap: anywhere;
+}
+#source-notes {
+  scroll-margin-top: 12rem;
+}
+.buyer-dialog {
+  overflow-y: auto;
+}
+.buyer-dialog[open] {
+  margin: auto;
+  border: 2px solid var(--foreground);
+}
+.buyer-dialog :disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+@media (max-width: 480px) {
+  .buyer-cover {
+    min-height: 30rem;
+  }
+  .spec-summary-row {
+    grid-template-columns: 1fr;
+    gap: 0.125rem;
+  }
+}

@@ -18,3 +18,5 @@ Core routes: `/`, `/materials/silver-wool-fabric/`, `/suppliers/burel-factory/`,
 Assistant connection is optional through PUBLIC_ASSISTANT_API_BASE; the UI clearly reports when it is unavailable. No model calls or fake replies ship by default.
 
 See [architecture](docs/ARCHITECTURE.md), [validation](docs/VALIDATION.md), [theme provenance](template.lock.json), [license](LICENSE) and [third-party notices](THIRD-PARTY-NOTICES.md).
+
+Browser review procedure: [BROWSER-ACCEPTANCE.md](docs/BROWSER-ACCEPTANCE.md). Its 15 cases are discovered successfully but have not executed in this environment.
