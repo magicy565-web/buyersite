@@ -1,0 +1,74 @@
+[
+  {
+    "evidence_id": "silver-composition",
+    "claim": "Silver composition",
+    "value": "100% wool",
+    "status": "supplier-stated",
+    "source_url": "https://burelfactory.com/en/products/prata",
+    "source_quote": "100% Wool",
+    "captured_at": "2026-11-12T13:52:32.531868+00:00",
+    "publication_permission": "public-source-review-only",
+    "verified_by": null,
+    "valid_until": null
+  },
+  {
+    "evidence_id": "silver-width",
+    "claim": "Silver width",
+    "value": "140 cm",
+    "status": "supplier-stated",
+    "source_url": "https://burelfactory.com/en/products/prata",
+    "source_quote": "140 cm wide",
+    "captured_at": "2026-11-12T13:52:32.531868+00:00",
+    "publication_permission": "public-source-review-only",
+    "verified_by": null,
+    "valid_until": null
+  },
+  {
+    "evidence_id": "silver-weight",
+    "claim": "Silver listed weight",
+    "value": "800 g/m (source notation; confirm linear metre basis)",
+    "status": "supplier-stated",
+    "source_url": "https://burelfactory.com/en/products/prata",
+    "source_quote": "800 g/m",
+    "captured_at": "2026-11-12T13:52:32.531868+00:00",
+    "publication_permission": "public-source-review-only",
+    "verified_by": null,
+    "valid_until": null
+  },
+  {
+    "evidence_id": "mill-location",
+    "claim": "Mill location",
+    "value": "Manteigas, Portugal",
+    "status": "supplier-stated",
+    "source_url": "https://burelfactory.com/en/pages/burel-factory-facts",
+    "source_quote": "textile mill in Manteigas",
+    "captured_at": "2026-11-12T13:52:32.531868+00:00",
+    "publication_permission": "public-source-review-only",
+    "verified_by": null,
+    "valid_until": null
+  },
+  {
+    "evidence_id": "sample-policy",
+    "claim": "Sample policy",
+    "value": "Samples may have a cost; request a project-specific offer.",
+    "status": "supplier-stated",
+    "source_url": "https://burelfactory.com/en/pages/faq-spatial-solutions",
+    "source_quote": "there may be a cost.",
+    "captured_at": "2026-11-12T13:52:32.531868+00:00",
+    "publication_permission": "public-source-review-only",
+    "verified_by": null,
+    "valid_until": null
+  },
+  {
+    "evidence_id": "batch-policy",
+    "claim": "Colour consistency",
+    "value": "Confirm one dye lot for colour-critical projects.",
+    "status": "supplier-stated",
+    "source_url": "https://burelfactory.com/en/pages/faq-spatial-solutions",
+    "source_quote": "exact colour matching from batch to batch cannot be assured.",
+    "captured_at": "2026-11-12T13:52:32.531868+00:00",
+    "publication_permission": "public-source-review-only",
+    "verified_by": null,
+    "valid_until": null
+  }
+]

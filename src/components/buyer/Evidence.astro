@@ -1,0 +1,11 @@
+---
+import evidence from '../../data/evidence.json';
+const { refs = [] } = Astro.props as { refs: string[] };
+const items = refs.map(id => { const found = evidence.find(e => e.evidence_id === id); if (!found) throw Error('Missing evidence: ' + id); return found; });
+---
+<section aria-label="Source notes" class="mt-12 border-t-2 pt-6">
+<h2>Specifications and source notes</h2>
+<dl>{items.map(item => <div class="mt-5"><dt class="font-bold">{item.claim}</dt><dd>{item.value}</dd><dd><a href={item.source_url}>Supplier source</a> · Supplier-stated · Reviewed November 12, 2026</dd></div>)}</dl>
+<p class="mt-6">MOQ, trade pricing, availability and project delivery require a current written offer.</p>
+<p><a href="/enquiry">Prepare an enquiry</a></p>
+</section>

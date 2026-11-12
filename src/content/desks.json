@@ -1,0 +1,17 @@
+[
+  {
+    "id": "materials",
+    "name": "Materials",
+    "order": 1
+  },
+  {
+    "id": "suppliers",
+    "name": "Suppliers",
+    "order": 2
+  },
+  {
+    "id": "guides",
+    "name": "Buying guides",
+    "order": 3
+  }
+]
