@@ -92,15 +92,18 @@ export function compileEnterpriseSite(input) {
     if (hostname(source) !== hostname(website)) fail('CROSS_DOMAIN_SOURCE', 'Website source is not from the enterprise domain');
     if (seen.has(source.href)) fail('DUPLICATE_SOURCE', 'Duplicate website snapshot');
     seen.add(source.href);
-    const body = text(raw.body_text, 'website_pages.body_text', 30000);
-    if (body.length < 40) fail('EMPTY_SOURCE', 'Website snapshot must include a real readable text body');
+    if (typeof raw.body_text !== 'string' || raw.body_text.length > 30000) {
+      fail('INVALID_SOURCE', 'Website body must be bounded UTF-8 text');
+    }
+    const body = raw.body_text;
+    if (body.trim().length < 40) fail('EMPTY_SOURCE', 'Website snapshot must include a real readable text body');
     const sourceHash = sha256(Buffer.from(body, 'utf8'));
     if (raw.content_sha256 && raw.content_sha256 !== sourceHash) {
       fail('SOURCE_HASH_MISMATCH', 'Website text does not match recorded snapshot SHA-256');
     }
     const capturedAt = date(raw.captured_at, 'website_pages.captured_at');
     const title = text(raw.title, 'website_pages.title', 250) || 'Company website';
-    const quote = body.slice(0, 220);
+    const quote = body.replace(/\s+/g, ' ').trim().slice(0, 220);
     const ref = websiteRef(raw, index);
     evidence.push({
       evidence_id: ref,
