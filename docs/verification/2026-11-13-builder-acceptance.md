@@ -1,5 +1,8 @@
 # BuyerSite builder verification — 2026-11-13
 
+Historical checkpoint: the browser blocker below was subsequently resolved.
+See [the later browser acceptance](2026-11-13-browser-acceptance.md) for current status.
+
 ## Result
 
 **Static checks pass; full builder acceptance remains blocked by browser launch.**
