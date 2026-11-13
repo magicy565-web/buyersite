@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "site_slug": "synthetic-empty-catalog",
+  "exported_at": "2026-11-13T00:00:00Z",
+  "enterprise": {
+    "id": "synthetic-empty-only",
+    "revision": 1,
+    "company": {
+      "displayName": "Synthetic Empty Catalog",
+      "description": "This is synthetic test material used to verify that a website template loads correct enterprise product metadata. No real supplier is represented.",
+      "website": "https://example.com"
+    },
+    "products": []
+  },
+  "website_pages": [
+    {
+      "url": "https://example.com/catalog",
+      "title": "Synthetic company catalog",
+      "captured_at": "2026-11-13T00:00:00Z",
+      "body_text": "Synthetic Empty Catalog has no supplied product records. This source is only a test fixture used to confirm that unavailable catalog information stays unknown."
+    }
+  ]
+}

@@ -111,3 +111,36 @@ desktop build and browser evidence are **not evidence for this new branch**.
 
 Do not parallelize unrelated agents, WhatsApp, Pricing, Chatwoot, ChatKit
 redesign, or game work into this milestone.
+
+## Reproducible builder acceptance (Node 24)
+
+After locked installation and `pnpm exec playwright install --with-deps chromium`,
+run `pnpm accept:site-builder`. It runs the builder tests, then sequentially
+compiles, typechecks, builds, checks every built HTML file and runs Playwright
+for three **synthetic** editions: a two-product catalog, industrial data with
+special characters/long names, and an empty product library. Sequential builds
+also detect old collection entries leaking into the next company's output.
+
+The browser suite derives its routes from the selected build and checks all
+HTML routes at desktop 1440px, mobile 390px and mobile 360px, image loading,
+evidence text, disabled assistant, an unsent enquiry download, back/forward and
+refresh. A bundled Chromium is used normally; an existing system browser can be
+selected with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium`.
+No browser-side third-party request is needed.
+
+Reports, step logs, a copy of each static build and a per-file SHA256 inventory
+are saved in `.generated/acceptance/<timestamp>/`. The artifact digest is SHA256
+of the compact JSON array of `{path, bytes, sha256}` rows, sorted by path. It
+identifies the exact static bytes, separately from the source-content fingerprint.
+The report records the tested Git commit and whether its checkout was dirty.
+The runner never deploys or changes a production host.
+
+In an execution environment that cannot launch Chromium,
+`pnpm accept:site-builder --static-only` completes the static checks and reports
+`STATIC_PASS_BROWSER_NOT_TESTED`. This is explicitly **not** a complete builder
+acceptance. Do not promote that report to PASS or production readiness.
+
+A server-exported input file may be passed explicitly instead of the default
+fixtures. Keep its source pack and resulting reports/artifact private; collection
+permissions and authenticated enterprise extraction still require live host
+integration and independent review. Synthetic acceptance never proves those.

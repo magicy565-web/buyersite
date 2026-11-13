@@ -2,21 +2,30 @@
 // BUYERSITE_BUILD_ROOT selects a compiled enterprise edition; the pilot remains the default.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import defaultOgImage from './assets/editorial/cover.svg';
+import defaultOgImage from './assets/editorial/cover.png';
 
 type BuilderSite = {
-  slug: string; name: string; description: string; url: string; locale: string;
-  author: string; supplierSlug: string; guideSlug: string; productName: string;
-  sourceWebsite: string; privatePreview: boolean;
+  slug: string;
+  name: string;
+  description: string;
+  url: string;
+  locale: string;
+  author: string;
+  supplierSlug: string;
+  guideSlug: string;
+  productName: string;
+  sourceWebsite: string;
+  privatePreview: boolean;
 };
 const editionRoot = process.env.BUYERSITE_BUILD_ROOT;
 const edition: BuilderSite | null = editionRoot
-  ? JSON.parse(readFileSync(resolve(editionRoot, 'site.json'), 'utf8')) as BuilderSite
+  ? (JSON.parse(readFileSync(resolve(editionRoot, 'site.json'), 'utf8')) as BuilderSite)
   : null;
 
 export const site = {
   name: edition?.name ?? 'Material Notes',
-  description: edition?.description ??
+  description:
+    edition?.description ??
     'A sourcing review for interior material buyers. Read the specifications, evidence and open questions before preparing an enquiry.',
   url: edition?.url ?? 'https://buyer-magazine.invalid',
   locale: edition?.locale ?? 'en',

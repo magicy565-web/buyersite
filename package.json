@@ -22,7 +22,8 @@
     "test:browser": "playwright test",
     "site:from-enterprise": "node site-builder/from-enterprise.mjs",
     "site:from-snapshots": "node site-builder/build.mjs",
-    "test:site-builder": "node --test site-builder/*.test.mjs"
+    "test:site-builder": "node --test site-builder/*.test.mjs",
+    "accept:site-builder": "node site-builder/acceptance.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.1",
