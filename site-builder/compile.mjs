@@ -136,9 +136,10 @@ export function compileEnterpriseSite(input) {
     });
     return { name, description, category, ref, slug: safeSlug(name) || 'product-' + (index + 1) };
   });
-  const uniqueSlugs = new Set();
+  const uniqueSlugs = new Set([safeSlug(companyName) || 'supplier', 'buyer-enquiry-guide']);
   for (const product of validProducts) {
     let current = product.slug; let suffix = 2;
+    if (uniqueSlugs.has(current)) current = 'product-' + product.slug;
     while (uniqueSlugs.has(current)) current = product.slug.slice(0, 42) + '-' + suffix++;
     uniqueSlugs.add(current); product.slug = current;
   }
@@ -207,7 +208,7 @@ export function compileEnterpriseSite(input) {
     supplierSlug, guideSlug, productName: validProducts[0]?.name || '',
     sourceWebsite: website.href, privatePreview: true,
   };
-  const content = { site, manifest, pages, articles, evidence, sourceSnapshots: acceptedPages.map(({url, title, capturedAt, sha256}) => ({url, title, capturedAt, sha256})),
+  const content = { site, manifest, pages, articles, evidence, sourceSnapshots: acceptedPages.map(({url, title, body, capturedAt, sha256}) => ({url, title, body_text: body, capturedAt, sha256})),
     preview_only: true, publication_blockers: [
       'EDITORIAL_APPROVAL_REQUIRED', 'MEDIA_RIGHTS_REQUIRED', 'CONVERSION_BACKEND_UNVERIFIED', 'PUBLIC_DEPLOYMENT_UNVERIFIED',
     ] };
