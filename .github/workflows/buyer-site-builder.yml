@@ -1,0 +1,74 @@
+name: Buyer Site Builder private preview checks
+
+on:
+  push:
+    branches:
+      - feat/company-to-buyer-site-v0-1
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'site-builder/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/buyer-site-builder.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE_URL: https://buyer-magazine.invalid
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Setup Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10.34.5'
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Pure builder and collector regression
+        run: pnpm test:site-builder
+      - name: Compile synthetic company pack
+        run: pnpm site:from-snapshots site-builder/fixtures/enterprise.synthetic.json
+      - name: Select generated edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          edition="$(find .generated/company-sites -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          test -n "$edition"
+          printf 'BUYERSITE_BUILD_ROOT=%s\n' "$GITHUB_WORKSPACE/$edition" >> "$GITHUB_ENV"
+          echo "Built synthetic edition only (not live company data)"
+      - name: Typecheck Astro
+        run: pnpm check
+      - name: Build static private edition
+        run: pnpm build
+      - name: Verify generated HTML
+        run: pnpm verify:output
+      - name: Ensure source and metadata do not leak pilot company
+        run: |
+          set -euo pipefail
+          ! grep -R -E -i 'Burel Factory|burel-silver|burelfactory.com' dist --include='*.html'
+          grep -q 'noindex, nofollow' dist/index.html
+          grep -q 'Disallow: /' dist/robots.txt
+      - name: Upload failure-only debugging logs
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: site-builder-diagnostics
+          path: |
+            .astro/
+            .generated/
+          retention-days: 2
+          if-no-files-found: ignore
