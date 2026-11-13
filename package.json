@@ -19,7 +19,10 @@
     "validate:content": "node scripts/validate-content.mjs",
     "prebuild": "pnpm prepare:media && pnpm validate:content",
     "verify:output": "node scripts/verify-output.mjs",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "site:from-enterprise": "node site-builder/from-enterprise.mjs",
+    "site:from-snapshots": "node site-builder/build.mjs",
+    "test:site-builder": "node --test site-builder/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.1",
