@@ -1,5 +1,11 @@
 # Validation — 2026-11-12
 
+Historical record for the original real-source pilot. For the current enterprise
+builder, use the [2026-11-14 reproduction report](verification/2026-11-14-reproduction.md):
+exact Node/pnpm locked installation, three synthetic editions and 96 browser
+tests passed. The pilot-specific results below are not a live enterprise or
+production acceptance and have not been re-labelled as such.
+
 Executed locally with Node 24.22.1, pnpm runner 11.25.0 and Astro 7.3.3.
 
 ## Passed

@@ -1,0 +1,60 @@
+
+> buyer-magazine-site@0.1.0 prebuild /workspace/scratch/5a20146a788d/buyersite
+> pnpm prepare:media && pnpm validate:content
+
+
+> buyer-magazine-site@0.1.0 prepare:media /workspace/scratch/5a20146a788d/buyersite
+> node scripts/prepare-media.mjs
+
+Enterprise edition: only original generated artwork is used; no pilot supplier photos fetched.
+
+> buyer-magazine-site@0.1.0 validate:content /workspace/scratch/5a20146a788d/buyersite
+> node scripts/validate-content.mjs
+
+Validated private edition: 4 page contracts, 3 evidence, 1 captured sources.
+
+> buyer-magazine-site@0.1.0 build /workspace/scratch/5a20146a788d/buyersite
+> astro build
+
+08:33:19 [content] Syncing content
+08:33:19 [content] Synced content
+08:33:19 [types] Generated 1.41s
+08:33:19 [build] output: "static"
+08:33:19 [build] mode: "static"
+08:33:19 [build] directory: /workspace/scratch/5a20146a788d/buyersite/dist/
+08:33:19 [build] Collecting build info...
+08:33:19 [build] ✓ Completed in 1.46s.
+08:33:19 [build] Building static entrypoints...
+08:33:19 [astro-icon] Loaded icons from src/icons, lucide
+08:33:19 [assets] Copying fonts (11 files)...
+08:33:20 [vite] ✓ built in 1.08s
+08:33:20 [vite] ✓ built in 111ms
+08:33:20 [build] Rearranging server assets...
+
+ generating static routes 
+08:33:20   ├─ /404.html (+31ms) 
+08:33:20   ├─ /colophon/index.html (+16ms) 
+08:33:20   ├─ /enquiry/index.html (+4ms) 
+08:33:20   ├─ /robots.txt (+3ms) 
+08:33:20   ├─ /rss.xml (+39ms) 
+08:33:20   ├─ /guides/buyer-enquiry-guide/index.html (+13ms) 
+08:33:20   ├─ /products/precision-pump-valve-a/index.html (+5ms) 
+08:33:20   ├─ /suppliers/ultraprecisionmanufacturinginternational-component/index.html (+4ms) 
+08:33:20   ├─ /products/index.html (+8ms) 
+08:33:20   ├─ /suppliers/index.html (+12ms) 
+08:33:20   ├─ /guides/index.html (+4ms) 
+08:33:20   ├─ /index.html (+7ms) 
+08:33:20 ✓ Completed in 251ms.
+
+ generating optimized images 
+08:33:20   ▶ /_astro/cover.-e0Crzpr_Z19VeQq.jpeg (reused cache entry) (+1ms) (1/5)
+08:33:20   ▶ /_astro/cover.-e0Crzpr_dWGyM.avif (reused cache entry) (+1ms) (2/5)
+08:33:20   ▶ /_astro/cover.-e0Crzpr_s4Q4P.avif (reused cache entry) (+1ms) (3/5)
+08:33:20   ▶ /_astro/cover.-e0Crzpr_cp6vf.avif (reused cache entry) (+6ms) (4/5)
+08:33:20   ▶ /_astro/cover.-e0Crzpr_15TQkM.avif (reused cache entry) (+1ms) (5/5)
+08:33:20 ✓ Completed in 11ms.
+
+08:33:20 [build] ✓ Completed in 1.52s.
+08:33:20 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+08:33:20 [build] 10 page(s) built in 3.00s
+08:33:20 [build] Complete!

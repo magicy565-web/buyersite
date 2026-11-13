@@ -1,0 +1,12 @@
+{
+  "tested_commit": "3f3a166d0382d5b14de8219c3f349e63250926da",
+  "source_dirty": false,
+  "scope": "Synthetic acceptance only; no live enterprise or deployment",
+  "package_json_sha256": "85310573fe74434127e03a5d5119b5cda0ce83a2bc7407519788920859c6d16e",
+  "pnpm_lock_sha256": "a9a3c8bf9dc97ad92eea01271e2488620b0c4f9b4c4582889d232723cb98e343",
+  "node": "v24.22.1",
+  "pnpm": "10.34.5",
+  "browser": "@sparticuz/chromium@153.0.0",
+  "browser_tests_passed": 96,
+  "public_deployment": false
+}
