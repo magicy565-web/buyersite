@@ -80,7 +80,25 @@ for (const route of routes)
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
     await expect(opener).toBeFocused();
-    await page.screenshot({ path: info.outputPath('page.png'), fullPage: true });
+    // Lazy layout can reveal long labels below the fold only after scrolling.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.evaluate(
+      () =>
+        new Promise<void>((done) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => done())),
+        ),
+    );
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const screenshot = await page.screenshot({ path: info.outputPath('page.png'), fullPage: true });
+    const viewportWidth = info.project.use.viewport?.width ?? 1440;
+    const scale = Number(info.project.use.deviceScaleFactor ?? 1);
+    expect(
+      screenshot.readUInt32BE(16),
+      'full-page PNG must not expand beyond the viewport',
+    ).toBeLessThanOrEqual(viewportWidth * scale);
     expect(errors).toEqual([]);
   });
 

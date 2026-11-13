@@ -144,3 +144,36 @@ A server-exported input file may be passed explicitly instead of the default
 fixtures. Keep its source pack and resulting reports/artifact private; collection
 permissions and authenticated enterprise extraction still require live host
 integration and independent review. Synthetic acceptance never proves those.
+
+### Existing Magazine Studio input adapter
+
+`createSiteFromStudio(job, sourceBytes, options)` in `from-enterprise.mjs`
+accepts an existing **server-owned** StudioStore production job and the original
+`source.json` bytes from `snapshotSources`. It checks the enterprise binding,
+frozen source SHA256, company/product revisions, selected product IDs and the
+existing website-capture permission before collection. It maps the native
+`enterprise.company` and `products` fields into the existing compiler contract.
+Only names, category, description and the native profile website are passed;
+internal SKU prices, supply policies, private documents and unapproved images
+are excluded. Returned `source_binding` must be retained on the same Studio job.
+
+This function is a server-side adapter, not an authentication mechanism or a
+public upload endpoint. The native job lifecycle, `outputKind=site` selection,
+protected multi-route serving and version approval are still to be wired in
+OpenMausBot; the adapter alone does not claim that live flow is integrated.
+
+### Optional Linux headless QA runtime
+
+If the system Chrome cannot start, a separate test-only runtime can use the
+published `@sparticuz/chromium@153.0.0` headless-shell package. It is not added to
+the site's production dependencies. In an operator-selected QA directory:
+
+    npm install --prefix /absolute/qa-runtime --ignore-scripts --no-audit --no-fund @sparticuz/chromium@153.0.0
+    node scripts/prepare-headless-runtime.mjs /absolute/qa-runtime
+    PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$PWD/.generated/qa-runtime/chromium-headless.sh" pnpm accept:site-builder
+
+The helper prepares an isolated browser launcher using the package's arguments,
+with single-process mode removed so that multiple Playwright contexts can be
+closed safely. It does not alter host network policy or browser sessions.
+Generated reports, browser traces and build outputs are excluded from Astro's
+typecheck so a completed run can be followed by another clean check/build.
