@@ -13,13 +13,15 @@ const ui = t(Astro.currentLocale);
         <dt class="font-bold">{item.claim}</dt>
         <dd>{item.value}</dd>
         <dd>
-          <a href={item.source_url}>{ui.supplierSource}</a> · {ui.supplierStated} · {ui.reviewDate}
+          {item.source_url ? <a href={item.source_url} rel="nofollow noopener">{ui.supplierSource}</a> : <span>Enterprise record</span>}
+          {' · '}
+          {item.status === 'supplier-stated' ? ui.supplierStated : item.status}
+          {' · '}
+          {item.captured_at ? item.captured_at.slice(0, 10) : ui.reviewDate}
         </dd>
       </div>
     ))}
   </dl>
   <p class="mt-6">{ui.unknownTerms}</p>
-  <p>
-    <a href="/enquiry">{ui.prepareEnquiry}</a>
-  </p>
+  <p><a href="/enquiry">{ui.prepareEnquiry}</a></p>
 </section>
