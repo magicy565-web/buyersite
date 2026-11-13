@@ -211,9 +211,11 @@ export function compileEnterpriseSite(input) {
     supplierSlug, guideSlug, productName: validProducts[0]?.name || '',
     sourceWebsite: website.href, privatePreview: true,
   };
+  const nonEnglishDraft = /[\u3400-\u9fff]/.test([companyName, companyDescription, ...validProducts.map((p) => p.name + ' ' + p.description)].join(' '));
   const content = { site, manifest, pages, articles, evidence, sourceSnapshots: acceptedPages.map(({url, title, body, capturedAt, sha256}) => ({url, title, body_text: body, capturedAt, sha256})),
     preview_only: true, publication_blockers: [
       'EDITORIAL_APPROVAL_REQUIRED', 'MEDIA_RIGHTS_REQUIRED', 'CONVERSION_BACKEND_UNVERIFIED', 'PUBLIC_DEPLOYMENT_UNVERIFIED',
+      ...(nonEnglishDraft ? ['ENGLISH_TRANSLATION_REQUIRED'] : []),
     ] };
   const fingerprint = sha256(JSON.stringify(content));
   return { ...content, fingerprint };
