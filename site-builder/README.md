@@ -14,7 +14,7 @@ OpenMausBot dashboard, standalone CRM or a second magazine authoring system.
    non-HTML responses, oversized pages and timeouts. JavaScript-only sites may
    fail with EMPTY_SOURCE; never fabricate website facts.
 3. Preserve the actual text snapshot, exact SHA-256, URL, capture timestamp and
-   enterprise revision. Source claims remain *supplier-stated*; nothing is
+   enterprise revision. Source claims remain _supplier-stated_; nothing is
    silently marked independently verified.
 4. Produce a versioned private site pack: site/route contracts, original source
    snapshots, evidence ledger, magazine article Markdown, one supplier profile,
@@ -116,10 +116,12 @@ redesign, or game work into this milestone.
 
 After locked installation and `pnpm exec playwright install --with-deps chromium`,
 run `pnpm accept:site-builder`. It runs the builder tests, then sequentially
-compiles, typechecks, builds, checks every built HTML file and runs Playwright
-for three **synthetic** editions: a two-product catalog, industrial data with
-special characters/long names, and an empty product library. Sequential builds
-also detect old collection entries leaking into the next company's output.
+builds two same-slug Worker jobs, verifies private preview and restart isolation,
+then compiles, typechecks, builds, checks every built HTML file and runs
+Playwright for three **synthetic** editions: a two-product catalog, industrial
+data with special characters/long names, and an empty product library.
+Sequential builds also detect old collection entries leaking into the next
+company's output.
 
 The browser suite derives its routes from the selected build and checks all
 HTML routes at desktop 1440px, mobile 390px and mobile 360px, image loading,
@@ -153,14 +155,66 @@ accepts an existing **server-owned** StudioStore production job and the original
 frozen source SHA256, company/product revisions, selected product IDs and the
 existing website-capture permission before collection. It maps the native
 `enterprise.company` and `products` fields into the existing compiler contract.
-Only names, category, description and the native profile website are passed;
-internal SKU prices, supply policies, private documents and unapproved images
-are excluded. Returned `source_binding` must be retained on the same Studio job.
+Only names, category and description are passed. The website comes from the
+server-owned Studio job and must exactly match `snapshot.website`, because the
+current native Company record has no website field. Internal SKU prices, supply
+policies, private documents, unselected products and unapproved images are
+excluded. Returned `source_binding` must be retained on the same Studio job.
 
 This function is a server-side adapter, not an authentication mechanism or a
 public upload endpoint. The native job lifecycle, `outputKind=site` selection,
-protected multi-route serving and version approval are still to be wired in
+native Studio persistence and version approval are still to be wired in
 OpenMausBot; the adapter alone does not claim that live flow is integrated.
+
+### Local build Worker for the existing host bridge
+
+`worker.mjs` is a headless build runtime, not another dashboard or public API.
+It matches the existing authenticated Magazine Studio bridge: OpenMausBot keeps
+browser authentication and injects `x-magazine-bridge` plus its server-resolved
+`x-enterprise-id`; the Worker listens only on `127.0.0.1` and rejects a body whose
+job tenant differs from that header.
+
+The bridge calls these relative paths below `/api/magazines`:
+
+- `POST /site-jobs` with a server-owned Studio job (`outputKind: site`) and the
+  original `source.json` bytes as canonical base64;
+- `GET /site-jobs/:jobId` for durable state and the immutable site revision;
+- `GET /site-jobs/:jobId/preview/<route>` for a private multi-route preview;
+- `GET /site-jobs` for that authenticated enterprise's jobs only.
+
+Creation returns immediately with `QUEUED`; builds are serialized because Astro
+uses one repository `dist/`. Job state and exact source bytes are private files
+under a mode-0700 data directory. A restart resumes `QUEUED`/`BUILDING` jobs and
+does not rebuild `READY` jobs. The final revision is derived from a SHA-256
+inventory of every static byte. Before each job, the Worker removes Astro's
+generated single-file content index; a duplicate-slug warning fails the job so
+an earlier enterprise edition cannot silently remain in the next build. Preview
+reads only inventory-listed files, rechecks exact bytes on every read, rejects
+traversal and symlinks, sends no-store/noindex/CSP headers, and returns 404
+for another enterprise instead of disclosing that the job exists.
+
+Example private configuration (the token is written by the operator into the
+existing mode-0600 `magazine-studio.json`; never commit it):
+
+```json
+{ "url": "http://127.0.0.1:4319/", "token": "<40-to-100-character-random-token>" }
+```
+
+Start the Worker using the same token and a private, persistent directory:
+
+```sh
+BUYERSITE_BRIDGE_TOKEN='<same-random-token>' \
+BUYERSITE_DATA_DIR='/absolute/private/buyer-site-worker' \
+pnpm site:worker
+```
+
+The Worker never publishes a site. `READY` means a private artifact passed
+Astro check, build and output verification. Public release remains a separate
+approved operation. The host must still persist the returned `sourceBinding`
+and revision on the same native Studio job, and its existing authenticated route
+must remain the only browser entry. Production service installation is not part
+of this repository change. Use a dedicated checkout for the Worker; do not run
+an interactive Astro development server from that same checkout concurrently.
 
 ### Optional Linux headless QA runtime
 

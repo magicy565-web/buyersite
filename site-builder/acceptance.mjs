@@ -46,6 +46,7 @@ const report = {
   live_enterprise_ingestion: 'NOT_TESTED',
   status: 'RUNNING',
   unit_tests: 'NOT_TESTED',
+  worker_runtime: 'NOT_TESTED',
   editions: [],
 };
 const persist = () => writeFile(join(root, 'report.json'), JSON.stringify(report, null, 2) + '\n');
@@ -73,6 +74,13 @@ const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 try {
   report.unit_tests = await run('test:site-builder', process.env, root);
   if (report.unit_tests.status !== 'PASS') throw Error('Builder unit tests failed');
+  report.worker_runtime = await run(
+    'accept:site-worker',
+    { ...process.env, BUYERSITE_WORKER_ACCEPTANCE_DIR: join(root, 'worker-runtime') },
+    root,
+  );
+  await persist();
+  if (report.worker_runtime.status !== 'PASS') throw Error('Worker runtime acceptance failed');
   for (const inputFile of inputs) {
     const input = JSON.parse(await readFile(inputFile, 'utf8'));
     const pack = await writeSitePreview(input);

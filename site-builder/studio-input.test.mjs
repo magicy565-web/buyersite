@@ -14,7 +14,6 @@ function nativeFixture() {
         revision: 9,
         displayName: 'Synthetic Native Supplier',
         description: 'Synthetic native snapshot for adapter verification only.',
-        website: 'https://example.com/',
       },
     },
     products: [
@@ -31,6 +30,14 @@ function nativeFixture() {
             priceTiers: [{ unitPrice: 'PRIVATE_PRICE_SENTINEL' }],
           },
         ],
+      },
+      {
+        id: 'prd_' + randomUUID(),
+        revision: 2,
+        status: 'draft',
+        name: 'Unselected Private Product',
+        category: 'Internal',
+        description: 'UNSELECTED_PRODUCT_SENTINEL',
       },
     ],
     documents: [{ content: 'PRIVATE_DOCUMENT_SENTINEL' }],
@@ -67,7 +74,7 @@ test('native Studio job binds the actual source bytes and allowlists public-faci
         return source;
       },
     });
-    assert.equal(target, f.snapshot.enterprise.company.website);
+    assert.equal(target, f.snapshot.website);
     assert.equal(built.source_binding.enterprise_id, f.job.enterpriseId);
     assert.equal(built.source_binding.source_sha256, f.job.sourceHash);
     assert.deepEqual(built.source_binding.product_revisions, [
@@ -76,6 +83,7 @@ test('native Studio job binds the actual source bytes and allowlists public-faci
     const evidence = await readFile(join(built.root, 'evidence.json'), 'utf8');
     assert.ok(evidence.includes('Native Catalog Product'));
     assert.doesNotMatch(evidence, /PRIVATE_|UNAPPROVED_IMAGE/);
+    assert.doesNotMatch(evidence, /UNSELECTED_PRODUCT_SENTINEL|Unselected Private Product/);
     const receipt = JSON.parse(await readFile(join(built.root, 'receipt.json'), 'utf8'));
     assert.equal(receipt.enterprise_revision, 'studio-snapshot-' + f.job.sourceHash);
     assert.equal(receipt.preview_only, true);
@@ -112,6 +120,14 @@ test('rejects cross-enterprise input, altered bytes and missing capture permissi
   await assert.rejects(
     createSiteFromStudio({ ...f.job, sourceHash: undefined }, f.bytes, options),
     { code: 'STUDIO_SOURCE_BINDING_REQUIRED' },
+  );
+  await assert.rejects(
+    createSiteFromStudio(
+      { ...f.job, input: { ...f.job.input, productIds: 'not-an-array' } },
+      f.bytes,
+      options,
+    ),
+    { code: 'STUDIO_PRODUCT_SNAPSHOT_INVALID' },
   );
   await assert.rejects(
     createSiteFromStudio(

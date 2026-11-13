@@ -60,15 +60,23 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
   ) {
     fail('STUDIO_REVISION_REQUIRED', 'Use a versioned native enterprise snapshot');
   }
+  if (
+    !Array.isArray(job.input?.productIds) ||
+    job.input.productIds.length > 12 ||
+    new Set(job.input.productIds).size !== job.input.productIds.length
+  ) {
+    fail(
+      'STUDIO_PRODUCT_SNAPSHOT_INVALID',
+      'Product IDs and revisions must match the frozen selection',
+    );
+  }
   let website;
   try {
     website = new URL(job.input.url);
-    const declared = new URL(company.website);
     if (
       website.protocol !== 'https:' ||
       website.username ||
       website.password ||
-      website.origin !== declared.origin ||
       snapshot.website !== job.input.url
     )
       throw Error();
@@ -89,19 +97,22 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
         p.status !== 'draft',
     ) ||
     new Set(products.map((p) => p.id)).size !== products.length ||
-    (job.input.productIds || []).some((id) => !products.some((p) => p.id === id))
+    job.input.productIds.some((id) => !products.some((p) => p.id === id))
   ) {
     fail(
       'STUDIO_PRODUCT_SNAPSHOT_INVALID',
       'Product IDs and revisions must match the frozen selection',
     );
   }
+  const selectedProducts = job.input.productIds.map((id) =>
+    products.find((product) => product.id === id),
+  );
   const sourceBinding = {
     job_id: job.id,
     enterprise_id: job.enterpriseId,
     source_sha256: digest,
     company_revision: company.revision,
-    product_revisions: products.map(({ id, revision }) => ({ id, revision })),
+    product_revisions: selectedProducts.map(({ id, revision }) => ({ id, revision })),
   };
   // Explicit allowlist: never pass internal SKUs, price tiers, supply policies,
   // document contents, contacts or unapproved photos into the site compiler.
@@ -116,7 +127,7 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
           description: company.description,
           website: website.href,
         },
-        products: products.map(({ id, name, category, description }) => ({
+        products: selectedProducts.map(({ id, name, category, description }) => ({
           id,
           name,
           category,
