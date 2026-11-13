@@ -43,7 +43,7 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     'site.json': result.site, 'manifest.json': result.manifest, 'pages.json': result.pages,
     'evidence.json': result.evidence, 'sources.json': result.sourceSnapshots,
     'desks.json': [
-      { id: 'products', name: 'Products', order: 1 },
+      ...(result.articles.some((item) => item.desk === 'products') ? [{ id: 'products', name: 'Products', order: 1 }] : []),
       { id: 'suppliers', name: 'Suppliers', order: 2 },
       { id: 'guides', name: 'Buying guides', order: 3 },
     ],
