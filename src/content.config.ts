@@ -1,9 +1,10 @@
 import { defineCollection, reference } from 'astro:content';
 import { resolve } from 'node:path';
-const buyerEdition = process.env.BUYERSITE_BUILD_ROOT;
-const editionFile = (filename: string) => buyerEdition ? resolve(buyerEdition, filename) : './src/content/' + filename;
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+
+const buyerEdition = process.env.BUYERSITE_BUILD_ROOT;
+const editionFile = (filename: string) => buyerEdition ? resolve(buyerEdition, filename) : './src/content/' + filename;
 
 // One row per desk. The id in desks.json IS the route segment (/world) and the value articles
 // put in `desk`, so there is no second slug field to fall out of sync with it.
