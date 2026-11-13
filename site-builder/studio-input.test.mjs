@@ -36,13 +36,14 @@ function nativeFixture() {
     documents: [{ content: 'PRIVATE_DOCUMENT_SENTINEL' }],
     assets: [{ name: 'UNAPPROVED_IMAGE_SENTINEL' }],
     collectionAuthorized: true,
+    website: 'https://example.com/',
   };
   const bytes = Buffer.from(JSON.stringify(snapshot, null, 2));
   const job = {
     id: randomUUID(),
     enterpriseId: snapshot.enterprise.id,
     sourceHash: createHash('sha256').update(bytes).digest('hex'),
-    input: { allowResearch: true, productIds: [snapshot.products[0].id] },
+    input: { allowResearch: true, productIds: [snapshot.products[0].id], url: snapshot.website },
   };
   return { snapshot, bytes, job };
 }
@@ -111,6 +112,14 @@ test('rejects cross-enterprise input, altered bytes and missing capture permissi
   await assert.rejects(
     createSiteFromStudio({ ...f.job, sourceHash: undefined }, f.bytes, options),
     { code: 'STUDIO_SOURCE_BINDING_REQUIRED' },
+  );
+  await assert.rejects(
+    createSiteFromStudio(
+      { ...f.job, input: { ...f.job.input, url: 'https://other.example.org/' } },
+      f.bytes,
+      options,
+    ),
+    { code: 'STUDIO_WEBSITE_MISMATCH' },
   );
   assert.equal(captures, 0);
 });

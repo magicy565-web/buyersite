@@ -60,6 +60,24 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
   ) {
     fail('STUDIO_REVISION_REQUIRED', 'Use a versioned native enterprise snapshot');
   }
+  let website;
+  try {
+    website = new URL(job.input.url);
+    const declared = new URL(company.website);
+    if (
+      website.protocol !== 'https:' ||
+      website.username ||
+      website.password ||
+      website.origin !== declared.origin ||
+      snapshot.website !== job.input.url
+    )
+      throw Error();
+  } catch {
+    fail(
+      'STUDIO_WEBSITE_MISMATCH',
+      'Capture only the recorded job URL on the native company website',
+    );
+  }
   const products = snapshot.products;
   if (
     products.some(
@@ -96,7 +114,7 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
           displayName: company.displayName,
           legalName: company.legalName,
           description: company.description,
-          website: company.website,
+          website: website.href,
         },
         products: products.map(({ id, name, category, description }) => ({
           id,
