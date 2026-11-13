@@ -1,6 +1,10 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import pilot from '../src/data/pilot.json' with { type: 'json' };
+if (process.env.BUYERSITE_BUILD_ROOT) {
+  console.log('Enterprise edition: only original generated artwork is used; no pilot supplier photos fetched.');
+  process.exit(0);
+}
 await mkdir('src/assets/review', { recursive: true });
 for (const asset of pilot.media) {
   const url = new URL(asset.url);

@@ -1,0 +1,167 @@
+[
+  {
+    "path": "404.html",
+    "bytes": 17338,
+    "sha256": "cd33df86e410aa7fb1d7f6328b2c98b0c34131881704545b4b5ef48cce3d1a03"
+  },
+  {
+    "path": "_astro/Base.BV3S5l4R.css",
+    "bytes": 27071,
+    "sha256": "ec8512007da3e5c9690522fe98e79b901d3d6e8a2a0c04fb01e9b917cc0f6572"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_15TQkM.avif",
+    "bytes": 7969,
+    "sha256": "97f77db16c64b50b68d6bddc7d9a1474ad2f67f6c8fa732e7bfd8f7cb3bd5a8d"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_Z19VeQq.jpeg",
+    "bytes": 20255,
+    "sha256": "663f57d0476598871b29791822ec482fe59702236889622f9fa0d27120d941cc"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_cp6vf.avif",
+    "bytes": 6952,
+    "sha256": "e60d0cce82452f5576f6920a119e3b690471894011fcf93b02102071adf95f17"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_dWGyM.avif",
+    "bytes": 3836,
+    "sha256": "a849e171c024eac368ae956f3f7139b996d5218cbbf321e26ee8e625f3a48b21"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_s4Q4P.avif",
+    "bytes": 5220,
+    "sha256": "d5274d60aba5ace0498ec025d340a3348b6fdafede89ed9e9491aea4678beb65"
+  },
+  {
+    "path": "_astro/fonts/582bf7ca14159ccb.woff2",
+    "bytes": 15620,
+    "sha256": "0d1f0b8d0722224e32e9f28261bdc86c79115be73444ae5eceb73976a1bcdf83"
+  },
+  {
+    "path": "_astro/fonts/5a2aa3c8ec8ee458.woff2",
+    "bytes": 24232,
+    "sha256": "2a3ef8cf75b8b425b24d2c187d5da023d1a8f8128651885a46bf95405cb63fdc"
+  },
+  {
+    "path": "_astro/fonts/8341075aa0d861b8.woff2",
+    "bytes": 21696,
+    "sha256": "cf8daee3b83c1e662196c6e34e444bc41344d54bfeb4fb5351e197de6ce94539"
+  },
+  {
+    "path": "_astro/fonts/837002a3e7e776e0.woff2",
+    "bytes": 22936,
+    "sha256": "33faca8b5795a0de1af77cbc43a050a3655c4b1e03e04847fdef4d19d2e361d2"
+  },
+  {
+    "path": "_astro/fonts/8582194a2516d886.woff2",
+    "bytes": 22712,
+    "sha256": "db397149a9f73fd6a41dd2fdf3314cf8a9daf0485134465cc268cac578766b71"
+  },
+  {
+    "path": "_astro/fonts/8aa90dcd7e8296da.woff2",
+    "bytes": 14708,
+    "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7"
+  },
+  {
+    "path": "_astro/fonts/bca7e5189739db19.woff2",
+    "bytes": 25148,
+    "sha256": "d656a2dcc2bf850a9af5156f2de42f6051facfbaa8d5790cf31159de39bc2568"
+  },
+  {
+    "path": "_astro/fonts/ea5e9e149f162355.woff2",
+    "bytes": 24344,
+    "sha256": "437cd97c802be9f10f60b4db8a723261e5c35dfe1529de0562981871028bd670"
+  },
+  {
+    "path": "_astro/fonts/f25dc0ac17b70934.woff2",
+    "bytes": 25104,
+    "sha256": "46876fbd58d448ffabbffca1598e18cf25546e57d9b5e4b95ac576f935465292"
+  },
+  {
+    "path": "_astro/fonts/fb58aa8df6b078cb.woff2",
+    "bytes": 24328,
+    "sha256": "86847b6de2f28614ffe373312e1ccb7e01420a0d6ac2b052bc8f94d43eb64c23"
+  },
+  {
+    "path": "_astro/fonts/fdc6efbd2d9aac7e.woff2",
+    "bytes": 25220,
+    "sha256": "83c497a1c028bfc2ae231f88c49ec7da542e1e4bbdfe23ad207a6dbb91d4f15d"
+  },
+  {
+    "path": "colophon/index.html",
+    "bytes": 18367,
+    "sha256": "c40ce3ae07ea051b48bbcb9accb5ee40c90f201b7e7cdc8754370a6bb7c62160"
+  },
+  {
+    "path": "enquiry/index.html",
+    "bytes": 19277,
+    "sha256": "fa05de424f114bfc25f0d06e50352ef97bd426e4adcc19edb5893bda0b94e6bb"
+  },
+  {
+    "path": "favicon.ico",
+    "bytes": 655,
+    "sha256": "09d2ac08d8cca9b6e1f90221f345a8c4dd0371c64a0dc52b6f96fc589b1e3d67"
+  },
+  {
+    "path": "favicon.svg",
+    "bytes": 749,
+    "sha256": "2d7a310283d6f9cc753210d83224cd6db6348cb82a5536348884e5831d46203f"
+  },
+  {
+    "path": "guides/buyer-enquiry-guide/index.html",
+    "bytes": 20778,
+    "sha256": "d9f83583da9c0b29b16a69e7e140f6a28243151c07fcc6a87be76537eb0bf4d6"
+  },
+  {
+    "path": "guides/index.html",
+    "bytes": 18783,
+    "sha256": "7817f8cc5451732244b2f8130b4f2f3dfb4ccefd5f2d807d06e4c993e84fa7c6"
+  },
+  {
+    "path": "index.html",
+    "bytes": 20937,
+    "sha256": "1baf6251e450a77c1a03d548a65cc378544b88cb026d5ca21ab3469ac709190e"
+  },
+  {
+    "path": "products/index.html",
+    "bytes": 18809,
+    "sha256": "e691816ff0b345f8e137a911639dc3091d0e33dc0391ea76ef4dc867a62c4d38"
+  },
+  {
+    "path": "products/precision-pump-valve-a/index.html",
+    "bytes": 22679,
+    "sha256": "b3c5d4a5295d1bb9e38f03f92a5f06838500569780d31876b4bfe20875624de6"
+  },
+  {
+    "path": "robots.txt",
+    "bytes": 26,
+    "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1"
+  },
+  {
+    "path": "rss.xml",
+    "bytes": 1799,
+    "sha256": "3805ae48e480ea6de87d761a9429ccd374c18bf0824da2134e216ddab63b2812"
+  },
+  {
+    "path": "sitemap-0.xml",
+    "bytes": 974,
+    "sha256": "b11417f36236608b01b73481c120bdb821d701fe21f7f3e1631b0777ccb8d1b4"
+  },
+  {
+    "path": "sitemap-index.xml",
+    "bytes": 193,
+    "sha256": "3d22f5d1a0caa7c8b6d2193c83b1ac9dee652578ed7dd36a199a2ea7e2d7771e"
+  },
+  {
+    "path": "suppliers/index.html",
+    "bytes": 18813,
+    "sha256": "190f66681297e2aef4228979bb9156bd12136163e2b9e79b8c59b4caab250b37"
+  },
+  {
+    "path": "suppliers/ultraprecisionmanufacturinginternational-component/index.html",
+    "bytes": 21874,
+    "sha256": "a32910a5c1209188c3a67b13f26e41d7689534748f117a2830502d6928279d11"
+  }
+]

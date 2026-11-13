@@ -1,0 +1,61 @@
+
+> buyer-magazine-site@0.1.0 prebuild /workspace/scratch/5a20146a788d/buyersite
+> pnpm prepare:media && pnpm validate:content
+
+
+> buyer-magazine-site@0.1.0 prepare:media /workspace/scratch/5a20146a788d/buyersite
+> node scripts/prepare-media.mjs
+
+Enterprise edition: only original generated artwork is used; no pilot supplier photos fetched.
+
+> buyer-magazine-site@0.1.0 validate:content /workspace/scratch/5a20146a788d/buyersite
+> node scripts/validate-content.mjs
+
+Validated private edition: 5 page contracts, 4 evidence, 1 captured sources.
+
+> buyer-magazine-site@0.1.0 build /workspace/scratch/5a20146a788d/buyersite
+> astro build
+
+08:31:39 [content] Syncing content
+08:31:39 [content] Synced content
+08:31:39 [types] Generated 1.46s
+08:31:39 [build] output: "static"
+08:31:39 [build] mode: "static"
+08:31:39 [build] directory: /workspace/scratch/5a20146a788d/buyersite/dist/
+08:31:39 [build] Collecting build info...
+08:31:39 [build] ✓ Completed in 1.48s.
+08:31:39 [build] Building static entrypoints...
+08:31:53 [astro-icon] Loaded icons from src/icons, lucide
+08:31:53 [assets] Copying fonts (11 files)...
+08:31:57 [vite] ✓ built in 17.99s
+08:31:57 [vite] ✓ built in 128ms
+08:31:57 [build] Rearranging server assets...
+
+ generating static routes 
+08:31:57   ├─ /404.html (+23ms) 
+08:31:57   ├─ /colophon/index.html (+29ms) 
+08:31:57   ├─ /enquiry/index.html (+8ms) 
+08:31:57   ├─ /robots.txt (+4ms) 
+08:31:57   ├─ /rss.xml (+101ms) 
+08:31:57   ├─ /guides/buyer-enquiry-guide/index.html (+8ms) 
+08:31:57   ├─ /products/cotton-canvas/index.html (+7ms) 
+08:31:57   ├─ /products/soft-knit-fabric/index.html (+14ms) 
+08:31:57   ├─ /suppliers/synthetic-cotton-textiles/index.html (+5ms) 
+08:31:57   ├─ /products/index.html (+11ms) 
+08:31:57   ├─ /suppliers/index.html (+3ms) 
+08:31:57   ├─ /guides/index.html (+9ms) 
+08:31:57   ├─ /index.html (+6ms) 
+08:31:57 ✓ Completed in 333ms.
+
+ generating optimized images 
+08:31:57   ▶ /_astro/cover.-e0Crzpr_Z19VeQq.jpeg (before: 78kB, after: 19kB) (+166ms) (1/5)
+08:31:58   ▶ /_astro/cover.-e0Crzpr_dWGyM.avif (before: 78kB, after: 3kB) (+748ms) (2/5)
+08:31:59   ▶ /_astro/cover.-e0Crzpr_s4Q4P.avif (before: 78kB, after: 5kB) (+1.19s) (3/5)
+08:32:02   ▶ /_astro/cover.-e0Crzpr_cp6vf.avif (before: 78kB, after: 6kB) (+2.09s) (4/5)
+08:32:04   ▶ /_astro/cover.-e0Crzpr_15TQkM.avif (before: 78kB, after: 7kB) (+2.66s) (5/5)
+08:32:04 ✓ Completed in 6.85s.
+
+08:32:04 [build] ✓ Completed in 25.38s.
+08:32:04 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+08:32:04 [build] 11 page(s) built in 26.89s
+08:32:04 [build] Complete!

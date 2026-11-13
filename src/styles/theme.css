@@ -29,6 +29,16 @@ header nav {
 header nav a {
   padding-block: 0.5rem;
 }
+/* Enterprise names and product codes can be longer than the pilot's labels. */
+header > div > a[href='/'] {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+:where(h1, h2, h3, dt, dd),
+.article-body,
+footer {
+  overflow-wrap: anywhere;
+}
 .article-body :where(a) {
   overflow-wrap: anywhere;
 }

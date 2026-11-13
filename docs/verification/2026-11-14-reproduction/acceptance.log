@@ -1,0 +1,22 @@
+
+> buyer-magazine-site@0.1.0 accept:site-builder /workspace/scratch/5a20146a788d/buyersite
+> node site-builder/acceptance.mjs
+
+test:site-builder: PASS (1272ms)
+check: PASS (12998ms)
+build: PASS (30133ms)
+verify:output: PASS (909ms)
+test:browser: PASS (57029ms)
+synthetic-cotton-textiles: artifact inventory SHA256 dc71c4a137c783a7e57807c8f69cc68007c5f48e30b1598c1617d04d05d4c73a
+check: PASS (10831ms)
+build: PASS (6908ms)
+verify:output: PASS (831ms)
+test:browser: PASS (52425ms)
+synthetic-industrial-testing: artifact inventory SHA256 5fb2f92e941cb45c898a43dc5a11434b9019bc6a404e255fa72c9c49f1adc52a
+check: PASS (11959ms)
+build: PASS (6164ms)
+verify:output: PASS (719ms)
+test:browser: PASS (45099ms)
+synthetic-empty-catalog: artifact inventory SHA256 2b0d24d3995eacbc4433429ac19f786da332a8e7820354e9c11ab15604786656
+Acceptance: PASS
+Report: /workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T16-31-19-743Z/report.json

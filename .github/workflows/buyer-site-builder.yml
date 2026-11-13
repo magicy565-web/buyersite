@@ -1,0 +1,56 @@
+name: Buyer Site Builder private preview checks
+
+on:
+  push:
+    branches:
+      - feat/company-to-buyer-site-v0-1
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'site-builder/**'
+      - 'scripts/**'
+      - 'tests/browser/**'
+      - 'playwright.config.ts'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/buyer-site-builder.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE_URL: https://buyer-magazine.invalid
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Setup Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10.34.5'
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Chromium for browser acceptance
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Accept three independent synthetic editions
+        run: pnpm accept:site-builder
+      - name: Upload synthetic acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: site-builder-diagnostics
+          path: |
+            .generated/acceptance/
+            playwright-report/
+          retention-days: 2
+          if-no-files-found: ignore

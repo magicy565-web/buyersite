@@ -1,0 +1,172 @@
+[
+  {
+    "path": "404.html",
+    "bytes": 17111,
+    "sha256": "0f23c1c29b207c5004d70aaa6a9613aa926959a1affffde3bbe9ec528c0475b9"
+  },
+  {
+    "path": "_astro/Base.BV3S5l4R.css",
+    "bytes": 27071,
+    "sha256": "ec8512007da3e5c9690522fe98e79b901d3d6e8a2a0c04fb01e9b917cc0f6572"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_15TQkM.avif",
+    "bytes": 7969,
+    "sha256": "97f77db16c64b50b68d6bddc7d9a1474ad2f67f6c8fa732e7bfd8f7cb3bd5a8d"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_Z19VeQq.jpeg",
+    "bytes": 20255,
+    "sha256": "663f57d0476598871b29791822ec482fe59702236889622f9fa0d27120d941cc"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_cp6vf.avif",
+    "bytes": 6952,
+    "sha256": "e60d0cce82452f5576f6920a119e3b690471894011fcf93b02102071adf95f17"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_dWGyM.avif",
+    "bytes": 3836,
+    "sha256": "a849e171c024eac368ae956f3f7139b996d5218cbbf321e26ee8e625f3a48b21"
+  },
+  {
+    "path": "_astro/cover.-e0Crzpr_s4Q4P.avif",
+    "bytes": 5220,
+    "sha256": "d5274d60aba5ace0498ec025d340a3348b6fdafede89ed9e9491aea4678beb65"
+  },
+  {
+    "path": "_astro/fonts/582bf7ca14159ccb.woff2",
+    "bytes": 15620,
+    "sha256": "0d1f0b8d0722224e32e9f28261bdc86c79115be73444ae5eceb73976a1bcdf83"
+  },
+  {
+    "path": "_astro/fonts/5a2aa3c8ec8ee458.woff2",
+    "bytes": 24232,
+    "sha256": "2a3ef8cf75b8b425b24d2c187d5da023d1a8f8128651885a46bf95405cb63fdc"
+  },
+  {
+    "path": "_astro/fonts/8341075aa0d861b8.woff2",
+    "bytes": 21696,
+    "sha256": "cf8daee3b83c1e662196c6e34e444bc41344d54bfeb4fb5351e197de6ce94539"
+  },
+  {
+    "path": "_astro/fonts/837002a3e7e776e0.woff2",
+    "bytes": 22936,
+    "sha256": "33faca8b5795a0de1af77cbc43a050a3655c4b1e03e04847fdef4d19d2e361d2"
+  },
+  {
+    "path": "_astro/fonts/8582194a2516d886.woff2",
+    "bytes": 22712,
+    "sha256": "db397149a9f73fd6a41dd2fdf3314cf8a9daf0485134465cc268cac578766b71"
+  },
+  {
+    "path": "_astro/fonts/8aa90dcd7e8296da.woff2",
+    "bytes": 14708,
+    "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7"
+  },
+  {
+    "path": "_astro/fonts/bca7e5189739db19.woff2",
+    "bytes": 25148,
+    "sha256": "d656a2dcc2bf850a9af5156f2de42f6051facfbaa8d5790cf31159de39bc2568"
+  },
+  {
+    "path": "_astro/fonts/ea5e9e149f162355.woff2",
+    "bytes": 24344,
+    "sha256": "437cd97c802be9f10f60b4db8a723261e5c35dfe1529de0562981871028bd670"
+  },
+  {
+    "path": "_astro/fonts/f25dc0ac17b70934.woff2",
+    "bytes": 25104,
+    "sha256": "46876fbd58d448ffabbffca1598e18cf25546e57d9b5e4b95ac576f935465292"
+  },
+  {
+    "path": "_astro/fonts/fb58aa8df6b078cb.woff2",
+    "bytes": 24328,
+    "sha256": "86847b6de2f28614ffe373312e1ccb7e01420a0d6ac2b052bc8f94d43eb64c23"
+  },
+  {
+    "path": "_astro/fonts/fdc6efbd2d9aac7e.woff2",
+    "bytes": 25220,
+    "sha256": "83c497a1c028bfc2ae231f88c49ec7da542e1e4bbdfe23ad207a6dbb91d4f15d"
+  },
+  {
+    "path": "colophon/index.html",
+    "bytes": 18106,
+    "sha256": "d86d35d6b33d727c0646222b43d9376d7c3c490bc700505f15d710e9ae95fe14"
+  },
+  {
+    "path": "enquiry/index.html",
+    "bytes": 19033,
+    "sha256": "bc7b1a4225c629c086002154c6238ce81fd1a610d38f76ddc02ffbbb8b14ff8e"
+  },
+  {
+    "path": "favicon.ico",
+    "bytes": 655,
+    "sha256": "09d2ac08d8cca9b6e1f90221f345a8c4dd0371c64a0dc52b6f96fc589b1e3d67"
+  },
+  {
+    "path": "favicon.svg",
+    "bytes": 749,
+    "sha256": "2d7a310283d6f9cc753210d83224cd6db6348cb82a5536348884e5831d46203f"
+  },
+  {
+    "path": "guides/buyer-enquiry-guide/index.html",
+    "bytes": 20532,
+    "sha256": "964fe6957f36f18dc1aa33a15491e18eb49a20dedb5ac649b239cb648000b6b0"
+  },
+  {
+    "path": "guides/index.html",
+    "bytes": 18556,
+    "sha256": "de2a2c39d2a45c022ea280f39806721eb2b5ec34b9d3849d6121bdf5e1663152"
+  },
+  {
+    "path": "index.html",
+    "bytes": 22083,
+    "sha256": "ff734d618621676bd29654c3dd33b2cfcc07b54ae59293575f8e9898ee3d395d"
+  },
+  {
+    "path": "products/cotton-canvas/index.html",
+    "bytes": 23026,
+    "sha256": "646fa84a52ffd7d202d6b259b51155cdfd0518b69edc0c6204da58ca6fa99f6d"
+  },
+  {
+    "path": "products/index.html",
+    "bytes": 19171,
+    "sha256": "0f2fffee0ec0ddb393ae6149054b67f2ea9056753352f372e42f8869200acedb"
+  },
+  {
+    "path": "products/soft-knit-fabric/index.html",
+    "bytes": 23008,
+    "sha256": "3f38a374885fff886fb321e299729c674305c5c6aa10a8fb388a32030a5b934d"
+  },
+  {
+    "path": "robots.txt",
+    "bytes": 26,
+    "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1"
+  },
+  {
+    "path": "rss.xml",
+    "bytes": 2097,
+    "sha256": "5fdc0ecab7ebf20cb4e1cab603d158367ef5a1b97570b7cd8aca016358f6b69e"
+  },
+  {
+    "path": "sitemap-0.xml",
+    "bytes": 1019,
+    "sha256": "a6f650770f24f3e3b55fe45607230fbba37e0be401bbd1caf9b63bd8ce159297"
+  },
+  {
+    "path": "sitemap-index.xml",
+    "bytes": 193,
+    "sha256": "3d22f5d1a0caa7c8b6d2193c83b1ac9dee652578ed7dd36a199a2ea7e2d7771e"
+  },
+  {
+    "path": "suppliers/index.html",
+    "bytes": 18543,
+    "sha256": "2f0f058b3dd970907ea3a5005111b10d0a0ff0e7394ace275f0a88b935bc4d00"
+  },
+  {
+    "path": "suppliers/synthetic-cotton-textiles/index.html",
+    "bytes": 21329,
+    "sha256": "d542a2d6a0e20f42168951ffcea89e0cfae4af8b3d95517d4f27ea1c8f7f996f"
+  }
+]

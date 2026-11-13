@@ -7,8 +7,8 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import SpecSummary from '../../components/buyer/SpecSummary.astro';
-import evidence from '../../data/evidence.json';
-import { resolveEvidence } from '../../lib/evidence';
+
+import { loadEvidence, resolveEvidence } from '../../lib/evidence';
 import Evidence from '../../components/buyer/Evidence.astro';
 import Author from '../../components/common/Author.astro';
 import Plate from '../../components/common/Plate.astro';
@@ -41,7 +41,7 @@ const ui = t(locale);
 const item = await present(article, locale);
 const { Content } = await render(article);
 const authors = await getAuthors(article);
-const sourceNotes = resolveEvidence(item.data.evidenceRefs, evidence);
+const sourceNotes = resolveEvidence(item.data.evidenceRefs, loadEvidence());
 
 const essay = item.data.format === 'photoessay';
 const blocks = item.data.rail ?? [];

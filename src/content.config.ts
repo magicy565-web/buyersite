@@ -1,11 +1,15 @@
 import { defineCollection, reference } from 'astro:content';
+import { resolve } from 'node:path';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+
+const buyerEdition = process.env.BUYERSITE_BUILD_ROOT;
+const editionFile = (filename: string) => buyerEdition ? resolve(buyerEdition, filename) : './src/content/' + filename;
 
 // One row per desk. The id in desks.json IS the route segment (/world) and the value articles
 // put in `desk`, so there is no second slug field to fall out of sync with it.
 const desks = defineCollection({
-  loader: file('./src/content/desks.json'),
+  loader: file(editionFile('desks.json')),
   schema: z.object({
     name: z.string(), // printed on the desk bar and, by default, in the kicker box
     blurb: z.string().optional(), // absent: the desk front opens straight into the list
@@ -15,7 +19,7 @@ const desks = defineCollection({
 
 // One file per article. The filename is the slug: /<desk>/<filename>.
 const articles = defineCollection({
-  loader: glob({ base: './src/content/articles', pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: buyerEdition ? resolve(buyerEdition, 'articles') : './src/content/articles', pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
       evidenceRefs: z.array(z.string()).default([]),
@@ -59,7 +63,7 @@ const articles = defineCollection({
 
 // Bylines. An entry's id is the value articles use in `byline`.
 const authors = defineCollection({
-  loader: file('./src/content/authors.json'),
+  loader: file(editionFile('authors.json')),
   schema: ({ image }) =>
     z.object({
       name: z.string(),

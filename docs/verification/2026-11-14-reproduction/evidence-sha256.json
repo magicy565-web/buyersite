@@ -1,0 +1,110 @@
+[
+  {
+    "path": "acceptance.log",
+    "sha256": "5f3ca069044f124a1485153bd092582ba986d0774a344d20574199acb22c7d43"
+  },
+  {
+    "path": "browser-runtime.json",
+    "sha256": "dc222a5c0c810f5776f4a6eee384f28800af0a42da8bf4570772136c558d51a4"
+  },
+  {
+    "path": "environment.json",
+    "sha256": "fec5a2551dd31de26b9743d29ee1643a2165ab80d8144f53b66364c6ae109800"
+  },
+  {
+    "path": "install.log",
+    "sha256": "1d517a96b7a8b005bac5d5813576a6a712856509a3dfaca22cfee0772817c013"
+  },
+  {
+    "path": "latest-run-evidence.json",
+    "sha256": "06c01b8d8c255f05b53db69f32d014d077b96a96121f4e7ce874a23260dca1c9"
+  },
+  {
+    "path": "report.json",
+    "sha256": "6711a47a4bb234da2b6d74f1553d9b53b588f3b208972523e2bc8d00f19bcb46"
+  },
+  {
+    "path": "run-annotations.json",
+    "sha256": "419032296866a060abf1406653b61baaecc9e41bd3aa6fb7139d0cbba077caeb"
+  },
+  {
+    "path": "run-jobs.json",
+    "sha256": "f93372766c47f36cfc964da32473caa06d0e136fbbcb307b451c15308ccbb577"
+  },
+  {
+    "path": "synthetic-cotton-textiles/artifact-files.json",
+    "sha256": "493bea44b68318c17c7b2fb2c0751a83e6284756f3b6995e6b5bfc5abed92e0f"
+  },
+  {
+    "path": "synthetic-cotton-textiles/build.log",
+    "sha256": "7949e1bd60f414537bf05869433e80fc9d9f06ef6f59980edb8aa7f350f69d46"
+  },
+  {
+    "path": "synthetic-cotton-textiles/check.log",
+    "sha256": "cac4429b3a0d64613aff660ffe6958a777b74e48d050e625ee2fca4b18b7b43b"
+  },
+  {
+    "path": "synthetic-cotton-textiles/test-browser.log",
+    "sha256": "bc1cff19e0c91fd7579588d035aff42053e59a4ee45f8ffc321bef9c9e06376d"
+  },
+  {
+    "path": "synthetic-cotton-textiles/verify-output.log",
+    "sha256": "1f0781681fbb4f797b8a8ac2dfd7ed26f7c2fb8825f448ad08687e2bd6cfeeda"
+  },
+  {
+    "path": "synthetic-cotton-textiles-browser.json",
+    "sha256": "2f1f96c2801196058fac6124ebc623d5d193ee2ed2466030ba2467e3c4cd0803"
+  },
+  {
+    "path": "synthetic-empty-catalog/artifact-files.json",
+    "sha256": "cc32cbe96a89a5dd6dcb3ce8d4807dbb139b77679879078747e0084d2298de10"
+  },
+  {
+    "path": "synthetic-empty-catalog/build.log",
+    "sha256": "e6684ead9ed4a08461b2bbc56501d7671db51af87cc57981f0359e75b9f4bf3d"
+  },
+  {
+    "path": "synthetic-empty-catalog/check.log",
+    "sha256": "69fbce6060d425ea4559459ca2abdf0e73f1a94c6c4c4764518b3c501ce4be2a"
+  },
+  {
+    "path": "synthetic-empty-catalog/test-browser.log",
+    "sha256": "93d4f495cb55f91d39c3e0ea89445094edb30bec7c826fe93fe5ecc1d81360b9"
+  },
+  {
+    "path": "synthetic-empty-catalog/verify-output.log",
+    "sha256": "48b69f7d4e8dc5aaa7f6b82b42f3f20bc4be0eadd39b0ccb9b8792ecd3ec9155"
+  },
+  {
+    "path": "synthetic-empty-catalog-browser.json",
+    "sha256": "3833907bab03758f6a2226a71c8b7038a1bba02fe29048bc9310512750a59cf6"
+  },
+  {
+    "path": "synthetic-industrial-testing/artifact-files.json",
+    "sha256": "01487cecbb57fe8df8763ba80aca605e214d57f9488ed601c0b3383202c02232"
+  },
+  {
+    "path": "synthetic-industrial-testing/build.log",
+    "sha256": "192f0abfc375c3bad43a8f7bb47da018ee8673fa0b0bc53e5d8d3bdd45d0fadc"
+  },
+  {
+    "path": "synthetic-industrial-testing/check.log",
+    "sha256": "a542c764f2762d5a7e00de38abd27fbb6749e8ebee23da38083208fb7d0a95b3"
+  },
+  {
+    "path": "synthetic-industrial-testing/test-browser.log",
+    "sha256": "574ea6e04b13952590d6bf3280652bab62bad581636d6ed3027244d22b377add"
+  },
+  {
+    "path": "synthetic-industrial-testing/verify-output.log",
+    "sha256": "25fc82a1787544cda84eaffd8adec798d8e806ae845282d5a777e8ec3824a026"
+  },
+  {
+    "path": "synthetic-industrial-testing-browser.json",
+    "sha256": "975ee29ec59a6a78d269d6a039e0fdf523e8a6eebdf0b3f937249eb5b8e7dd10"
+  },
+  {
+    "path": "test-site-builder.log",
+    "sha256": "005e1353816ddc8647a62058dfc7c6b1979f92f47dc680657e49aaf0ce2604bb"
+  }
+]

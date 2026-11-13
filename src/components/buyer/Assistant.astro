@@ -1,12 +1,13 @@
 ---
 import { t } from '../../i18n';
+import { site } from '../../config';
 const ui = t(Astro.currentLocale);
 ---
 
 <button type="button" data-assistant-open class="buyer-action">
   {ui.askSourcing}
 </button>
-<dialog id="buyer-assistant" class="buyer-dialog" aria-labelledby="assistant-title">
+<dialog id="buyer-assistant" class="buyer-dialog" aria-labelledby="assistant-title" data-site-slug={site.slug} data-assistant-enabled={site.builderMode ? "false" : "true"}>
   <h2 id="assistant-title">Sourcing assistant</h2>
   <p id="assistant-status">
     AI is not connected in this review. Read the source notes or prepare an enquiry.
@@ -20,7 +21,7 @@ const ui = t(Astro.currentLocale);
     </button>
   </form>
   <p>
-    <a href="/guides/burel-project-brief">Read the buying guide</a> ·{' '}
+    <a href={"/guides/" + site.guideSlug}>Read the buying guide</a> ·{' '}
     <a href="/enquiry">Prepare an enquiry</a>
   </p>
   <form method="dialog">
@@ -44,8 +45,8 @@ const ui = t(Astro.currentLocale);
   const status = document.querySelector<HTMLElement>('#assistant-status')!;
   const log = document.querySelector<HTMLElement>('#assistant-messages')!;
   // Runtime-neutral public gateway. No supplier/tenant secrets or automatic RFQ submission.
-  const configured = import.meta.env.PUBLIC_ASSISTANT_API_BASE;
-  const slug = 'material-notes';
+  const configured = panel.dataset.assistantEnabled === "true" ? import.meta.env.PUBLIC_ASSISTANT_API_BASE : null;
+  const slug = panel.dataset.siteSlug || 'material-notes';
   let session: string | undefined;
   let base: URL | undefined;
   if (configured) {
@@ -96,7 +97,7 @@ const ui = t(Astro.currentLocale);
         body: JSON.stringify({
           message: question,
           page_url: location.href,
-          product_context: location.pathname.startsWith('/materials/') ? 'burel-silver' : null,
+          product_context: null, // Generic buyer editions require an independently verified product context binding.
         }),
       });
       if (r.status === 401 || r.status === 403) session = undefined;

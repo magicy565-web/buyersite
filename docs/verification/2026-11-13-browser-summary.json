@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "tested_local_commit": "8a72c1661356faaf300d241c9c8c12ca22315e1b",
+  "tested_published_commit": "ff9d4978fb5c9b5f01d841b4633a1519a4ebfb0b",
+  "tested_tree": "07a24917d16585848d59bf524bd499139a5e24f8",
+  "native_url_binding_local_commit": "72d40aa924a659dd456ede9a9a9bb52f6fc0838e",
+  "native_url_binding_published_commit": "305f63e57ffe7f5cf0673d8abe161bc5dcf5cec9",
+  "native_url_binding_tree": "c28b15335c6767e8f92b60d1bd7e9d933d1f8812",
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "pnpm": "11.25.0",
+    "chromium_executable": "/workspace/scratch/f7a81738a0a5/buyersite/.generated/qa-runtime/chromium-headless.sh"
+  },
+  "browser_version": "153.0.8010.0",
+  "browser_package": "@sparticuz/chromium@153.0.0",
+  "builder_unit_tests": 10,
+  "browser_total_passed": 96,
+  "editions": [
+    {
+      "slug": "synthetic-cotton-textiles",
+      "core_routes": 5,
+      "artifact_inventory_sha256": "dc71c4a137c783a7e57807c8f69cc68007c5f48e30b1598c1617d04d05d4c73a",
+      "browser_stats": {
+        "startTime": "2026-11-13T08:48:25.263Z",
+        "duration": 26253.889000000003,
+        "expected": 36,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "slug": "synthetic-industrial-testing",
+      "core_routes": 4,
+      "artifact_inventory_sha256": "5fb2f92e941cb45c898a43dc5a11434b9019bc6a404e255fa72c9c49f1adc52a",
+      "browser_stats": {
+        "startTime": "2026-11-13T08:49:04.974Z",
+        "duration": 24672.924,
+        "expected": 33,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "slug": "synthetic-empty-catalog",
+      "core_routes": 3,
+      "artifact_inventory_sha256": "2b0d24d3995eacbc4433429ac19f786da332a8e7820354e9c11ab15604786656",
+      "browser_stats": {
+        "startTime": "2026-11-13T08:49:41.973Z",
+        "duration": 19027.399999999998,
+        "expected": 27,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ],
+  "live_enterprise_ingestion": "NOT_TESTED",
+  "studio_production_deployment": "NOT_TESTED",
+  "native_url_binding_rebuild_matches_browser_tested_bytes": true
+}

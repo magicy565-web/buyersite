@@ -1,0 +1,78 @@
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +418
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 418, reused 0, downloaded 0, added 0
+Progress: resolved 418, reused 0, downloaded 1, added 0
+
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 10.34.5 → 12.18.0.   │
+   │   Changelog: https://pnpm.io/v/12.18.0   │
+   │     To update, run: pnpm add -g pnpm     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+Progress: resolved 418, reused 0, downloaded 24, added 24
+Progress: resolved 418, reused 0, downloaded 25, added 24
+Progress: resolved 418, reused 0, downloaded 48, added 48
+Progress: resolved 418, reused 0, downloaded 49, added 48
+Progress: resolved 418, reused 0, downloaded 72, added 72
+Progress: resolved 418, reused 0, downloaded 73, added 72
+Progress: resolved 418, reused 0, downloaded 96, added 96
+Progress: resolved 418, reused 0, downloaded 97, added 96
+Progress: resolved 418, reused 0, downloaded 120, added 120
+Progress: resolved 418, reused 0, downloaded 121, added 120
+Progress: resolved 418, reused 0, downloaded 144, added 144
+Progress: resolved 418, reused 0, downloaded 145, added 144
+Progress: resolved 418, reused 0, downloaded 168, added 168
+Progress: resolved 418, reused 0, downloaded 169, added 168
+Progress: resolved 418, reused 0, downloaded 192, added 192
+Progress: resolved 418, reused 0, downloaded 193, added 192
+Progress: resolved 418, reused 0, downloaded 216, added 216
+Progress: resolved 418, reused 0, downloaded 217, added 216
+Progress: resolved 418, reused 0, downloaded 240, added 240
+Progress: resolved 418, reused 0, downloaded 241, added 240
+Progress: resolved 418, reused 0, downloaded 264, added 264
+Progress: resolved 418, reused 0, downloaded 265, added 264
+Progress: resolved 418, reused 0, downloaded 288, added 288
+Progress: resolved 418, reused 0, downloaded 289, added 288
+Progress: resolved 418, reused 0, downloaded 312, added 312
+Progress: resolved 418, reused 0, downloaded 313, added 312
+Progress: resolved 418, reused 0, downloaded 336, added 336
+Progress: resolved 418, reused 0, downloaded 337, added 336
+Progress: resolved 418, reused 0, downloaded 360, added 360
+Progress: resolved 418, reused 0, downloaded 361, added 360
+Progress: resolved 418, reused 0, downloaded 384, added 384
+Progress: resolved 418, reused 0, downloaded 385, added 384
+Progress: resolved 418, reused 0, downloaded 408, added 408
+Progress: resolved 418, reused 0, downloaded 409, added 408
+Progress: resolved 418, reused 0, downloaded 418, added 418, done
+.../esbuild@0.28.2/node_modules/esbuild postinstall$ node install.js
+.../esbuild@0.28.2/node_modules/esbuild postinstall: Done
+
+dependencies:
++ @astrojs/mdx 8.0.1
++ @astrojs/rss 4.0.19
++ @astrojs/sitemap 3.7.4
++ @iconify-json/lucide 1.2.132
++ @tailwindcss/vite 4.3.3
++ ajv 8.20.0
++ ajv-formats 3.0.1
++ astro 7.3.3
++ astro-icon 1.2.0
++ sharp 0.35.4
++ tailwindcss 4.3.3
+
+devDependencies:
++ @astrojs/check 0.9.10
++ @playwright/test 1.65.0
++ eslint 10.10.0
++ eslint-plugin-astro 3.1.0
++ prettier 3.9.6
++ prettier-plugin-astro 1.0.0
++ prettier-plugin-tailwindcss 0.8.1
++ typescript 6.0.3
++ typescript-eslint 8.70.0
+
+Done in 1m 19.2s using pnpm v10.34.5
