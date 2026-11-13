@@ -1,0 +1,155 @@
+{
+  "version": "1.0.0",
+  "started_at": "2026-11-13T17:09:03.886Z",
+  "finished_at": "2026-11-13T17:13:05.510Z",
+  "source_commit": "4f14b3eb095fbdeba6d6a41446940f6a6e48958c",
+  "source_dirty": false,
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "pnpm": "10.34.5",
+    "chromium_executable": "/workspace/scratch/5a20146a788d/buyersite/.generated/qa-runtime/chromium-headless.sh"
+  },
+  "scope": "Builder acceptance only. Default inputs are synthetic fixtures, never live enterprise acceptance.",
+  "production_deployed": false,
+  "live_enterprise_ingestion": "NOT_TESTED",
+  "status": "PASS",
+  "unit_tests": {
+    "status": "PASS",
+    "exit_code": 0,
+    "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/test-site-builder.log",
+    "duration_ms": 1449
+  },
+  "worker_runtime": {
+    "status": "PASS",
+    "exit_code": 0,
+    "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/accept-site-worker.log",
+    "duration_ms": 38890
+  },
+  "editions": [
+    {
+      "input": "site-builder/fixtures/enterprise.synthetic.json",
+      "input_sha256": "dca9533b31ef2e8bd952c6387d9b3cbc6b09587a684e22c9e3f533e49395d6cf",
+      "pack": {
+        "root": "/workspace/scratch/5a20146a788d/buyersite/.generated/company-sites/synthetic-cotton-textiles-3aa6ae96864d",
+        "site_slug": "synthetic-cotton-textiles",
+        "fingerprint": "3aa6ae96864da1757b1b650039f0608f0664dfeb4ec91d5aee5682ed7ea05fde",
+        "pages": 5,
+        "articles": 4,
+        "preview_only": true
+      },
+      "check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-cotton-textiles/check.log",
+        "duration_ms": 12222
+      },
+      "build": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-cotton-textiles/build.log",
+        "duration_ms": 6389
+      },
+      "output": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-cotton-textiles/verify-output.log",
+        "duration_ms": 1067
+      },
+      "browser": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-cotton-textiles/test-browser.log",
+        "duration_ms": 55413
+      },
+      "artifact": {
+        "directory": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-cotton-textiles/dist",
+        "inventory_sha256": "821daeab13831bc4e2e06cdfe33432de24106930cc68a09c812e88b750680a45",
+        "files": 34
+      }
+    },
+    {
+      "input": "site-builder/fixtures/enterprise.edge-cases.json",
+      "input_sha256": "b8fc1a2c0800f198ef61aa92c5883ea1766cbabffdc21eab6df7ad0dc8b173c8",
+      "pack": {
+        "root": "/workspace/scratch/5a20146a788d/buyersite/.generated/company-sites/synthetic-industrial-testing-8c92a8c4845d",
+        "site_slug": "synthetic-industrial-testing",
+        "fingerprint": "8c92a8c4845d4ed1255fdebc639a2912d703ee31ca4fe7609ed1a452a9113248",
+        "pages": 4,
+        "articles": 3,
+        "preview_only": true
+      },
+      "check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-industrial-testing/check.log",
+        "duration_ms": 11404
+      },
+      "build": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-industrial-testing/build.log",
+        "duration_ms": 6337
+      },
+      "output": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-industrial-testing/verify-output.log",
+        "duration_ms": 720
+      },
+      "browser": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-industrial-testing/test-browser.log",
+        "duration_ms": 49905
+      },
+      "artifact": {
+        "directory": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-industrial-testing/dist",
+        "inventory_sha256": "4ffe2a8396740f5fe9b09a6f994fad9d2a12000ecd8c505135aff37e48deb9a4",
+        "files": 33
+      }
+    },
+    {
+      "input": "site-builder/fixtures/enterprise.empty.json",
+      "input_sha256": "fa86f19ef3dfd8a2da0a31e683f5114b464e5fb74bbc2d4837f7cd2b841af44d",
+      "pack": {
+        "root": "/workspace/scratch/5a20146a788d/buyersite/.generated/company-sites/synthetic-empty-catalog-f4d1871ec749",
+        "site_slug": "synthetic-empty-catalog",
+        "fingerprint": "f4d1871ec7491da1284806b40622994e7fa5c50c14486320c34e01104721c773",
+        "pages": 3,
+        "articles": 2,
+        "preview_only": true
+      },
+      "check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-empty-catalog/check.log",
+        "duration_ms": 10564
+      },
+      "build": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-empty-catalog/build.log",
+        "duration_ms": 6071
+      },
+      "output": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-empty-catalog/verify-output.log",
+        "duration_ms": 701
+      },
+      "browser": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-empty-catalog/test-browser.log",
+        "duration_ms": 38463
+      },
+      "artifact": {
+        "directory": "/workspace/scratch/5a20146a788d/buyersite/.generated/acceptance/2026-11-13T17-09-03-886Z/synthetic-empty-catalog/dist",
+        "inventory_sha256": "96db29e295d5ee8caf5929f10f0caf29ba93a55299a0c32513e1653b469f0deb",
+        "files": 31
+      }
+    }
+  ]
+}
