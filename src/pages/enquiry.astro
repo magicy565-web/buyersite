@@ -1,22 +1,48 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/common/PageHead.astro';
+import { site } from '../config';
 ---
-<Base title="Prepare a material sourcing enquiry"><div class="max-w-content mx-auto px-4 py-12"><PageHead kicker="Buying brief" title="Prepare your enquiry" lede="Create a brief you can review and download. Nothing is sent to the supplier." />
-<form id="enquiry-form" class="mt-8 space-y-6">
-<label class="block">Material<input class="enquiry-field" name="material" value="Burel Factory Silver wool fabric" maxlength="200" required /></label>
-<label class="block">Quantity and unit<input class="enquiry-field" name="quantity" placeholder="e.g. 20 linear metres — to be confirmed" maxlength="200" required /></label>
-<label class="block">Application and installation<textarea class="enquiry-field" name="application" maxlength="2000" required></textarea></label>
-<label class="block">Destination and target delivery<input class="enquiry-field" name="delivery" maxlength="300" required /></label>
-<button class="buyer-action">Download enquiry brief</button><p id="enquiry-status" role="status"></p>
-</form></div></Base>
+<Base title="Prepare a sourcing enquiry">
+  <div class="max-w-content mx-auto px-4 py-12">
+    <PageHead kicker="Buying brief" title="Prepare your enquiry"
+      lede="Create an editable brief you can review and download. Nothing is sent to the supplier." />
+    <form id="enquiry-form" class="mt-8 space-y-6" data-source-url={site.sourceWebsite}>
+      <label class="block">Product or material
+        <input class="enquiry-field" name="material" value={site.productName} placeholder="Name the product or material" maxlength="200" required />
+      </label>
+      <label class="block">Quantity and unit
+        <input class="enquiry-field" name="quantity" placeholder="e.g. 20 pieces — to be confirmed" maxlength="200" required />
+      </label>
+      <label class="block">Application and specification
+        <textarea class="enquiry-field" name="application" maxlength="2000" required></textarea>
+      </label>
+      <label class="block">Destination and target delivery
+        <input class="enquiry-field" name="delivery" maxlength="300" required />
+      </label>
+      <button class="buyer-action">Download enquiry brief</button>
+      <p id="enquiry-status" role="status"></p>
+    </form>
+  </div>
+</Base>
 <script>
-const form = document.querySelector<HTMLFormElement>('#enquiry-form')!;
-form.addEventListener('submit', event => {
- event.preventDefault(); const data = new FormData(form);
- const text = ['MATERIAL SOURCING ENQUIRY — UNSENT DRAFT', ...['material','quantity','application','delivery'].map(key => key + ': ' + String(data.get(key) || '').trim()), 'Please confirm: MOQ; trade price and terms; usable width; weight unit; sample cost; dye lot; delivery; applicable technical documentation.', 'Source: https://burelfactory.com/en/products/prata', 'No supplier offer or availability is implied.'].join('\n\n');
- const url = URL.createObjectURL(new Blob([text], {type:'text/plain;charset=utf-8'}));
- const link = document.createElement('a'); link.href = url; link.download = 'material-enquiry-draft.txt'; link.click(); setTimeout(() => URL.revokeObjectURL(url),1000);
- document.querySelector('#enquiry-status')!.textContent = 'Draft downloaded. It has not been submitted or sent.';
-});
+  const form = document.querySelector<HTMLFormElement>('#enquiry-form')!;
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const lines = [
+      'SUPPLIER ENQUIRY — UNSENT DRAFT',
+      ...['material','quantity','application','delivery'].map(key => key + ': ' + String(data.get(key) || '').trim()),
+      'Please confirm: technical specifications; MOQ; trade price and currency; lead time; samples; quality documents; packing and delivery terms.',
+      'Background source: ' + (form.dataset.sourceUrl || 'Unknown'),
+      'No supplier offer, availability or submission is implied.',
+    ];
+    const blobUrl = URL.createObjectURL(new Blob([lines.join('\n\n')], { type: 'text/plain;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = 'buyer-enquiry-unsent.txt';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    document.querySelector('#enquiry-status')!.textContent = 'Unsent draft downloaded. It has not been submitted.';
+  });
 </script>
