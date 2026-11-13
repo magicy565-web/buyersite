@@ -1,5 +1,34 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/common/PageHead.astro';
+import { site } from '../config';
+import { loadEvidence } from '../lib/evidence';
+const publicSources = loadEvidence().filter((item) => item.source_url);
 ---
-<Base title="Sources, rights and editorial scope"><div class="max-w-content mx-auto px-4 py-12"><PageHead kicker="Editorial scope" title="Sources and review scope" lede="An independent private review for interior material buyers." /><p class="mt-8">This pilot uses Burel Factory public product and supplier information. It is not the supplier website, an authorized advertisement or a tested supplier recommendation. Product photographs remain the supplier’s property and are restricted to private review. No buyer enquiries are sent by this site.</p><p class="mt-6">Supplier statements, editorial inferences and unknown commercial terms remain separate. No independent factory audit or product testing has been performed.</p><p class="mt-6"><a href="https://burelfactory.com/en/products/prata">Product source</a> · <a href="https://burelfactory.com/en/pages/burel-factory-facts">Supplier source</a> · <a href="https://burelfactory.com/en/pages/faq-spatial-solutions">Project FAQ</a></p></div></Base>
+<Base title="Sources, rights and editorial scope">
+  <div class="max-w-content mx-auto px-4 py-12">
+    <PageHead kicker="Editorial scope" title="Sources and review scope"
+      lede="A private, evidence-led buyer review. No supplier relationship or independent audit is implied." />
+    {site.builderMode ? (
+      <p class="mt-8">
+        This edition uses an enterprise profile, its product records and supplied website snapshots.
+        Enterprise claims are supplier-stated, not independently verified. Missing commercial terms
+        remain Unknown. Original editorial artwork is not a supplier product photo.
+        No enquiry has been submitted and the site is not approved for public publication.
+      </p>
+    ) : (
+      <p class="mt-8">
+        This pilot uses Burel Factory public product and supplier information. It is not an authorized
+        supplier advertisement or a tested supplier recommendation. Supplier product photographs
+        remain restricted to private review. No buyer enquiries are sent by this site.
+      </p>
+    )}
+    <p class="mt-6">Publishing requires reviewed facts, image permissions, a verified conversion path and deployment approval.</p>
+    <h2 class="mt-9">Source pages</h2>
+    <ul class="mt-4 space-y-2">
+      {publicSources.map((item) => (
+        <li><a href={item.source_url!} rel="nofollow noopener">{item.claim}</a> — supplier-stated, captured {item.captured_at?.slice(0, 10) ?? 'on file'}</li>
+      ))}
+    </ul>
+  </div>
+</Base>
