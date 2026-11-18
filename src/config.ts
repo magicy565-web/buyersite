@@ -16,6 +16,7 @@ type BuilderSite = {
   productName: string;
   sourceWebsite: string;
   privatePreview: boolean;
+  designDirection?: 'atelier' | 'industrial' | 'editorial';
 };
 const editionRoot = process.env.BUYERSITE_BUILD_ROOT;
 const edition: BuilderSite | null = editionRoot
@@ -37,6 +38,7 @@ export const site = {
   sourceWebsite: edition?.sourceWebsite ?? 'https://burelfactory.com/en/products/prata',
   privatePreview: true,
   builderMode: Boolean(edition),
+  designDirection: edition?.designDirection ?? 'halftone',
   defaultOgImage,
 } as const;
 
