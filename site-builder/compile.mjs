@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { planEditorialVisuals } from './visual-director.mjs';
+import { planMedia } from './media-policy.mjs';
 
 export class SiteInputError extends Error {
   constructor(code, message) {
@@ -183,6 +184,7 @@ export function compileEnterpriseSite(input) {
     categories: validProducts.flatMap((product) => [product.category, product.name]),
     articles,
   });
+  const mediaPlan = planMedia(articles, input.media_assets || [], date(input.exported_at, 'exported_at'));
   const pages = [
     { page_id: 'home', path: '/', page_type: 'home', locale: 'en',
       title: boundedTitle(publicationName + ': sourcing review'), description, h1: publicationName,
@@ -219,7 +221,7 @@ export function compileEnterpriseSite(input) {
     designDirection: visualPlan.direction,
   };
   const nonEnglishDraft = /[\u3400-\u9fff]/.test([companyName, companyDescription, ...validProducts.map((p) => p.name + ' ' + p.description)].join(' '));
-  const content = { site, manifest, pages, articles, visualPlan, evidence, sourceSnapshots: acceptedPages.map(({url, title, body, capturedAt, sha256}) => ({url, title, body_text: body, capturedAt, sha256})),
+  const content = { site, manifest, pages, articles, visualPlan, mediaPlan, evidence, sourceSnapshots: acceptedPages.map(({url, title, body, capturedAt, sha256}) => ({url, title, body_text: body, capturedAt, sha256})),
     preview_only: true, publication_blockers: [
       'EDITORIAL_APPROVAL_REQUIRED', 'MEDIA_RIGHTS_REQUIRED', 'CONVERSION_BACKEND_UNVERIFIED', 'PUBLIC_DEPLOYMENT_UNVERIFIED',
       ...(nonEnglishDraft ? ['ENGLISH_TRANSLATION_REQUIRED'] : []),
