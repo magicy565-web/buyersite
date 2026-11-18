@@ -9,6 +9,7 @@ const evidence: { evidence_id: string; claim: string; value: string }[] = JSON.p
   readFileSync(edition ? join(edition, 'evidence.json') : 'src/data/evidence.json', 'utf8'),
 );
 const site = edition ? JSON.parse(readFileSync(join(edition, 'site.json'), 'utf8')) : null;
+const visualPlan = edition ? JSON.parse(readFileSync(join(edition, 'visual-plan.json'), 'utf8')) : null;
 // Exercise every generated HTML route, including desk fronts and standing pages.
 const routes = readdirSync('dist', { recursive: true })
   .map(String)
@@ -147,4 +148,22 @@ test('navigate, go back and refresh a deep link', async ({ page }) => {
   await expect(page).toHaveURL('http://127.0.0.1:4321/');
   await page.goForward();
   await expect(page.locator('h1')).toHaveText(target.h1);
+});
+
+test('private enterprise editions use one curated profile and distinct article art', async ({ page }) => {
+  test.skip(!visualPlan, 'Applies to enterprise-generated editions only');
+  const seen = new Set<string>();
+  for (const artwork of visualPlan.images as { page_id: string; asset: string }[]) {
+    const route = contracts.find((item: any) => item.page_id === artwork.page_id);
+    expect(route, 'Every artwork must bind to a rendered route').toBeTruthy();
+    await page.goto(route!.path);
+    await expect(page.locator('html')).toHaveAttribute('data-editorial-style', visualPlan.direction);
+    const hero = page.locator('img[alt^="Abstract editorial illustration"]').first();
+    await expect(hero).toHaveCount(1);
+    const asset = await hero.getAttribute('src');
+    expect(asset).toBeTruthy();
+    expect(seen.has(asset!)).toBe(false);
+    seen.add(asset!);
+  }
+  expect(seen.size).toBe(visualPlan.images.length);
 });
