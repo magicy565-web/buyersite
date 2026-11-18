@@ -405,6 +405,27 @@ export async function createBuyerSiteWorker({
       const record = records.get(match[1]);
       if (!record || record.enterpriseId !== enterpriseId) fail('SITE_JOB_NOT_FOUND', 404);
       if (!match[2] && request.method === 'GET') return json(response, 200, publicJob(record));
+      if (request.method === 'GET' && (match[2] === 'visual-review' ||
+          match[2]?.startsWith('visual-review/screenshot/'))) {
+        if (record.state !== 'READY') fail('PREVIEW_NOT_READY', 409);
+        let review;
+        try { review = JSON.parse(await readFile(join(root, record.id, 'visual-review.json'), 'utf8')); }
+        catch { fail('VISUAL_REVIEW_NOT_FOUND', 404); }
+        if (review.artifact_sha256 !== record.artifactHash) fail('VISUAL_REVIEW_STALE', 409);
+        if (match[2] === 'visual-review') return json(response, 200, review);
+        const filename = match[2].slice('visual-review/screenshot/'.length);
+        if (!/^[a-z0-9][a-z0-9-]{0,80}-(desktop|mobile)\.png$/.test(filename)) fail('VISUAL_REVIEW_SCREENSHOT_NOT_FOUND', 404);
+        const entry = review.pages?.flatMap((page) => page.screenshots || []).find((shot) => shot.private_file === filename);
+        if (!entry || !/^[a-f0-9]{64}$/.test(entry.sha256 || '')) fail('VISUAL_REVIEW_SCREENSHOT_NOT_FOUND', 404);
+        const screenshot = await readFile(join(root, record.id, 'visual-review', 'screenshots', filename));
+        if (sha256(screenshot) !== entry.sha256) fail('VISUAL_REVIEW_SCREENSHOT_CHANGED', 503);
+        response.writeHead(200, {
+          ...PRIVATE_HEADERS,
+          'content-type': 'image/png',
+          'content-length': String(screenshot.length),
+        });
+        return response.end(screenshot);
+      }
       if (!['preview', undefined].includes(match[2]) && !match[2]?.startsWith('preview/'))
         fail('SITE_JOB_NOT_FOUND', 404);
       if (!match[2] || !['GET', 'HEAD'].includes(request.method || ''))
