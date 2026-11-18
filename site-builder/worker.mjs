@@ -16,6 +16,7 @@ import {
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSiteFromStudio } from './from-enterprise.mjs';
+import { reviewBuiltSite } from './visual-review.mjs';
 
 const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const JOB_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -139,6 +140,7 @@ function publicJob(record) {
     artifactHash: record.artifactHash ?? null,
     previewPath: record.state === 'READY' ? `/api/magazines/site-jobs/${record.id}/preview/` : null,
     sourceBinding: record.sourceBinding ?? null,
+    visualReview: record.visualReview ?? { status: 'PENDING_CONFIGURATION' },
     error: record.error ?? null,
     publication: 'BLOCKED',
   };
@@ -232,6 +234,19 @@ export async function buildStudioSite({
   await chmod(staged, 0o700);
   const manifest = await inventory(staged);
   const revision = 'site_' + manifest.digest.slice(0, 24);
+  // A private preview may become READY even when external review is unavailable,
+  // but the review is always bound to the exact static bytes and public release
+  // remains blocked. Permission must exist in both frozen source and job input.
+  let snapshot;
+  try { snapshot = JSON.parse(sourceBytes.toString('utf8')); } catch { snapshot = null; }
+  const review = await reviewBuiltSite({
+    artifactDir: staged,
+    jobDir,
+    sourceRoot: built.root,
+    artifactSha256: manifest.digest,
+    authorized: job.input?.allowAiReview === true && snapshot?.aiReviewAuthorized === true,
+  });
+  await atomicJson(join(jobDir, 'visual-review.json'), review);
   const artifactDir = join(jobDir, 'revisions', revision);
   await mkdir(dirname(artifactDir), { recursive: true, mode: 0o700 });
   const existing = await stat(artifactDir).catch((error) => {
@@ -261,6 +276,7 @@ export async function buildStudioSite({
     fingerprint: built.fingerprint,
     revision,
     sourceBinding: built.source_binding,
+    visualReview: { status: review.status, artifactSha256: manifest.digest, publication: 'BLOCKED' },
   };
 }
 
@@ -302,6 +318,7 @@ export async function createBuyerSiteWorker({
         record.files = artifact.rows;
         record.revision = result.revision || 'site_' + artifact.digest.slice(0, 24);
         record.sourceBinding = result.sourceBinding ?? null;
+        record.visualReview = result.visualReview ?? { status: 'PENDING_CONFIGURATION', publication: 'BLOCKED' };
         await save(record);
       } catch (error) {
         record.state = 'FAILED';
