@@ -3,6 +3,7 @@ import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { compileEnterpriseSite } from './compile.mjs';
+import { renderEditorialArtwork } from './visual-director.mjs';
 
 const json = (value) => JSON.stringify(value, null, 2) + '\n';
 const inline = (value) => JSON.stringify(value);
@@ -12,15 +13,6 @@ const markdown = (value) =>
     .replace(/[<>&]/g, (char) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[char])
     .replace(/([\x60*_{}\[\]()#+.!|])/g, '\\$1');
 const heading = (value) => markdown(value).replace(/^\\/, '');
-const visual = [
-  '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067" role="img" aria-label="Original abstract editorial artwork">',
-  '<rect width="1600" height="1067" fill="#ded8c8"/>',
-  '<path d="M0 1067L620 0h270L285 1067z" fill="#414d46"/>',
-  '<path d="M470 1067L1170 0h430L900 1067z" fill="#a35a42"/>',
-  '<circle cx="1190" cy="250" r="178" fill="#efe9da"/>',
-  '<path d="M0 850h1600v217H0z" fill="#242a2a" opacity=".2"/>',
-  '</svg>',
-].join('\n');
 
 export function articleMarkdown(entry, dateString) {
   const props = [
@@ -29,10 +21,11 @@ export function articleMarkdown(entry, dateString) {
     ['desk', entry.desk],
     ['byline', ['editorial']],
     ['date', dateString],
-    ['hero', './cover.png'],
-    ['heroAlt', 'Original abstract magazine artwork; not a photograph of supplier products'],
-    ['heroCredit', 'Original editorial illustration, not supplier product photography'],
-    ['format', 'report'],
+    ['hero', './hero-' + entry.slug + '.png'],
+    ['heroAlt', 'Abstract editorial illustration for ' + entry.title + '; not supplier product photography'],
+    ['heroCaption', 'Illustration only; product and supplier claims require their own evidence.'],
+    ['heroCredit', 'Original abstract editorial artwork · not supplier photography'],
+    ['format', entry.pageType === 'supplier-profile' ? 'photoessay' : entry.pageType === 'buyer-guide' ? 'brief' : 'report'],
     ['featured', Boolean(entry.featured)],
     ['evidenceRefs', entry.refs],
     ['pageType', entry.pageType],
@@ -56,6 +49,7 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   await mkdir(articlesDir, { recursive: true });
   const outputFiles = {
     'site.json': result.site,
+    'visual-plan.json': result.visualPlan,
     'manifest.json': result.manifest,
     'pages.json': result.pages,
     'evidence.json': result.evidence,
@@ -90,11 +84,19 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   for (const [name, value] of Object.entries(outputFiles)) {
     await writeFile(join(root, name), json(value), { flag: 'w' });
   }
-  // Rasterize only our constant artwork. Never enable Astro's SVG processing for
-  // arbitrary supplier uploads to make an internally generated cover buildable.
-  await sharp(Buffer.from(visual)).png().toFile(join(articlesDir, 'cover.png'));
+  // Render one original abstract illustration per article. Do not pass untrusted
+  // supplier SVG/media to sharp or imply that abstract art depicts real products.
   const dateString = new Date(input.exported_at).toISOString().slice(0, 10);
   for (const item of result.articles) {
+    const artwork = result.visualPlan.images.find((image) => image.page_id === item.slug);
+    if (!artwork) throw new Error('MISSING_VISUAL_PLAN: ' + item.slug);
+    const svg = renderEditorialArtwork({
+      direction: result.visualPlan.direction,
+      pageId: artwork.page_id,
+      sequence: artwork.sequence,
+      composition: artwork.composition,
+    });
+    await sharp(Buffer.from(svg)).png().toFile(join(articlesDir, artwork.asset));
     await writeFile(join(articlesDir, item.slug + '.md'), articleMarkdown(item, dateString));
   }
   return {
