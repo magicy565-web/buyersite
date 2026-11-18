@@ -7,8 +7,8 @@ const validators = Object.fromEntries(await Promise.all(['site-manifest','magazi
 const editionRoot = process.env.BUYERSITE_BUILD_ROOT;
 if (editionRoot) {
   const root = (name) => editionRoot.replace(/\/$/, '') + '/' + name;
-  const [manifest, pages, evidence, site, snapshots, visualPlan] = await Promise.all(
-    ['manifest.json', 'pages.json', 'evidence.json', 'site.json', 'sources.json', 'visual-plan.json'].map((name) => load(root(name)))
+  const [manifest, pages, evidence, site, snapshots, visualPlan, mediaPlan, mediaReport] = await Promise.all(
+    ['manifest.json', 'pages.json', 'evidence.json', 'site.json', 'sources.json', 'visual-plan.json', 'media-plan.json', 'media-report.json'].map((name) => load(root(name)))
   );
   const check = (name, value) => {
     if (!validators[name](value)) throw Error(name + ': ' + JSON.stringify(validators[name].errors));
@@ -23,6 +23,37 @@ if (editionRoot) {
       site.designDirection !== visualPlan.direction ||
       visualPlan.images.length !== pages.length - 1) {
     throw Error('Missing or inconsistent editorial design plan');
+  }
+  const mediaFiles = new Map();
+  if (mediaPlan.plan_sha256 !== mediaReport.plan_sha256 ||
+      !Array.isArray(mediaPlan.selections) || !Array.isArray(mediaReport.images) ||
+      mediaPlan.selections.length !== visualPlan.images.length ||
+      mediaReport.images.length !== visualPlan.images.length ||
+      mediaReport.publication !== 'BLOCKED' ||
+      mediaReport.review_required !== true) {
+    throw Error('Media plan/report mismatch or review gate missing');
+  }
+  for (const photo of mediaReport.images) {
+    if (mediaFiles.has(photo.page_id) ||
+        !['licensed-photo', 'ai-generated', 'abstract-fallback'].includes(photo.kind) ||
+        photo.filename !== 'hero-' + photo.page_id + '.png' ||
+        !/^[a-f0-9]{64}$/.test(photo.sha256 || '')) {
+      throw Error('Untrusted media report entry');
+    }
+    const raw = await readFile(root('articles/' + photo.filename));
+    const digest = (await import('node:crypto')).createHash('sha256').update(raw).digest('hex');
+    if (digest !== photo.sha256) throw Error('Generated hero changed after media review');
+    if (photo.kind === 'licensed-photo' && (!/^[a-f0-9]{64}$/.test(photo.grant_sha256 || '') ||
+        !/^[a-f0-9]{64}$/.test(photo.source_sha256 || ''))) {
+      throw Error('Licensed photograph is missing provenance or grant hash');
+    }
+    if (photo.kind === 'ai-generated' && (!photo.generation_model || !/^[a-f0-9]{64}$/.test(photo.prompt_sha256 || ''))) {
+      throw Error('Generated media missing image model or prompt digest');
+    }
+    if (photo.kind !== 'licensed-photo' && !/not (?:a supplier |product )?photograph|conceptual artwork/i.test(photo.caption + ' ' + photo.credit)) {
+      throw Error('Non-photographic visual must be described as conceptual artwork');
+    }
+    mediaFiles.set(photo.page_id, photo);
   }
   const visualAssets = new Map();
   for (const artwork of visualPlan.images) {
@@ -54,7 +85,9 @@ if (editionRoot) {
     if (page.page_type !== 'home') {
       const article = await readFile(root('articles/' + page.page_id + '.md'), 'utf8');
       const artwork = visualAssets.get(page.page_id);
-      if (!artwork || !article.includes('hero: "./' + artwork.asset + '"')) {
+      const resolvedMedia = mediaFiles.get(page.page_id);
+      if (!artwork || !resolvedMedia || !article.includes('hero: "./' + artwork.asset + '"') ||
+          !article.includes(JSON.stringify(resolvedMedia.credit))) {
         throw Error('Article hero is not bound to visual plan: ' + page.page_id);
       }
       for (const id of page.evidence_refs) if (!article.includes(id)) throw Error('Missing article evidence reference: ' + id);
