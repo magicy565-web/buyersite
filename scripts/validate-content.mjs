@@ -7,8 +7,8 @@ const validators = Object.fromEntries(await Promise.all(['site-manifest','magazi
 const editionRoot = process.env.BUYERSITE_BUILD_ROOT;
 if (editionRoot) {
   const root = (name) => editionRoot.replace(/\/$/, '') + '/' + name;
-  const [manifest, pages, evidence, site, snapshots] = await Promise.all(
-    ['manifest.json', 'pages.json', 'evidence.json', 'site.json', 'sources.json'].map((name) => load(root(name)))
+  const [manifest, pages, evidence, site, snapshots, visualPlan] = await Promise.all(
+    ['manifest.json', 'pages.json', 'evidence.json', 'site.json', 'sources.json', 'visual-plan.json'].map((name) => load(root(name)))
   );
   const check = (name, value) => {
     if (!validators[name](value)) throw Error(name + ': ' + JSON.stringify(validators[name].errors));
@@ -18,6 +18,24 @@ if (editionRoot) {
     throw Error('Enterprise edition must remain isolated private preview');
   }
   if (pages.length !== manifest.routes.length || !pages.length) throw Error('Site route mismatch');
+  if (!['atelier', 'industrial', 'editorial'].includes(visualPlan.direction) ||
+      manifest.design_system.direction !== visualPlan.direction ||
+      site.designDirection !== visualPlan.direction ||
+      visualPlan.images.length !== pages.length - 1) {
+    throw Error('Missing or inconsistent editorial design plan');
+  }
+  const visualAssets = new Map();
+  for (const artwork of visualPlan.images) {
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(artwork.page_id) ||
+        artwork.asset !== 'hero-' + artwork.page_id + '.png' ||
+        artwork.source !== 'original-abstract-illustration' ||
+        visualAssets.has(artwork.page_id)) throw Error('Unsafe or duplicated artwork plan');
+    const bytes = await readFile(root('articles/' + artwork.asset));
+    if (!bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) {
+      throw Error('Invalid generated artwork: ' + artwork.page_id);
+    }
+    visualAssets.set(artwork.page_id, artwork);
+  }
   const ids = new Set(evidence.map((item) => item.evidence_id));
   if (ids.size !== evidence.length) throw Error('Duplicate evidence IDs');
   for (const item of evidence) check('site-evidence', item);
@@ -35,6 +53,10 @@ if (editionRoot) {
     for (const id of page.evidence_refs) if (!ids.has(id)) throw Error('Dangling evidence reference: ' + id);
     if (page.page_type !== 'home') {
       const article = await readFile(root('articles/' + page.page_id + '.md'), 'utf8');
+      const artwork = visualAssets.get(page.page_id);
+      if (!artwork || !article.includes('hero: "./' + artwork.asset + '"')) {
+        throw Error('Article hero is not bound to visual plan: ' + page.page_id);
+      }
       for (const id of page.evidence_refs) if (!article.includes(id)) throw Error('Missing article evidence reference: ' + id);
     }
   }
