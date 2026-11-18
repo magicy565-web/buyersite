@@ -1,0 +1,76 @@
+$ pnpm prepare:media && pnpm validate:content && pnpm check:editorial
+$ node scripts/prepare-media.mjs
+Verified 3 media assets: exact bytes, provenance, page disclosures and observed AI reviews.
+$ node scripts/validate-content.mjs
+Validated 1 manifest, 4 page contracts and 6 evidence records. Public indexing: false.
+$ node scripts/check-editorial-profiles.mjs
+atelier: contrast pairs PASS
+industrial: contrast pairs PASS
+editorial: contrast pairs PASS
+$ astro build && node scripts/finalize-site.mjs
+08:46:56 [content] Syncing content
+08:46:56 [content] Synced content
+08:46:56 [types] Generated 560ms
+08:46:56 [build] output: "static"
+08:46:56 [build] mode: "static"
+08:46:56 [build] directory: /workspace/scratch/f80fc133438a/buyersite/dist/
+08:46:56 [build] Collecting build info...
+08:46:56 [build] ✓ Completed in 608ms.
+08:46:56 [build] Building static entrypoints...
+08:46:56 [astro-icon] Loaded icons from src/icons, lucide
+08:46:57 [assets] Copying fonts (11 files)...
+08:46:57 [vite] ✓ built in 688ms
+08:46:57 [WARN] [vite] [plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+08:46:57 [vite] ✓ built in 400ms
+08:46:57 [build] Rearranging server assets...
+
+ generating static routes 
+08:46:58   ├─ /404.html (+33ms) 
+08:46:58   ├─ /buyer-data.json (+3ms) 
+08:46:58   ├─ /colophon/index.html (+10ms) 
+08:46:58   ├─ /enquiry/index.html (+15ms) 
+08:46:58   ├─ /privacy/index.html (+150ms) 
+08:46:58   ├─ /robots.txt (+4ms) 
+08:46:58   ├─ /rss.xml (+19ms) 
+08:46:58   ├─ /search/index.html (+5ms) 
+08:46:58   ├─ /sources/index.html (+5ms) 
+08:46:58   ├─ /suppliers/burel-factory/index.html (+8ms) 
+08:46:58   ├─ /guides/burel-project-brief/index.html (+4ms) 
+08:46:58   ├─ /materials/silver-wool-fabric/index.html (+4ms) 
+08:46:58   ├─ /materials/index.html (+3ms) 
+08:46:58   ├─ /suppliers/index.html (+2ms) 
+08:46:58   ├─ /guides/index.html (+3ms) 
+08:46:58   ├─ /index.html (+5ms) 
+08:46:58 ✓ Completed in 739ms.
+
+ generating optimized images 
+08:46:58   ▶ /_astro/cover.-e0Crzpr_Z19VeQq.jpeg (reused cache entry) (+1ms) (1/19)
+08:46:58   ▶ /_astro/sample-study.CA87pirR_Z1bmVqt.jpeg (reused cache entry) (+2ms) (2/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_ZgpUK8.jpeg (reused cache entry) (+2ms) (3/19)
+08:46:58   ▶ /_astro/wool-study.Bsr3c2t8_Z14xPrW.jpeg (reused cache entry) (+2ms) (4/19)
+08:46:58   ▶ /_astro/sample-study.CA87pirR_Z23XWLH.avif (reused cache entry) (+0ms) (5/19)
+08:46:58   ▶ /_astro/wool-study.Bsr3c2t8_1lwGJ3.avif (reused cache entry) (+1ms) (6/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_KDPty.avif (reused cache entry) (+1ms) (7/19)
+08:46:58   ▶ /_astro/sample-study.CA87pirR_ZmVjGy.avif (reused cache entry) (+1ms) (8/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_2hO2go.avif (reused cache entry) (+0ms) (9/19)
+08:46:58   ▶ /_astro/wool-study.Bsr3c2t8_h5uDf.avif (reused cache entry) (+1ms) (10/19)
+08:46:58   ▶ /_astro/sample-study.CA87pirR_ZUzLip.avif (reused cache entry) (+1ms) (11/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_DiGNQ.avif (reused cache entry) (+1ms) (12/19)
+08:46:58   ▶ /_astro/wool-study.Bsr3c2t8_2ufUym.avif (reused cache entry) (+1ms) (13/19)
+08:46:58   ▶ /_astro/sample-study.CA87pirR_Z1W8lEB.avif (reused cache entry) (+1ms) (14/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_bKsNO.avif (reused cache entry) (+1ms) (15/19)
+08:46:58   ▶ /_astro/wool-study.Bsr3c2t8_ZhXt0g.avif (reused cache entry) (+1ms) (16/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_1o4V7A.avif (reused cache entry) (+1ms) (17/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_Z2fjYA7.avif (reused cache entry) (+0ms) (18/19)
+08:46:58   ▶ /_astro/weaving-study.-_ex609t_ZpjUyt.avif (reused cache entry) (+1ms) (19/19)
+08:46:58 ✓ Completed in 8ms.
+
+08:46:58 [build] ✓ Completed in 1.87s.
+08:46:58 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+08:46:58 [build] 13 page(s) built in 2.49s
+08:46:58 [build] Complete!
+Finalized 79 static files, Pagefind, same-origin conversion and aggregate analytics Worker.

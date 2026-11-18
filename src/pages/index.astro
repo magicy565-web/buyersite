@@ -8,11 +8,13 @@ import Rundown from '../components/article/Rundown.astro';
 import { site } from '../config';
 import { getArticles, presentAll } from '../lib/content';
 import { loadEvidence, resolveEvidence } from '../lib/evidence';
+import { getBuyerBrief } from '../lib/buyer-brief';
 import { t } from '../i18n';
 
 const items = await presentAll(await getArticles());
 const lead = items.find((item) => item.data.featured) ?? items[0];
-const supplier = items.find((item) => item.data.pageType === 'supplier-profile' && item.id !== lead?.id);
+const supplierEntry = items.find((item) => item.data.pageType === 'supplier-profile');
+const supplier = supplierEntry?.id !== lead?.id ? supplierEntry : undefined;
 const guide = items.find((item) => item.data.pageType === 'buyer-guide');
 const products = items.filter((item) => item.data.pageType === 'product-editorial');
 const featuredProducts = products.filter((item) => item.id !== lead?.id).slice(0, 3);
@@ -20,24 +22,33 @@ const displayed = new Set([lead?.id, supplier?.id, guide?.id, ...featuredProduct
 const furtherReading = items.filter((item) => !displayed.has(item.id));
 const evidence = loadEvidence();
 const notesFor = (item: (typeof items)[number]) => resolveEvidence(item.data.evidenceRefs, evidence);
+const briefFor = (item: (typeof items)[number]) => getBuyerBrief(item.href);
 const ui = t(Astro.currentLocale ?? site.locale);
 ---
 
 <Base nameplate={false} description={site.description} image={lead?.data.hero}>
-  {lead && <EditionCover title={site.name} lead={lead} context={lead.desk.data.name} />}
+  {lead && <EditionCover title={site.name} description={ui.editorial.homePurpose} lead={lead} context={lead.desk.data.name} brief={briefFor(lead)} />}
   <div class="editorial-container">
+    <nav class="editorial-reading-route" aria-label={ui.editorial.readingRoute}>
+      <p>{ui.editorial.readingRoute}</p>
+      <ul>
+        {products[0] && <li><a href={products[0].href}>{ui.editorial.materialRoute}</a></li>}
+        {supplierEntry && <li><a href={supplierEntry.href}>{ui.editorial.supplierRoute}</a></li>}
+        {guide && <li><a href={guide.href}>{ui.editorial.guideRoute}</a></li>}
+      </ul>
+    </nav>
     {lead?.data.pageType === 'product-editorial' && (
-      <ProductStory item={lead} notes={notesFor(lead)} heroAlreadyShown />
+      <ProductStory item={lead} notes={notesFor(lead)} brief={briefFor(lead)} heroAlreadyShown />
     )}
-    {supplier && <SupplierFeature item={supplier} notes={notesFor(supplier)} />}
+    {supplier && <SupplierFeature item={supplier} notes={notesFor(supplier)} brief={briefFor(supplier)} />}
     {featuredProducts.length > 0 && (
       <div class="editorial-archive-heading">
         <h2>{ui.editorial.moreProducts}</h2>
         <a href={'/' + featuredProducts[0].desk.id}>{ui.editorial.browseDesk}</a>
       </div>
     )}
-    {featuredProducts.map((item) => <ProductStory item={item} notes={notesFor(item)} />)}
-    <BuyingChecklist guide={guide} />
+    {featuredProducts.map((item) => <ProductStory item={item} notes={notesFor(item)} brief={briefFor(item)} />)}
+    <BuyingChecklist guide={guide} brief={guide ? briefFor(guide) : null} />
     {furtherReading.length > 0 && (
       <section class="editorial-section" aria-labelledby="more-reading">
         <div class="editorial-archive-heading"><h2 id="more-reading">{ui.editorial.moreReading}</h2></div>

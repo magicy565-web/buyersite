@@ -1,0 +1,65 @@
+[
+  {
+    "page_path": "/materials/silver-wool-fabric/",
+    "title": "Silver wool fabric: establish the specification",
+    "product_name": "Burel Factory Silver wool fabric",
+    "product_id": "burel-silver",
+    "supplier_id": "burel-factory",
+    "source_url": "https://burelfactory.com/en/products/prata",
+    "evidence_ids": ["silver-composition", "silver-width", "silver-weight"],
+    "summary": "The supplier lists composition, width and weight for Silver. Use those details as a starting specification, then confirm the weight basis and the requirements of your application.",
+    "unconfirmed": [
+      {"id": "weight-basis", "label": "Weight basis and usable width", "detail": "The source writes 800 g/m. Confirm the measurement basis, tolerance and usable width on the current technical sheet."},
+      {"id": "application-fit", "label": "Suitability for your project", "detail": "No application-specific performance or test results are verified in this review."},
+      {"id": "trade-terms", "label": "MOQ and trade price", "detail": "Request the order minimum, price, currency and sample charges for your quantity."},
+      {"id": "delivery", "label": "Stock and delivery", "detail": "Availability, production lead time and delivery to your destination are unconfirmed."}
+    ],
+    "questions": [
+      {"id": "technical-sheet", "label": "Confirm the fabric specification", "prompt": "Please share the current technical sheet for Silver wool fabric, including composition, usable width, weight measurement basis and tolerances. The public page lists 800 g/m; please confirm what that unit refers to."},
+      {"id": "sample", "label": "Request a sample for the intended use", "prompt": "Is a sample of Silver wool fabric available for our project? Please confirm its size, any charge, colour reference and relevant performance documents for our intended application."},
+      {"id": "written-offer", "label": "Ask for a comparable written offer", "prompt": "Please confirm the minimum order, trade price and currency, current availability, production lead time, packing and delivery terms for our quantity and destination."}
+    ]
+  },
+  {
+    "page_path": "/suppliers/burel-factory/",
+    "title": "Burel Factory: a mill to evaluate for your project",
+    "product_name": "",
+    "product_id": null,
+    "supplier_id": "burel-factory",
+    "source_url": "https://burelfactory.com/en/pages/burel-factory-facts",
+    "evidence_ids": ["mill-location"],
+    "summary": "The source places the mill in Manteigas, Portugal. This profile helps you begin supplier evaluation; it does not establish production capacity, product suitability or a trading relationship.",
+    "unconfirmed": [
+      {"id": "supplier-qualification", "label": "Supplier qualification", "detail": "No independent factory audit or supplier onboarding has been completed for this review."},
+      {"id": "production-scope", "label": "Capacity and project capability", "detail": "Confirm the product, process and capacity relevant to the work you need."},
+      {"id": "quality-documents", "label": "Applicable quality evidence", "detail": "Request current documents for the selected product and intended use."},
+      {"id": "supplier-terms", "label": "Commercial relationship and terms", "detail": "A supplier introduction, quotation or order acceptance is not established by this profile."}
+    ],
+    "questions": [
+      {"id": "capability", "label": "Check project capability", "prompt": "Please confirm whether you can supply the material or finished product described in our brief, including the relevant production process, capacity and project lead time."},
+      {"id": "qualification", "label": "Request qualification evidence", "prompt": "Please share the company and product documents relevant to supplier qualification for our project, including the scope, issuer and validity date of any applicable certificates or test reports."},
+      {"id": "commercial-contact", "label": "Identify the right commercial contact", "prompt": "Who should handle our project-specific enquiry? Please confirm the information you need to prepare an offer and the next step for samples or technical review."}
+    ]
+  },
+  {
+    "page_path": "/guides/burel-project-brief/",
+    "title": "Specify the application before comparing offers",
+    "product_name": "",
+    "product_id": null,
+    "supplier_id": "burel-factory",
+    "source_url": "https://burelfactory.com/en/pages/faq-spatial-solutions",
+    "evidence_ids": ["sample-policy", "batch-policy"],
+    "summary": "Choose whether you need fabric, a finished piece or a bespoke interior solution. Then compare offers against the same application, quantity, sample and delivery requirements.",
+    "unconfirmed": [
+      {"id": "procurement-route", "label": "The right procurement route", "detail": "Fabric by the metre, a finished piece and a bespoke solution require different briefs. Availability of a route for your project is not confirmed."},
+      {"id": "sample-cost", "label": "Sample availability and cost", "detail": "The supplier says a sample may carry a cost. Request the terms for your selected material."},
+      {"id": "colour-lot", "label": "Colour and batch planning", "detail": "Confirm how the supplier will handle colour-critical quantities and any later replenishment."},
+      {"id": "project-terms", "label": "Project-specific conditions", "detail": "Confirm the applicable delivery, payment and return terms in writing before ordering."}
+    ],
+    "questions": [
+      {"id": "route", "label": "Choose what you are asking the supplier to deliver", "prompt": "Our project needs either fabric by the metre, a finished item or a bespoke interior solution. Please confirm the appropriate route and what dimensions, drawings or application details you need from us."},
+      {"id": "sample-colour", "label": "Set a sample and colour approval step", "prompt": "Please confirm sample availability and cost, how we should approve the colour and finish, and whether the required quantity can be planned in one dye lot."},
+      {"id": "comparable-terms", "label": "Compare quotations on the same basis", "prompt": "Please provide a written offer for our quantity and destination that states the product scope, price and currency, lead time, packing, delivery, payment and applicable return terms."}
+    ]
+  }
+]

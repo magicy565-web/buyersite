@@ -13,7 +13,7 @@ on:
       - 'runtime/**'
       - 'drizzle/**'
       - '.openai/hosting.json'
-      - 'docs/verification/launch-review.json'
+      - 'docs/verification/*review.json'
       - 'astro.config.mjs'
       - 'tests/browser/**'
       - 'playwright.config.ts'
@@ -49,7 +49,7 @@ jobs:
       - name: Install Chromium for browser acceptance
         run: pnpm exec playwright install --with-deps chromium
       - name: Verify conversion and aggregate feedback
-        run: pnpm test:runtime
+        run: pnpm test:runtime && pnpm test:knowledge
       - name: Verify the reviewed magazine release
         run: pnpm check && pnpm build && pnpm verify:output && pnpm check:release
       - name: Review magazine browser behavior

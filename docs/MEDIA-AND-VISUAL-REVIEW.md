@@ -1,95 +1,93 @@
-# Dual-path media and AI visual review — private enterprise editions
+# Two media paths and the AI review release gate
 
-This change is stacked on `feat/editorial-visual-director-v1`. It is a **private, source-bound Site Worker implementation**, NOT an automatic publishing feature. No model or media service credentials are committed.
+The public editorial pilot and private enterprise builder share the same media policy and review binding. No new media platform, supplier messaging system or public enterprise publishing endpoint is introduced. The public pilot uses three original, clearly disclosed ChatGPT-generated concept illustrations. Its actual image reviews are interactive AI observations; this does not claim an Images API or Responses API call occurred.
 
-## Two mutually exclusive paths per article
+## One decision per page
 
-1. **Licensed photography**: An authenticated enterprise snapshot may include `mediaAssets` referencing immutable `<sha256>.bin` files under `BUYERSITE_MEDIA_ROOT/<enterprise-id>/`. The Worker uses the image only if the frozen asset descriptor has explicit `approved-public` rights with a grant SHA-256, approver identity, approval date, nonexpired scope and crop/resize permission. The file must be regular (no symlink), be within the correct tenant, match the supplied hash, be bounded and be valid PNG/JPEG/WebP with usable dimensions. The builder never downloads arbitrary supplier-image URLs. The importer is **operator-only** and requires the rights grant file and an explicit rights/crop attestation. Grant metadata does **not** substitute for a legal verification of the rights document.
-2. **No usable licensed image**: With frozen `mediaGenerationAuthorized: true` on the server snapshot, `job.input.allowAiGeneration: true`, and a server-only `OPENAI_API_KEY`, the Worker calls the Images API. The existing `gpt-image-2` default is retained; an operator can choose another explicitly supported model through `BUYERSITE_IMAGE_MODEL`. There is no automatic model or cost upgrade. Generated pictures are editorial concepts, never described as actual products or factories. Images carry model + prompt digest + output SHA in `media-report.json`. Without that dual authorization or credentials, the original abstract artwork remains as a clearly labelled **fallback**, not falsely described as an AI-generated photo. Failed provider requests fail the build instead of being misrepresented as approved imagery. By default, an edition contains at most four generated images (six is the hard cap; budgets must be set operationally).
+| Available evidence | Image choice | Release requirements |
+| --- | --- | --- |
+| An explicit, applicable and current commercial grant covers a retained image | Use that licensed image | Original image and grant bytes, current tenant rights record, page scope, transformation permission, nonexpired/nonrevoked grant, exact rendered derivation, and completed AI review |
+| No usable licensed image | Generate an original concept when generation is authorized | Retained prompt/model/provider and image hashes, truthful visible concept caption/credit, completed AI image/page review, and separate publication checks |
+| Generation or review cannot run | Keep a clearly labelled abstract preview or return a review/configuration error | Public release remains blocked; an abstract fallback is not an approved AI concept |
 
-Every final image is bound to its article's ID and its file hash. The `media-plan.json` contains source decisions; `media-report.json` contains actual rendered outcomes in the private source directory. The content validator recomputes the plan digest and verifies image bytes and the exact planned source/grant/asset/credit bindings. The static artifact inventory independently hashes the final public image bytes; private rights metadata is not copied into the public output.
+A photograph may be reused on multiple explicitly covered pages. The quality report records repetition without treating it as a rights failure. A public website URL, supplier identity or image caption does not confer commercial image rights.
 
-An explicitly authorized photograph can appear on several explicitly bound pages. The report records `REUSED_IMAGE` as an editorial quality warning rather than discarding a usable licensed image. Rights are checked again at render and build time.
+## Commercially authorized images
 
-### Retry and provider integrity
-
-Generated PNGs and small receipts are cached in the private source directory's `.media-cache` (or an operator-supplied `mediaCacheDir`). The cache key binds tenant, page, full prompt digest, model, requested dimensions, quality, output format and normalization version. Identical retries reuse the validated bytes and make no provider call. A corrupt/missing cached image with an existing receipt fails closed; it does not silently spend again. Changing a model, prompt or policy requires a new build identity. Cache hit/call counters are execution diagnostics, not approval evidence.
-
-Both API adapters bound streamed response bytes before JSON parsing. Generated images must decode as usable still PNGs; claimed prompt/model/output receipts must match the actual request and image. API errors expose only safe error codes, never provider response bodies or credentials.
-
-The request shape and explicit model list were checked against the [official Images API reference](https://developers.openai.com/api/reference/resources/images/methods/generate) on 2026-11-18. Availability for a particular API account still requires a live authorized call; mocked tests do not prove account access.
-
-### Rights importer (trusted operator; not a public form)
+The trusted importer requires the actual grant document and separate explicit attestations for commercial use and transformations. The authenticated caller must verify that the document covers the tenant, page and intended use. The software verifies the supplied authorization record; it cannot infer a valid grant from a filename or hash.
 
 ```bash
-# Grant document must actually authorize publication and transformations;
-# the CLI cannot determine legality from a hash.
 node site-builder/media-import.mjs \
   /srv/buyersite/private-media \
   enterprise-01 product-slug asset-01 \
   /private/approved-photo.jpg /private/signed-grant.pdf \
   'Cotton fabric closeup' 'Photo: Supplier, used with permission' \
-  editor-01 --attest-rights-and-transforms
+  editor-01 --attest-commercial-rights-and-transforms \
+  --expires-at 2027-01-01T00:00:00Z
 ```
 
-The CLI returns a descriptor; the authenticated OpenMausBot export must attach it to the **frozen snapshot** as `mediaAssets: [descriptor]`. Add `--expires-at <ISO-timestamp>` when the grant expires; invalid or already expired grants cannot be imported. The importer retains the original grant privately at `<media-root>/<enterprise-id>/grants/<grant-sha256>.bin`. Rendering verifies these bytes as well as the image, and fails if either is missing, replaced or linked. The grant is never added to the public site. Approved photos are not selected merely because a buyer supplies an internet URL. Rights must still be reviewed at the final publication decision.
+The returned descriptor includes `rights.enterprise_id`, explicit `page_ids`, `allow_commercial`, `allow_resize`, `allow_crop`, grant SHA, grantor, approval time and expiry. The API equivalent requires both `attestRights: true` and `attestCommercialUse: true`. Old descriptors without explicit commercial and page/tenant scope are not approved; an authorized new import is required.
 
-### Studio snapshot and job flags
+Private storage contains the immutable original image at `<tenant>/<image-sha256>.bin`, grant at `<tenant>/grants/<grant-sha256>.bin`, and current descriptor at `<tenant>/rights/<asset-id>.json`. Asset IDs identify immutable imported approvals; a revised approval uses a new asset ID. The private source snapshot alone is insufficient: render, validation and release read the current registry and compare the exact rights fingerprint. Files must be regular, bounded and hash-correct within the expected tenant. The published image must be the authorized original or the deterministic supported crop/resize of that original; attaching another image to a valid grant fails.
 
-```json
-{
-  "mediaUsageAuthorized": true,
-  "mediaAssets": ["<operator-created immutable descriptors>"],
-  "mediaGenerationAuthorized": true,
-  "aiReviewAuthorized": true
-}
-```
-
-```json
-{
-  "job": {
-    "input": {
-      "allowApprovedMedia": true,
-      "allowAiGeneration": true,
-      "allowAiReview": true
-    }
-  }
-}
-```
-
-Both the *server-owned* snapshot and the Studio job must grant the respective action. Unknown images remain excluded. Do not place images, API keys, rights contracts, or credentials in browser forms.
-
-## Visual AI review
-
-After `astro check`, `astro build` and verified output, the Worker captures every page in the generated manifest, including home, all products, supplier and buying guide. The default limit is 16 pages; exceeding the configured budget fails the review instead of silently skipping pages. Empty manifests, unsafe paths and missing image bindings cannot pass.
-
-Real screenshots use 1440px desktop and 390px mobile on a temporary **loopback-only** HTTP server. Capture triggers lazy images, waits for successful image decoding and fonts, and checks overflow. Long pages are divided into overlapping 1600px-high segments; mobile text remains at its original pixel width. The reviewer receives every segment, not a vertically compressed whole-page thumbnail. There are at most 12 segments per viewport; a larger page requires correction or a deliberate budget change and cannot receive a partial PASS.
-
-The screenshots, source media kind and page context are sent to the multimodal Responses API with `store:false`, a strict JSON output schema and a critical art-director prompt, **only when** both source and job consent to external AI review and the API key is configured.
-
-- Output is `PENDING_CONFIGURATION`, `REVIEW_ERROR`, `REVISION_REQUIRED`, or `PASS_RECOMMENDED`.
-- `PASS_RECOMMENDED` requires all four 1–5 scores ≥4, model decision `pass`, no major/critical issues, and successful real screenshots.
-- Failed or unavailable AI review never claims PASS. All outcomes have `publication: BLOCKED` and `human_approval_required: true`.
-- The review is bound to the exact static artifact SHA and saved outside the public artifact tree at `<worker-data>/<job-id>/visual-review.json`; screenshots are private under `visual-review/screenshots`.
-- Authenticated same-enterprise Worker endpoints (the host may add its own proxy prefix):
-  - `GET /site-jobs/:id/visual-review` (report)
-  - `GET /site-jobs/:id/visual-review/screenshot/:filename` (hash-verified PNG)
-- First screenshot filenames are `<page>-desktop.png` and `<page>-mobile.png`; subsequent segments append `-2` through `-12`. Each report entry records viewport, vertical position, dimensions and byte digest.
-- Cross-tenant access remains 404. There is still no `publish` endpoint; human review, actual media rights, real RFQ and production deployment verification are separate required gates.
-
-## Verification
+Withdraw a grant for every use in that tenant with the operator-only operation:
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm test:site-builder
-pnpm check:editorial
-pnpm accept:site-builder --static-only
-# With Playwright Chromium available:
-pnpm accept:site-builder
+node site-builder/media-import.mjs --revoke-grant \
+  /srv/buyersite/private-media enterprise-01 \
+  <grant-sha256> editor-01 'Grant withdrawn by rights holder'
 ```
 
-Synthetic unit tests inject a fake image generator and fake vision assessor; **they are not evidence of actual paid API calls or real browser screenshots**. They exercise real Node filesystem, crypto, streamed Response bodies and Sharp image operations. Coverage includes tenant isolation, authorization, cached retry/corruption, receipt binding, all-page review, readable tall mobile segmentation and malformed review rejection. Full live review requires server-secret credentials, explicit enterprise consent, a real Chromium binary and authorized non-synthetic source media. Never use a synthetic vision pass as publication approval.
+This writes a retained revocation marker. Frozen approvals, cached images and re-import attempts cannot override it. A damaged marker also blocks use. Restoring permission requires a new evidenced grant, not deleting the marker. Expiry is evaluated at render/build/release time, not only at the original snapshot date. A grant withdrawal after a static site has already deployed requires the operator to remove/rebuild that deployed content; this implementation does not run a background takedown service.
 
-## Remaining integration
+The authenticated OpenMausBot host must attach imported descriptors as `mediaAssets` and populate the private registry. Native production ingestion remains a host integration dependency; synthetic fixtures are not real supplier permission.
 
-OpenMausBot's native company/product source snapshot, photo approval UI, and account-scoped grant ledger must emit these fields and populate the private registry. Without this host change, the standalone builder supports the two paths, but the normal Studio button does not yet automatically ingest approved images. No production site is deployed.
+## Generation when no licensed image is usable
+
+The enterprise builder requires both server-snapshot `mediaGenerationAuthorized: true` and job `allowAiGeneration: true`, plus a server-only `OPENAI_API_KEY`. Existing server/image adapter configuration is retained: `BUYERSITE_IMAGE_MODEL` chooses an explicitly supported model and `BUYERSITE_VISION_MODEL` chooses the vision model. No automatic model or cost upgrade occurs. The default per-edition generation limit is four; the hard cap is six.
+
+Generated output is a concept, never evidence of a real product, factory, certificate or commercial specification. The report retains the actual prompt and prompt digest, model, provider and normalized image digest. Cached retries bind tenant, page, prompt, model, dimensions, quality and normalization policy; corrupt bytes or receipts fail closed without a silent replacement charge. Failed provider calls do not become successful fallback approvals. Provider responses are bounded before JSON parsing and safe errors exclude credentials and response bodies.
+
+The current public pilot's three originals came from the built-in ChatGPT image generator. Their provider/model metadata truthfully states that the built-in tool did not expose an API model identifier. They were visually inspected again in ChatGPT before the current bound image-review receipts were recorded. No paid provider credentials were configured or paid provider requests executed during that verification.
+
+## One review binding, two real review methods
+
+`site-builder/media-review.mjs` binds the exact image SHA, prompt SHA, generation provider/model, rights provenance, page ID, URL, title, alt text, credit and caption. The policy version is part of the digest. Changing any of these invalidates the old image approval even if someone updates the registry's image hash. Full-page source and artifact binding separately catch layout/content changes.
+
+Accepted image review methods are `interactive-vision` and `openai-responses`. Both require an actual AI observation, a stored assessment with no blocking findings and scores of at least four out of five. There is **no mandatory human approval** after a valid AI review. Legal authorization, source-evidence publication permission, conversion readiness and deployment eligibility remain separate checks.
+
+An interactive AI reviewer must open the actual original image, assess it in the intended page context and record the observation using `mediaReviewReceipt`. This helper only binds and formats the supplied assessment; it does not inspect an image or invent a verdict. The pilot registry retains its earlier review notes alongside the new bound observations. Automated image review uses `reviewMediaAsset` in the existing visual-review adapter, supplying the actual pixels and intended caption/context through the Responses API. Provider success without a complete valid assessment cannot pass.
+
+Injected transports/captures/assessors are marked `evidence_type: fixture`. Tests can exercise the contract, but those results cannot satisfy a real release gate. Review status alone is insufficient; missing, rejected, stale or fixture reviews block public preparation. A stored hash is an integrity check, not a cryptographic attestation of a reviewer: only trusted server/operator workflows may write approvals. Untrusted inputs must never be allowed to submit their own approval receipt.
+
+### Default editorial site
+
+The existing `src/data/concept-media.json` registry now supports either `ai-generated` or `licensed-photo` for each pilot article; it retains its filename for compatibility. `scripts/prepare-media.mjs` verifies complete article coverage, original pixels, matching frontmatter disclosure and bound observed AI image review. Licensed entries additionally require the current private registry and a valid authorized image derivation.
+
+`assertPublicRelease` repeats that check. The final release report must match the current source fingerprint, which includes the shared media policy code, and actual page review must cover home, all articles, enquiry, search, sources, colophon and privacy. Image approval does not substitute for this page review. There is no skip-approval environment flag.
+
+### Enterprise editions
+
+The Worker keeps enterprise artifacts private. With both `aiReviewAuthorized: true` in its server-owned snapshot and `allowAiReview: true` in the job, the existing review adapter captures every manifest page at 1440px desktop and 390px mobile. It loads/decode-checks lazy images and fonts, detects overflow, and divides long pages into readable overlapping segments. Every segment goes to the authorized reviewer; oversized or incomplete coverage cannot pass.
+
+Receipts bind the complete artifact digest plus source-page/media-plan/rights/image/prompt bindings. `PASS_RECOMMENDED` requires the model's pass decision, all four page scores at least four and no major/critical issues. `assertEditionVisualReview` revalidates current image/grant data, full coverage, assessment and screenshot hashes before a future publisher can consume that recommendation. It accepts observed automated or interactive AI reviews; it does not lift enterprise privacy. All current enterprise reports retain `publication: BLOCKED` with `ENTERPRISE_PRIVATE_PREVIEW`, and `human_approval_required: false`.
+
+Private authenticated review endpoints are unchanged:
+
+- `GET /site-jobs/:id/visual-review`
+- `GET /site-jobs/:id/visual-review/screenshot/:filename`
+
+Screenshot names are `<page>-desktop.png` or `<page>-mobile.png`, followed by `-2` through `-12` when needed. Reports and grant documents stay outside the public artifact. Cross-tenant access remains blocked.
+
+## Verification and limits
+
+```bash
+node --test site-builder/media-policy.test.mjs site-builder/media-import.test.mjs \
+  site-builder/media-render.test.mjs site-builder/media-review.test.mjs \
+  site-builder/visual-review.test.mjs
+node scripts/prepare-media.mjs
+```
+
+The targeted suite uses real Node filesystem, cryptographic hashes, Sharp decoding/normalization and streamed-response handling. It tests expired/revoked/wrong-scope grants, explicit commercial attestation, missing/current records, source and grant tampering, source-to-output derivation, changed prompt/model/page/disclosure, missing/rejected/fixture review, safe fallback, cache corruption, readable all-page capture segmentation and provider response validation. Authored colored images, test grant documents and injected provider assessments are clearly synthetic. They do not prove production API account access or real supplier permission.
+
+Live evidence in this turn is the three original concept files and their actual interactive AI image inspection. Final browser/page acceptance and the source-bound release report are performed separately on the built artifact. No new paid provider execution is claimed.

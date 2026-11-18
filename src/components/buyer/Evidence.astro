@@ -1,27 +1,35 @@
 ---
 import type { EvidenceItem } from '../../lib/evidence';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
+import { site } from '../../config';
 import { t } from '../../i18n';
-const { items } = Astro.props as { items: EvidenceItem[] };
-const ui = t(Astro.currentLocale);
+import '../../styles/editorial.css';
+interface Props { items: EvidenceItem[]; brief?: BuyerBrief | null; }
+const { items, brief } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const sourceName = (url: string) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ui.supplierSource; } };
 ---
 
-<section id="source-evidence" aria-label="Source notes" class="mt-12 border-t-2 pt-6">
-  <h2>{ui.sourceNotes}</h2>
-  <dl>
-    {items.map((item) => (
-      <div class="mt-5">
-        <dt class="font-bold">{item.claim}</dt>
-        <dd>{item.value}</dd>
-        <dd>
-          {item.source_url ? <a href={item.source_url} rel="nofollow noopener">{ui.supplierSource}</a> : <span>Enterprise record</span>}
-          {' · '}
-          {item.status === 'supplier-stated' ? ui.supplierStated : item.status}
-          {' · '}
-          {item.captured_at ? item.captured_at.slice(0, 10) : ui.reviewDate}
-        </dd>
-      </div>
-    ))}
-  </dl>
-  <p class="mt-6">{ui.unknownTerms}</p>
-  <p><a href="/enquiry">{ui.prepareEnquiry}</a></p>
+<section id="source-evidence" aria-labelledby="source-evidence-title" class="buyer-evidence">
+  <h2 id="source-evidence-title">{ui.sourceNotes}</h2>
+  <p class="buyer-evidence-scope">{ui.editorial.evidenceScope}</p>
+  {items.length > 0 ? (
+    <dl class="buyer-evidence-list">
+      {items.map((item) => (
+        <div id={'source-' + item.evidence_id} data-evidence-id={item.evidence_id}>
+          <dt>{item.claim}</dt>
+          <dd>{item.value}</dd>
+          <dd class="buyer-evidence-meta">
+            <span>{item.status === 'supplier-stated' ? ui.editorial.supplierStatement : item.status}</span>
+            {item.captured_at ? <span>{ui.editorial.sourceDate} <time datetime={item.captured_at}>{item.captured_at.slice(0, 10)}</time></span> : <span>{ui.editorial.dateUnavailable}</span>}
+          </dd>
+          <dd class="buyer-evidence-link">
+            {item.source_url ? <a href={item.source_url} rel="nofollow noopener">{ui.editorial.readSource}: {sourceName(item.source_url)}</a> : <span>{ui.editorial.enterpriseRecord}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  ) : <p>{ui.editorial.noEvidence}</p>}
+  <p class="editorial-source-note">{ui.unknownTerms}</p>
+  <a class="editorial-text-link" href={buyerEnquiryHref(brief)} data-buyer-context={brief?.page_path}>{ui.editorial.carryContext}</a>
 </section>

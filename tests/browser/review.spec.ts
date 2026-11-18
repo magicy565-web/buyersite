@@ -8,7 +8,6 @@ const contracts: { path: string; h1: string; evidence_refs: string[]; page_type:
 const evidence: { evidence_id: string; claim: string; value: string }[] = JSON.parse(
   readFileSync(edition ? join(edition, 'evidence.json') : 'src/data/evidence.json', 'utf8'),
 );
-const site = edition ? JSON.parse(readFileSync(join(edition, 'site.json'), 'utf8')) : null;
 const visualPlan = edition ? JSON.parse(readFileSync(join(edition, 'visual-plan.json'), 'utf8')) : null;
 const mediaReport = edition ? JSON.parse(readFileSync(join(edition, 'media-report.json'), 'utf8')) : null;
 const publication = JSON.parse(readFileSync('src/data/publication.json', 'utf8'));
@@ -74,13 +73,13 @@ for (const route of routes)
         )
         .toBe(true);
     }
-    await expect(page.locator('header a[href="/enquiry"]')).toBeVisible();
+    await expect(page.locator('header a[href^="/enquiry"]')).toBeVisible();
     const opener = page.locator('header [data-assistant-open]');
     await opener.click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await expect(
       page.getByRole('dialog').locator('#assistant-status'),
-    ).toContainText('Live AI sourcing is not connected');
+    ).toContainText('Published facts, their sources');
     await expect(
       page.getByRole('dialog').locator('[data-assistant-mode="source-guide"]'),
     ).toBeVisible();
@@ -121,7 +120,7 @@ test('download an unsent enquiry brief without submitting it', async ({ page }, 
   });
   await page.goto('/enquiry/');
   const product = page.getByLabel('Product or material', { exact: true });
-  if (site) await expect(product).toHaveValue(site.productName);
+  await expect(product).toHaveValue('');
   await product.fill('Selected product; final specification to be confirmed');
   await page.getByLabel('Quantity and unit').fill('20 pieces');
   await page
@@ -139,7 +138,7 @@ test('download an unsent enquiry brief without submitting it', async ({ page }, 
   const brief = readFileSync(target, 'utf8');
   expect(brief).toContain('UNSENT DRAFT');
   expect(brief).toContain('quantity: 20 pieces');
-  if (site) expect(brief).toContain('Background source: ' + site.sourceWebsite);
+  expect(brief).not.toContain('Published source:');
   await expect(page.getByRole('status').filter({ hasText: 'Your unsent brief has been downloaded.' })).toBeVisible();
   expect(mutations).toEqual([]);
 });

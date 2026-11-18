@@ -4,26 +4,117 @@
   "title": "Frozen rights-attested Buyer Magazine Media Asset",
   "type": "object",
   "additionalProperties": false,
-  "required": ["asset_id", "page_id", "sha256", "alt", "credit", "rights"],
+  "required": [
+    "asset_id",
+    "page_id",
+    "sha256",
+    "alt",
+    "credit",
+    "rights"
+  ],
   "properties": {
-    "asset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$" },
-    "page_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$" },
-    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-    "alt": { "type": "string", "minLength": 1, "maxLength": 300 },
-    "credit": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "asset_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$"
+    },
+    "page_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "alt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "credit": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
     "rights": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "scope", "grant_sha256", "granted_by", "approved_at", "allow_resize", "allow_crop"],
+      "required": [
+        "status",
+        "scope",
+        "grant_sha256",
+        "granted_by",
+        "approved_at",
+        "allow_resize",
+        "allow_crop",
+        "enterprise_id",
+        "page_ids",
+        "allow_commercial"
+      ],
       "properties": {
-        "status": { "type": "string", "enum": ["approved-public", "review-only", "unknown", "denied"] },
-        "scope": { "type": "string", "const": "buyer-magazine-site" },
-        "grant_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-        "granted_by": { "type": "string", "minLength": 1, "maxLength": 120 },
-        "approved_at": { "type": "string", "format": "date-time" },
-        "expires_at": { "type": ["string", "null"], "format": "date-time" },
-        "allow_resize": { "type": "boolean" },
-        "allow_crop": { "type": "boolean" }
+        "status": {
+          "type": "string",
+          "enum": [
+            "approved-public",
+            "review-only",
+            "unknown",
+            "denied",
+            "revoked"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "const": "buyer-magazine-site"
+        },
+        "grant_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "granted_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "allow_resize": {
+          "type": "boolean"
+        },
+        "allow_crop": {
+          "type": "boolean"
+        },
+        "enterprise_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$"
+        },
+        "page_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 48,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$"
+          }
+        },
+        "allow_commercial": {
+          "type": "boolean"
+        },
+        "revoked_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
       }
     }
   }

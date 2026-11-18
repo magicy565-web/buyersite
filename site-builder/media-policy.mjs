@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 // module does not grant rights: it verifies a documented publication grant.
 const HEX = /^[a-f0-9]{64}$/;
 const ID = /^[a-z0-9][a-z0-9_-]{0,79}$/;
+const TENANT = /^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$/;
 const MAX_ASSETS = 48;
 export const MEDIA_KINDS = Object.freeze(['licensed-photo', 'ai-generated', 'abstract-fallback']);
 
@@ -30,6 +31,10 @@ export function normalizeMediaAssets(assets = [], asOf = new Date().toISOString(
     const rights = asset.rights;
     const approved = rights && rights.status === 'approved-public' &&
       rights.scope === 'buyer-magazine-site' &&
+      TENANT.test(rights.enterprise_id || '') &&
+      Array.isArray(rights.page_ids) && rights.page_ids.length > 0 && rights.page_ids.length <= 48 &&
+      rights.page_ids.every((id) => ID.test(id)) && rights.page_ids.includes(asset.page_id) &&
+      rights.allow_commercial === true && !rights.revoked_at &&
       HEX.test(rights.grant_sha256 || '') &&
       safeText(rights.granted_by, 120) &&
       isDate(rights.approved_at) && Date.parse(rights.approved_at) <= Date.parse(asOf) &&
@@ -45,6 +50,12 @@ export function normalizeMediaAssets(assets = [], asOf = new Date().toISOString(
       approved: Boolean(approved),
       grant_sha256: approved ? rights.grant_sha256 : null,
       expires_at: approved ? rights.expires_at || null : null,
+      rights: approved ? {
+        status: rights.status, scope: rights.scope, enterprise_id: rights.enterprise_id,
+        page_ids: [...new Set(rights.page_ids)].sort(), grant_sha256: rights.grant_sha256,
+        granted_by: rights.granted_by, approved_at: rights.approved_at, expires_at: rights.expires_at || null,
+        allow_commercial: true, allow_resize: true, allow_crop: true,
+      } : null,
       // Rights metadata is retained; URLs in untrusted media descriptors
       // are deliberately not downloaded by the builder.
       rights_status: rights?.status || 'unconfirmed',
@@ -67,11 +78,13 @@ export function planMedia(articles, assets = [], asOf = new Date().toISOString()
       page_id: article.slug, media_kind: 'licensed-photo', asset_id: licensed.asset_id,
       source_sha256: licensed.sha256, grant_sha256: licensed.grant_sha256,
       expires_at: licensed.expires_at,
+      rights: licensed.rights,
+      rights_sha256: createHash('sha256').update(JSON.stringify(licensed.rights)).digest('hex'),
       alt: licensed.alt, credit: licensed.credit,
       fallback_reason: null,
     } : {
       page_id: article.slug, media_kind: 'generation-requested', asset_id: null,
-      source_sha256: null, grant_sha256: null, expires_at: null,
+      source_sha256: null, grant_sha256: null, expires_at: null, rights: null, rights_sha256: null,
       alt: 'Conceptual editorial illustration for ' + article.title,
       credit: 'AI-generated concept illustration; not a supplier product photograph',
       fallback_reason: candidates.length ? 'NO_PUBLICATION_GRANT' : 'NO_APPROVED_ASSET',

@@ -45,9 +45,11 @@ for (const page of pages) {
         assert.ok(html.includes(escaped(record.source_url)), 'missing source URL ' + id);
     }
   }
-  assert.ok(html.includes('href="/enquiry"'));
+  const enquiryLinks = [...html.matchAll(/href="(\/enquiry(?:\?[^\"]*)?)"/g)].map((match) => new URL(decoded(match[1]), 'https://buyer-magazine.invalid'));
+  assert.ok(enquiryLinks.length > 0, file + ': enquiry action exists');
+  if (page.path !== '/') assert.ok(enquiryLinks.some((link) => (link.searchParams.get('from') ?? '').replace(/\/+$/, '') === page.path.replace(/\/+$/, '')), file + ': enquiry carries the article context');
   if (page.page_type === 'product-editorial') {
-    const summary = html.indexOf('id="spec-summary-title"');
+    const summary = html.indexOf('id="buyer-summary-title"');
     const body = html.indexOf('class="article-body');
     assert.ok(summary >= 0 && body > summary, 'product specifications must precede the article');
   }
@@ -92,6 +94,20 @@ if (edition) {
 assert.match(await readFile(join(outputRoot,'robots.txt'), 'utf8'), privatePreview ? /Disallow: \// : /Allow: \//);
 assert.match(await readFile(join(outputRoot,'enquiry/index.html'), 'utf8'), /enquiry|sourcing/i);
 assert.ok(await readFile(join(outputRoot,'sitemap-index.xml'), 'utf8'));
+const knowledge = JSON.parse(await readFile(join(outputRoot, 'buyer-data.json'), 'utf8'));
+assert.equal(knowledge.schema_version, 'buyer-knowledge-v1');
+assert.match(knowledge.revision, /^[a-f0-9]{64}$/);
+for (const brief of knowledge.briefs) {
+  assert.ok(pages.some((page) => page.path === brief.page_path), 'machine brief points to a published route');
+  assert.ok(brief.unconfirmed.every((condition) => condition.status === 'unconfirmed'), 'unconfirmed terms remain explicit');
+  for (const id of brief.evidence_ids) {
+    const record = knowledge.evidence.find((item) => item.evidence_id === id);
+    const original = evidence.find((item) => item.evidence_id === id);
+    assert.equal(original?.publication_permission, 'approved', 'machine data excludes private facts');
+    assert.equal(record?.value, original?.value, 'machine value matches the reviewed source record');
+  }
+}
+if (!edition) assert.equal(knowledge.briefs.length, pages.filter((page) => page.path !== '/').length, 'all public stories have machine-readable briefs');
 console.log(
   'Verified ' +
     pages.length +

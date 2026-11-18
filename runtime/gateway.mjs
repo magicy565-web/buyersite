@@ -1,4 +1,5 @@
-import { searchSourceRecords } from './source-guide.mjs';
+import { buildSourceGuideReply } from './source-guide.mjs';
+import { findPublishedContext, normalizeKnownPath, sanitizeCampaign } from '../src/lib/buyer-journey.mjs';
 
 /**
  * Same-origin conversion adapter for the static magazine.
@@ -103,7 +104,30 @@ function pagePath(value, config) {
   return normalized;
 }
 
-function validateEnquiry(body, config) {
+function publishedBrief(path, config) {
+  const brief = findPublishedContext(path, Array.isArray(config.buyerBriefs) ? config.buyerBriefs : []);
+  if (!brief) return null;
+  const safeText = (value, max, nullable = false) => {
+    if (nullable && value == null) return null;
+    if (typeof value !== 'string' || value.length > max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value)) throw new Error('Invalid published context');
+    return value;
+  };
+  if (!normalizeKnownPath(brief.page_path, config.allowedPaths) || !Array.isArray(brief.evidence_ids) || brief.evidence_ids.length > 100 ||
+      !Array.isArray(brief.questions) || brief.questions.length > 20 || !Array.isArray(brief.unconfirmed) || brief.unconfirmed.length > 20) throw new Error('Invalid published context');
+  const source = safeText(brief.source_url, 2_000, true);
+  if (source) { const url = new URL(source); if (url.protocol !== 'https:' || url.username || url.password) throw new Error('Invalid published citation'); }
+  return {
+    page_path: normalizeKnownPath(brief.page_path, config.allowedPaths), title: safeText(brief.title, 400),
+    product_name: safeText(brief.product_name, 300), product_id: safeText(brief.product_id, 200, true),
+    supplier_id: safeText(brief.supplier_id, 200, true), source_url: source,
+    knowledge_revision: safeText(config.knowledgeRevision ?? null, 128, true),
+    evidence_ids: brief.evidence_ids.map((id) => safeText(id, 120)),
+    unconfirmed: brief.unconfirmed.map((item) => ({ id: safeText(item.id, 120), label: safeText(item.label, 200), detail: safeText(item.detail, 2_000) })),
+    questions: brief.questions.map((item) => ({ id: safeText(item.id, 120), label: safeText(item.label, 200), prompt: safeText(item.prompt, 2_000) })),
+  };
+}
+
+function validateEnquiry(body, config, request) {
   if (body.site_slug !== undefined && body.site_slug !== config.siteSlug) {
     throw new HttpError(400, 'INVALID_SITE', 'This enquiry belongs to another edition.');
   }
@@ -115,13 +139,17 @@ function validateEnquiry(body, config) {
   if (!/^[^\s@<>]+@[^\s@<>.]+(?:\.[^\s@<>.]+)+$/.test(email)) {
     throw new HttpError(400, 'INVALID_EMAIL', 'Enter a valid email address.');
   }
-  const attribution = {};
-  for (const name of ['source', 'medium', 'campaign']) {
-    const value = field(body.attribution?.[name], 'campaign attribution', 100, false);
-    // Campaign labels never contain email addresses, URLs, query strings or visitor identifiers.
-    if (value && /^[\p{L}\p{N} _.-]+$/u.test(value)) attribution[name] = value;
+  if (['product_id', 'supplier_id', 'source_url', 'evidence_ids', 'context_json', 'product_name', 'context_title'].some((key) => Object.hasOwn(body, key))) {
+    throw new HttpError(400, 'INVALID_CONTEXT', 'Choose an article from this edition; product and source identifiers are assigned by the server.');
   }
-  return {
+  if (body.attribution_opt_out !== undefined && typeof body.attribution_opt_out !== 'boolean') throw new HttpError(400, 'INVALID_ATTRIBUTION', 'The attribution preference is not valid.');
+  const optedOut = body.attribution_opt_out === true || request.headers.get('DNT') === '1' || request.headers.get('Sec-GPC') === '1';
+  let attribution = {};
+  if (!optedOut) {
+    try { attribution = sanitizeCampaign(body.attribution, { strict: true }); }
+    catch { throw new HttpError(400, 'INVALID_ATTRIBUTION', 'Use bounded source, medium and campaign labels without personal details.'); }
+  }
+  const data = {
     email,
     name: field(body.name, 'name', 100, false),
     company: field(body.company, 'company', 160, false),
@@ -133,6 +161,29 @@ function validateEnquiry(body, config) {
     attribution,
     consent_version: consentVersion,
   };
+  const modern = ['context_page_path', 'question_ids', 'landing_page_path', 'attribution_opt_out'].some((key) => Object.hasOwn(body, key));
+  if (modern || optedOut) {
+    let context = null;
+    if (body.context_page_path !== undefined && body.context_page_path !== null && body.context_page_path !== '') {
+      context = publishedBrief(body.context_page_path, config);
+      if (!context) throw new HttpError(400, 'INVALID_CONTEXT', 'Choose a published article from this edition.');
+    }
+    const questionIds = body.question_ids ?? [];
+    if (!Array.isArray(questionIds) || questionIds.length > 20 || questionIds.some((id) => typeof id !== 'string') || new Set(questionIds).size !== questionIds.length ||
+        questionIds.some((id) => !context?.questions.some((question) => question.id === id))) {
+      throw new HttpError(400, 'INVALID_QUESTIONS', 'Choose questions from the linked article.');
+    }
+    if (context) context.questions = context.questions.filter((question) => questionIds.includes(question.id));
+    let landing = null;
+    if (!optedOut && body.landing_page_path != null && body.landing_page_path !== '') {
+      landing = normalizeKnownPath(body.landing_page_path, config.allowedPaths);
+      if (!landing) throw new HttpError(400, 'INVALID_ATTRIBUTION', 'The landing page must belong to this edition.');
+    }
+    Object.assign(data, { context, landing_page_path: landing,
+      attribution_method: optedOut ? 'withheld' : landing ? 'reported-session' : Object.keys(attribution).length ? 'reported-campaign' : null,
+      attribution_opt_out: optedOut });
+  }
+  return data;
 }
 
 function dbReady(env) {
@@ -184,9 +235,12 @@ async function saveEnquiry(request, env, config) {
   }
   const key = request.headers.get('idempotency-key') ?? '';
   if (!UUID.test(key)) throw new HttpError(400, 'INVALID_IDEMPOTENCY_KEY', 'Refresh the page before trying again.');
-  const data = validateEnquiry(await boundedJson(request), config);
+  const data = validateEnquiry(await boundedJson(request), config, request);
   const keyHash = await sha(key);
-  const payloadHash = await sha(JSON.stringify(data));
+  // Keep the legacy payload shape stable. New retries bind the buyer's selected IDs,
+  // not mutable catalog wording; the first saved context snapshot remains immutable.
+  const hashData = data.context ? { ...data, context: { page_path: data.context.page_path, question_ids: data.context.questions.map((question) => question.id).sort() } } : data;
+  const payloadHash = await sha(JSON.stringify(hashData));
   const existing = await env.DB.prepare(`SELECT id, created_at, status, payload_hash FROM buyer_enquiries
     WHERE site_slug = ? AND idempotency_key_hash = ?`).bind(config.siteSlug, keyHash).first();
   if (existing) {
@@ -199,12 +253,14 @@ async function saveEnquiry(request, env, config) {
   const inserted = await env.DB.prepare(`INSERT INTO buyer_enquiries
     (id, site_slug, idempotency_key_hash, payload_hash, created_at, updated_at, status,
       email, name, company, material, quantity, application, delivery, page_path,
-      attribution_json, consent_version, consent_at)
-    VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      attribution_json, consent_version, consent_at, context_json, originating_page_path, landing_page_path, attribution_method)
+    VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT (site_slug, idempotency_key_hash) DO NOTHING RETURNING id, created_at, status`)
     .bind(id, config.siteSlug, keyHash, payloadHash, now, now, data.email, data.name, data.company,
       data.material, data.quantity, data.application, data.delivery, data.page_path,
-      JSON.stringify(data.attribution), data.consent_version, now).first();
+      JSON.stringify(data.attribution), data.consent_version, now, data.context ? JSON.stringify(data.context) : null,
+      data.context?.page_path ?? null, data.landing_page_path ?? null,
+      data.attribution_method ?? (Object.keys(data.attribution).length ? 'reported-campaign' : null)).first();
   if (inserted) return receipt(inserted);
   // A concurrent retry may have won the unique-key race after our first read.
   const raced = await env.DB.prepare(`SELECT id, created_at, status, payload_hash FROM buyer_enquiries
@@ -238,7 +294,8 @@ async function ownerEnquiries(request, env, config, id) {
       throw new HttpError(400, 'INVALID_CURSOR', 'The date cursor is invalid.');
     }
     const rows = await env.DB.prepare(`SELECT id, created_at, updated_at, status, email, name, company,
-      material, quantity, application, delivery, page_path, attribution_json, consent_version, consent_at
+      material, quantity, application, delivery, page_path, attribution_json, consent_version, consent_at,
+      context_json, originating_page_path, landing_page_path, attribution_method
       FROM buyer_enquiries WHERE site_slug = ? AND (created_at < ? OR (created_at = ? AND id < ?))
       ORDER BY created_at DESC, id DESC LIMIT ?`)
       .bind(config.siteSlug, before, before, beforeId, limit + 1).all();
@@ -315,7 +372,13 @@ async function answerQuestion(request, env, config, fetchFn) {
   const result = await upstreamJson(endpoint('/chat'), env, {
     message,
     page_url: new URL(path, request.url).href,
-    product_context: null,
+    product_context: (() => {
+      const brief = publishedBrief(path, config);
+      if (!brief) return null;
+      return { ...brief, knowledge_revision: typeof config.knowledgeRevision === 'string' ? config.knowledgeRevision : null,
+        evidence: (config.sourceRecords ?? []).filter((record) => brief.evidence_ids.includes(record.id) && normalizeKnownPath(record.page_path, config.allowedPaths) === brief.page_path)
+          .map(({ id, claim, value, source_url, status, captured_at }) => ({ id, claim, value, source_url, status, captured_at })) };
+    })(),
   }, { 'X-Visitor-Session': upstreamSession, 'X-Buyersite-Site': config.siteSlug }, fetchFn);
   if (typeof result.answer !== 'string' || !result.answer.trim() || result.answer.length > 24_000) {
     throw new HttpError(502, 'INVALID_SOURCING_RESPONSE', 'The sourcing service returned an unsupported answer.');
@@ -326,7 +389,7 @@ async function answerQuestion(request, env, config, fetchFn) {
 async function sourceGuide(request, env, config) {
   sameOrigin(request);
   const body = await boundedJson(request, 2_048);
-  if (body.site_slug !== config.siteSlug || Object.keys(body).some((key) => !['query', 'site_slug'].includes(key))) {
+  if (body.site_slug !== config.siteSlug || Object.keys(body).some((key) => !['query', 'site_slug', 'page_path'].includes(key))) {
     throw new HttpError(400, 'INVALID_SOURCE_QUERY', 'Search within the current edition.');
   }
   const query = field(body.query, 'source search', 200);
@@ -334,12 +397,7 @@ async function sourceGuide(request, env, config) {
     throw new HttpError(503, 'SOURCES_UNAVAILABLE', 'Source search is unavailable. Use the edition search or source notes.');
   }
   if (dbReady(env)) await limitRequest(request, env, config, 'source-guide', 30, 600);
-  return json({
-    mode: 'source-guide',
-    method: 'keyword-search',
-    results: searchSourceRecords(query, config),
-    inference_performed: false,
-  });
+  return json(buildSourceGuideReply(query, config, body.page_path ? pagePath(body.page_path, config) : null));
 }
 
 export async function handleBuyerRequest(request, env, config, { fetchFn = fetch } = {}) {

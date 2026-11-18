@@ -29,6 +29,7 @@
     "accept:site-builder": "node site-builder/acceptance.mjs",
     "dev:astro": "astro dev",
     "test:runtime": "node --test runtime/*.test.mjs",
+    "test:knowledge": "node --test scripts/public-knowledge.test.mjs",
     "check:release": "node scripts/check-release.mjs"
   },
   "dependencies": {

@@ -1,0 +1,20 @@
+import type { BuyerBrief } from './buyer-brief';
+
+export type Campaign = Partial<Record<'source' | 'medium' | 'campaign', string>>;
+export type Journey = { version: 1; site_slug: string; landing_path: string; article_path: string | null; campaign: Campaign };
+export type BriefHandoff = { version: 1; site_slug: string; page_path: string; question_ids: string[]; requirements: Partial<Record<'quantity' | 'application' | 'delivery', string>> };
+export type BuyerReceipt = { receipt_id: string; created_at: string; status: string; destination: string; supplier_sent: false };
+export const BRIEF_HANDOFF_KEY: string;
+export function privacyOptOut(navigatorLike?: { doNotTrack?: string | null; globalPrivacyControl?: boolean }): boolean;
+export function normalizeKnownPath(value: unknown, allowedPaths: string[]): string | null;
+export function sanitizeCampaign(input: unknown, options?: { strict?: boolean }): Campaign;
+export function clearJourney(storage: Storage | null, siteSlug: string): void;
+export function readJourney(storage: Storage | null, siteSlug: string, allowedPaths: string[], articlePaths: string[], optedOut?: boolean): Journey | null;
+export function captureJourney(storage: Storage | null, options: { siteSlug: string; allowedPaths: string[]; articlePaths: string[]; path: string; search?: string; optedOut?: boolean }): Journey | null;
+export function findPublishedContext(path: unknown, contexts: BuyerBrief[]): BuyerBrief | null;
+export function saveBriefHandoff(storage: Storage, draft: BriefHandoff, contexts: BuyerBrief[]): boolean;
+export function readBriefHandoff(storage: Storage | null, siteSlug: string, contexts: BuyerBrief[]): BriefHandoff | null;
+export function buyerNavigationPaths(contexts: BuyerBrief[]): string[];
+export function saveReceipt(storage: Storage | null, siteSlug: string, receipt: BuyerReceipt): boolean;
+export function readReceipt(storage: Storage | null, siteSlug: string): (BuyerReceipt & { site_slug: string }) | null;
+export function clearReceipt(storage: Storage | null, siteSlug: string): void;

@@ -1,0 +1,206 @@
+{
+  "schema_version": "buyersite-editorial-release-v1",
+  "status": "APPROVED_EDITORIAL_RELEASE",
+  "reviewed_at": "2026-11-18T16:49:30.790Z",
+  "reviewer": {
+    "kind": "ai_interactive_review",
+    "name": "ChatGPT",
+    "scope": "Direct browser, screenshot, accessibility, source and saved-record inspection. This is an interactive AI review, not a paid API verdict or a human sign-off."
+  },
+  "source_sha256": "76fdf7b32ede89a993d33e28c57b2e3c759d6d8fbf8289646035ac2a51c97272",
+  "visual_review": {
+    "complete": true,
+    "decision": "pass",
+    "unresolved_blocking_findings": 0,
+    "reviewed_paths": [
+      "/",
+      "/materials/silver-wool-fabric/",
+      "/suppliers/burel-factory/",
+      "/guides/burel-project-brief/",
+      "/enquiry/",
+      "/search/",
+      "/sources/",
+      "/colophon/",
+      "/privacy/"
+    ],
+    "coverage": "Desktop rendered review for all nine paths. Narrow review of home, all three articles, sources, enquiry and sourcing dialog in a 360px iframe (345px content with scrollbar). This is responsive layout review, not touch/device emulation or real-buyer testing.",
+    "checks": [
+      "Contextual article and question links preserve the reviewed reading",
+      "Source search returns the scoped exact 140 cm width and its citation",
+      "Unknown commercial terms stay explicitly unconfirmed",
+      "Pagefind wool query returned two matching articles",
+      "Unsent brief download contains selected questions and remains explicitly unsent",
+      "Actual local Worker/SQLite enquiry receipt and reload restoration observed",
+      "Switching to supplier context clears the prefilled product; clear-context and remove-attribution controls work",
+      "No horizontal overflow in observed desktop and narrow layouts",
+      "Mobile navigation targets measured at 44px high; source disclosure measured 68.78px high",
+      "Dialog Escape closes and returns focus to its opener"
+    ],
+    "resolved_findings": [
+      "Reduced mobile header copy while preserving full accessible names",
+      "Collapsed repeated source explanations and full question prompts",
+      "Enlarged mobile brand, theme toggle and source disclosure targets",
+      "Changed pre-submit copy to describe what submission will do"
+    ],
+    "screenshots": [
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/colophon-desktop.jpg",
+        "sha256": "e1bc045a2957b39d57d372217d976e51252085c1a5bd08ad7c7fa3fefec4d12b"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/enquiry-context.jpg",
+        "sha256": "9c6a274e3789309926cfcc12875761ff876e356a31f99dd867a57a227a1122ef"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/enquiry-mobile-context.jpg",
+        "sha256": "f9034ad1a823a6b4a42a856d4b7cc161ba643058f3c9598d9f22a9d6e9e2b2a6"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/guide-desktop.jpg",
+        "sha256": "4002d697a17cbec82dfbd0172053927b17e0ee1d386675bd23da438cf4ed7efa"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/guide-mobile-summary.jpg",
+        "sha256": "732c23026b6d0944eb4282dafb416f252cc83a2483e2853dd60305ec5b6c5616"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/guide-mobile.jpg",
+        "sha256": "861a4266693b14f9b7c2f60b1e57fa443c8a0560244cceff79a38cd90e11f1c8"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/home-desktop.jpg",
+        "sha256": "3c68ddc445f968d8d0724419beb778af1131973839b906d1adb9017f4d19497d"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/home-mobile.jpg",
+        "sha256": "c3c7308f17710ecbb6f268fc87cc0bd80e4230fd8789b4f24c3bfdab1fe816b4"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/local-receipt.jpg",
+        "sha256": "dc7b014180f0ead0b36573261a189a9adea1ea07255ff7eec68877b8678f65e2"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/local-restored-receipt.jpg",
+        "sha256": "83d22f8cbc2b142a7931f958b257625d182346c97f9869afa12017a34015fb49"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/privacy-desktop.jpg",
+        "sha256": "54a9b72e1daa076b6394d791eb8e86fce7a8809ec02b72b8d153e8e1580ca620"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/product-desktop.jpg",
+        "sha256": "170276ddad2572f62b92b2d87988d134af5240439a840b057d0d3fc24d8eed4b"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/product-mobile-summary.jpg",
+        "sha256": "60036e144223a685826ae794b8aeba20ace8c4bf3d8baa3c46b017bdb0e7de26"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/product-mobile-top.jpg",
+        "sha256": "7d30c2a4ec0c354df6cec057d974f87cd891370cdd96beb23b187b7c6d8e8018"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/scoped-source-search.jpg",
+        "sha256": "35d537788cd18256632a8fb13b665fd95d0d088a91375d5a94ba707e0c67402e"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/search-results.jpg",
+        "sha256": "1ce588b3840931d64142ccfb016913a1cc08a0cc13f77715c2a3af2d1e349915"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/sources-desktop.jpg",
+        "sha256": "13b3cb9de647747bd47eff0c0b4ad53e91ff4190327c1c6bbc475f880ab3adb6"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/sources-mobile.jpg",
+        "sha256": "80ec61b35fcfd168e02fc2f1bb1fa0781a34f296408ec0a1a06795a5e34e5bd1"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/sourcing-mobile.jpg",
+        "sha256": "0d3068a68af3eb363709933017527f2bb87c657a472c3b25c8ecba52b8b0c2b9"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/supplier-desktop.jpg",
+        "sha256": "5fa5457c10564d28184a23c8f46a1d493de02b6b9e8c32bacbbd11c0f4c7d03b"
+      },
+      {
+        "path": "docs/verification/2026-11-19-decision-flow/screenshots/supplier-mobile.jpg",
+        "sha256": "d0f0284297d8251dfd932d88bc3bd8975601f06c6de77bfec5cf1af372398043"
+      }
+    ]
+  },
+  "media": {
+    "mode": "ai-generated-concepts",
+    "asset_count": 3,
+    "provenance": "src/data/concept-media.json",
+    "actual_supplier_photography": false,
+    "licensed_photo_path": "Implemented with rights-scope, expiry and revocation checks; acceptance uses synthetic grant fixtures, not a real commercial licence.",
+    "review_binding": "Current image bytes, generation prompt/provider/model, article identity and visible disclosures are bound to an interactive AI review receipt."
+  },
+  "conversion": {
+    "persisted_receipt_verified": true,
+    "environment": "Local real Worker + SQLite, not hosted D1",
+    "receipt_id": "bf539e43-0559-4e1e-88ea-f647618fae4d",
+    "rows_for_receipt": 1,
+    "context_snapshot_verified": true,
+    "restored_after_reload": true,
+    "unsent_download_verified": true,
+    "supplier_sent": false,
+    "evidence": "docs/verification/2026-11-19-decision-flow/local-browser-receipt.json",
+    "hosted_current_version_acceptance": "PASS for browser save, reload and native D1 context read-back; see explicit limits in hosted-v4-acceptance.json"
+  },
+  "verification": {
+    "unit_tests": {
+      "passed": 65,
+      "failed": 0,
+      "skipped": 0,
+      "split": {
+        "site_builder_and_media": 37,
+        "runtime_and_public_knowledge": 28
+      },
+      "node": "24.22.3"
+    },
+    "typecheck": {
+      "errors": 0,
+      "warnings": 0,
+      "hints": 2
+    },
+    "default_html_pages": 13,
+    "synthetic_editions": {
+      "count": 3,
+      "status": "STATIC_PASS_BROWSER_NOT_TESTED",
+      "scope": "Actual check/build/output and durable worker acceptance. Fixture editions preceded final cosmetic mobile polish. Current enterprise Playwright suite was not executed."
+    },
+    "contrast_profiles": [
+      "atelier",
+      "industrial",
+      "editorial"
+    ],
+    "hosted_ci": "Not claimed green; prior GitHub runner allocation was blocked by account billing."
+  },
+  "release_policy_change": "Private review may switch to public indexing with the same reviewed source fingerprint. Canonical, robots, output and release gates are checked again after the switch.",
+  "external_connections": {
+    "live_ai": "UNCONFIGURED: no compatible deployed sessions/chat service has been verified",
+    "paid_image_generation_and_review_apis": "UNCONFIGURED: provider integration exercised with fixtures; current concept images reviewed directly",
+    "google_search_console": "UNCONNECTED",
+    "umami": "UNCONNECTED"
+  },
+  "notes": [
+    "Synthetic QA records and validation traffic are not customer demand.",
+    "Receipt recovery is limited to received successful receipts in the same browser tab.",
+    "No supplier contact, order, quotation confirmation or automatic content publication occurred."
+  ],
+  "public_release_verification": {
+    "version_number": 4,
+    "source_commit": "0728ea64bb00f261404b9ccc0815bc380febc3eb",
+    "deployment_id": "appgdep_6afdd7ed68f481918893cdec23fc8cc8",
+    "url": "https://buyersite.magicy565.chatgpt.site/",
+    "evidence": "docs/verification/2026-11-19-decision-flow/hosted-v4-acceptance.json",
+    "api_evidence": "docs/verification/2026-11-19-decision-flow/hosted-api-readback.json",
+    "receipt_id": "75891cf5-889d-48c1-b597-773cf972f7ce",
+    "test_record_archived": false,
+    "owner_database_read_verified": true,
+    "hosted_authenticated_admin_report_retested": false,
+    "knowledge_revision": "a6f97692b74eb66f0858b667e2e50cfc106b77f89f636e5353e68beb61b9d2fd"
+  }
+}

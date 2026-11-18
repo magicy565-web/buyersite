@@ -24,6 +24,27 @@ textarea.conversion-input { resize: vertical; }
 .enquiry-receipt dt { font-weight: 600; }
 .enquiry-receipt dd { overflow-wrap: anywhere; }
 .enquiry-receipt code { font-size: .9rem; }
+.enquiry-context { line-height: 1.6; }
+.enquiry-context-links { display: flex; flex-wrap: wrap; gap: .6rem 1.25rem; margin-block: 0 .75rem; }
+.enquiry-source-context { margin-block: .75rem; border-block: 1px solid var(--border); padding-block: .75rem; }
+.enquiry-source-context > summary { min-height: 44px; padding-block: .55rem; }
+.enquiry-context summary { cursor: pointer; font-family: var(--font-heading); font-weight: 600; }
+.enquiry-context summary:focus-visible { outline: 2px solid var(--foreground); outline-offset: 3px; }
+.enquiry-source-context > p:first-of-type { margin-block-start: 1rem; }
+.enquiry-source-context ul { display: grid; gap: .75rem; margin-block-start: .75rem; }
+.enquiry-questions { display: grid; gap: .15rem; margin-block: 1rem; }
+.enquiry-context h3 { font-family: var(--font-heading); font-weight: 700; }
+.enquiry-questions > h3 { margin-block-end: .35rem; }
+.enquiry-question { display: flex; flex-wrap: wrap; align-items: start; gap: 0 .75rem; }
+.enquiry-question > label { flex: 1 1 12rem; min-height: 44px; padding-block: .55rem; }
+.enquiry-question-details { flex: 0 0 auto; max-width: 100%; font-size: .85rem; }
+.enquiry-question-details[open] { flex-basis: 100%; }
+.enquiry-question-details summary { min-height: 44px; padding-block: .65rem; font-weight: 400; text-decoration: underline; text-underline-offset: .15em; }
+.enquiry-question-prompt { margin-block: 0 .9rem; padding-inline-start: 1.9rem; font-size: .9rem; color: var(--muted); }
+.enquiry-referral dl { display: grid; gap: .75rem; line-height: 1.6; }
+.enquiry-referral dt { font-family: var(--font-heading); font-weight: 600; }
+.enquiry-referral dd { overflow-wrap: anywhere; }
+.enquiry-referral > .conversion-secondary { justify-self: start; }
 .sourcing-dialog { width: min(44rem, calc(100% - 1.5rem)); padding: 1.5rem; }
 .sourcing-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-block-end: 2px solid var(--foreground); padding-block-end: .8rem; }
 .sourcing-dialog-heading h2 { font-family: var(--font-heading); font-size: 1.65rem; font-weight: 700; }

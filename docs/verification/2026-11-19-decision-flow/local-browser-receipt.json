@@ -1,0 +1,61 @@
+{
+  "scope": "Local real Worker + SQLite browser flow; synthetic QA data",
+  "receipt_id": "bf539e43-0559-4e1e-88ea-f647618fae4d",
+  "persisted": true,
+  "rows_for_receipt": 1,
+  "originating_page_path": "/materials/silver-wool-fabric",
+  "landing_page_path": "/",
+  "attribution_method": "reported-session",
+  "context": {
+    "page_path": "/materials/silver-wool-fabric",
+    "title": "Silver wool fabric: establish the specification",
+    "product_name": "Burel Factory Silver wool fabric",
+    "product_id": "burel-silver",
+    "supplier_id": "burel-factory",
+    "source_url": "https://burelfactory.com/en/products/prata",
+    "knowledge_revision": "684d31aebe1c6c3d224d348764e62df60aad3a81ddc57c190212dfdbd65c9955",
+    "evidence_ids": [
+      "silver-composition",
+      "silver-width",
+      "silver-weight"
+    ],
+    "unconfirmed": [
+      {
+        "id": "weight-basis",
+        "label": "Weight basis and usable width",
+        "detail": "The source writes 800 g/m. Confirm the measurement basis, tolerance and usable width on the current technical sheet."
+      },
+      {
+        "id": "application-fit",
+        "label": "Suitability for your project",
+        "detail": "No application-specific performance or test results are verified in this review."
+      },
+      {
+        "id": "trade-terms",
+        "label": "MOQ and trade price",
+        "detail": "Request the order minimum, price, currency and sample charges for your quantity."
+      },
+      {
+        "id": "delivery",
+        "label": "Stock and delivery",
+        "detail": "Availability, production lead time and delivery to your destination are unconfirmed."
+      }
+    ],
+    "questions": [
+      {
+        "id": "technical-sheet",
+        "label": "Confirm the fabric specification",
+        "prompt": "Please share the current technical sheet for Silver wool fabric, including composition, usable width, weight measurement basis and tolerances. The public page lists 800 g/m; please confirm what that unit refers to."
+      },
+      {
+        "id": "written-offer",
+        "label": "Ask for a comparable written offer",
+        "prompt": "Please confirm the minimum order, trade price and currency, current availability, production lead time, packing and delivery terms for our quantity and destination."
+      }
+    ]
+  },
+  "quantity": "20 metres",
+  "restored_after_reload": true,
+  "unsent_download_verified": true,
+  "supplier_sent": false
+}

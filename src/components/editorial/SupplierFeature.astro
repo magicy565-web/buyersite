@@ -2,12 +2,13 @@
 import { Image } from 'astro:assets';
 import type { Item } from '../../lib/content';
 import type { EvidenceItem } from '../../lib/evidence';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
 import { site } from '../../config';
 import { t } from '../../i18n';
 import '../../styles/editorial.css';
 
-interface Props { item: Item; notes?: EvidenceItem[]; }
-const { item, notes = [] } = Astro.props;
+interface Props { item: Item; notes?: EvidenceItem[]; brief?: BuyerBrief | null; }
+const { item, notes = [], brief } = Astro.props;
 const ui = t(Astro.currentLocale ?? site.locale);
 const headingId = `supplier-feature-${item.id}`;
 ---
@@ -33,7 +34,9 @@ const headingId = `supplier-feature-${item.id}`;
         ))}
       </dl>
     )}
-    <p class="editorial-source-note">{ui.editorial.supplierScope}</p>
+    <p class="editorial-source-note">{brief?.summary ?? ui.editorial.supplierScope}</p>
+    {brief && <p class="editorial-open-note"><strong>{ui.editorial.openHeading}:</strong> {brief.unconfirmed.slice(0, 2).map((item) => item.label).join('; ')}.</p>}
     <a class="editorial-text-link" href={item.href + '#source-notes'}>{ui.editorial.reviewSupplierSources}</a>
+    {brief && <a class="editorial-text-link supplier-enquiry-link" href={buyerEnquiryHref(brief)} data-buyer-context={brief.page_path}>{ui.prepareEnquiry}</a>}
   </div>
 </section>

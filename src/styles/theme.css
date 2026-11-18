@@ -75,6 +75,18 @@ footer {
   display: inline-flex;
   align-items: center;
 }
+.header-label-short { display: none; }
+@media (max-width: 640px) {
+  .buyer-header-inner { gap: 0; padding-block: .35rem; }
+  .buyer-header-inner > a { display: inline-flex; align-items: center; min-height: 44px; }
+  .buyer-header-menu { gap: 0 .8rem; }
+  .buyer-header-menu > nav { width: 100%; min-height: 44px; align-items: center; justify-content: space-between; gap: .6rem; }
+  .buyer-header-menu > nav a { display: inline-flex; align-items: center; min-height: 44px; }
+  .buyer-header-menu .header-action { padding-inline: .15rem; font-family: var(--font-heading); font-size: .875rem; }
+  .buyer-header-menu > [data-theme-toggle] { margin-inline-start: auto; min-width: 44px; min-height: 44px; padding-inline: .15rem; }
+  .header-label-full { display: none; }
+  .header-label-short { display: inline; }
+}
 .cover-actions a {
   color: var(--on-plate);
   text-decoration: underline;

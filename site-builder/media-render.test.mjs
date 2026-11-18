@@ -9,6 +9,7 @@ import { planMedia } from './media-policy.mjs';
 import { planEditorialVisuals } from './visual-director.mjs';
 import { materializeEditionMedia } from './media-render.mjs';
 import { importApprovedPhoto } from './media-import.mjs';
+import { revokePublicationGrant } from './media-rights.mjs';
 
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 const articles = [
@@ -32,7 +33,7 @@ test('synthetic authored art and grant complete import, plan and licensed-path r
     const imported = await importApprovedPhoto({
       mediaRoot: join(dir, 'registry'), enterpriseId: 'enterprise-01', pageId: 'product', assetId: 'synthetic-image-01',
       imagePath, rightsDocumentPath, alt: 'Synthetic test artwork', credit: 'Synthetic test art, not supplier photography',
-      grantedBy: 'synthetic-test-operator', attestRights: true,
+      grantedBy: 'synthetic-test-operator', attestRights: true, attestCommercialUse: true,
     });
     assert.equal(imported.publication, 'BLOCKED_PENDING_FINAL_REVIEW');
     const grantPath = join(tenant, 'grants', imported.descriptor.rights.grant_sha256 + '.bin');
@@ -52,8 +53,24 @@ test('synthetic authored art and grant complete import, plan and licensed-path r
     await assert.rejects(() => materializeEditionMedia({
       ...options, enterpriseId: 'different-company',
     }));
+    const rightsPath = join(tenant, 'rights', imported.descriptor.asset_id + '.json');
+    const originalRights = await readFile(rightsPath, 'utf8');
+    for (const changes of [{ status: 'revoked' }, { page_ids: ['another-page'] }, { allow_commercial: false }]) {
+      const changed = JSON.parse(originalRights);
+      Object.assign(changed.descriptor.rights, changes);
+      await writeFile(rightsPath, JSON.stringify(changed));
+      await assert.rejects(() => materializeEditionMedia(options), (error) => error.code === 'APPROVED_MEDIA_CURRENT_RIGHTS_MISMATCH');
+    }
+    await writeFile(rightsPath, originalRights);
+    const imageFile = join(tenant, imported.descriptor.sha256 + '.bin');
+    await writeFile(imageFile, 'Tampered source bytes');
+    await assert.rejects(() => materializeEditionMedia(options), (error) => error.code === 'APPROVED_MEDIA_HASH_MISMATCH');
+    await writeFile(imageFile, bytes);
     await writeFile(grantPath, 'This grant has been replaced and its digest no longer matches the frozen descriptor.');
     await assert.rejects(() => materializeEditionMedia(options), (error) => error.code === 'APPROVED_MEDIA_GRANT_MISMATCH');
+    await writeFile(grantPath, grant);
+    await revokePublicationGrant({ mediaRoot: options.mediaRoot, enterpriseId: options.enterpriseId, grantSha256: imported.descriptor.rights.grant_sha256, revokedBy: 'test-operator', reason: 'Synthetic test withdrawal' });
+    await assert.rejects(() => materializeEditionMedia(options), (error) => error.code === 'APPROVED_MEDIA_RIGHTS_REVOKED');
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 

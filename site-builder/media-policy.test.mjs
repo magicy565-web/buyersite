@@ -9,7 +9,7 @@ const article = [{ slug: 'product', title: 'Woven Textiles', pageType: 'product-
 const photo = (overrides = {}) => ({
   asset_id: 'approved-product-01', page_id: 'product', sha256: hash, alt: 'Woven cotton sample',
   credit: 'Supplier photo, used with permission',
-  rights: { status: 'approved-public', scope: 'buyer-magazine-site', grant_sha256: grant, granted_by: 'editor-1', approved_at: '2026-11-15T00:00:00Z', allow_resize: true, allow_crop: true, ...overrides },
+  rights: { enterprise_id: 'enterprise-01', page_ids: ['product', 'supplier'], allow_commercial: true, status: 'approved-public', scope: 'buyer-magazine-site', grant_sha256: grant, granted_by: 'editor-1', approved_at: '2026-11-15T00:00:00Z', allow_resize: true, allow_crop: true, ...overrides },
 });
 
 test('selects the licensed photo only for its bound page and requests generation for other pages', () => {
@@ -25,7 +25,9 @@ test('selects the licensed photo only for its bound page and requests generation
 test('unapproved or expired media cannot be published as a licensed photograph', () => {
   for (const changes of [
     { status: 'review-only' }, { grant_sha256: null }, { allow_crop: false },
-    { expires_at: '2026-11-17T00:00:00Z' },
+    { expires_at: '2026-11-17T00:00:00Z' }, { status: 'revoked' },
+    { revoked_at: '2026-11-17T00:00:00Z' }, { scope: 'internal-review' },
+    { page_ids: ['supplier'] }, { allow_commercial: false }, { enterprise_id: '' },
   ]) {
     const plan = planMedia(article, [photo(changes)], fixed);
     assert.equal(plan.approved_count, 0);

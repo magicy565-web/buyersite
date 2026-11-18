@@ -18,11 +18,12 @@ test('importer rejects expired grants, missing attestations and pre-existing has
     const options = {
       mediaRoot: join(dir, 'private'), enterpriseId: 'test-company', pageId: 'sample', assetId: 'test-asset',
       imagePath, rightsDocumentPath, alt: 'Synthetic test image', credit: 'Synthetic test fixture',
-      grantedBy: 'test-operator', attestRights: true,
+      grantedBy: 'test-operator', attestRights: true, attestCommercialUse: true,
     };
     await assert.rejects(() => importApprovedPhoto({ ...options, expiresAt: '2000-01-01T00:00:00Z' }), /MEDIA_RIGHTS_INVALID_OR_EXPIRED/);
     await assert.rejects(() => importApprovedPhoto({ ...options, expiresAt: 'invalid' }), /MEDIA_RIGHTS_INVALID_OR_EXPIRED/);
     await assert.rejects(() => importApprovedPhoto({ ...options, attestRights: 'true' }), /MEDIA_RIGHTS_ATTESTATION_REQUIRED/);
+    await assert.rejects(() => importApprovedPhoto({ ...options, attestCommercialUse: false }), /MEDIA_RIGHTS_ATTESTATION_REQUIRED/);
     const tenant = join(options.mediaRoot, options.enterpriseId);
     await mkdir(tenant, { recursive: true });
     const stored = join(tenant, createHash('sha256').update(bytes).digest('hex') + '.bin');

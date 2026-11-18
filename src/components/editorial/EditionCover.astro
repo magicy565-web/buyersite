@@ -1,6 +1,7 @@
 ---
 import Plate from '../common/Plate.astro';
 import type { Item } from '../../lib/content';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
 import { site } from '../../config';
 import { t } from '../../i18n';
 import '../../styles/editorial.css';
@@ -10,9 +11,11 @@ interface Props {
   description?: string;
   lead: Item;
   context?: string;
+  brief?: BuyerBrief | null;
 }
-const { title, description, lead, context } = Astro.props;
+const { title, description, lead, context, brief } = Astro.props;
 const ui = t(Astro.currentLocale ?? site.locale);
+const enquiryHref = brief ? buyerEnquiryHref(brief) : '/enquiry?from=' + encodeURIComponent(lead.href);
 ---
 
 <section class="editorial-cover" data-editorial-block="cover" aria-labelledby="edition-title">
@@ -34,7 +37,7 @@ const ui = t(Astro.currentLocale ?? site.locale);
         <p>{lead.data.deck}</p>
         <div class="cover-actions editorial-actions">
           <a href={lead.href}>{ui.editorial.readStory}</a>
-          <a href="/enquiry">{ui.prepareEnquiry}</a>
+          <a href={enquiryHref} data-buyer-context={brief?.page_path ?? lead.href}>{ui.prepareEnquiry}</a>
         </div>
       </div>
     </div>

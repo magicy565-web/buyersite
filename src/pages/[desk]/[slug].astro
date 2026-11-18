@@ -10,6 +10,7 @@ import SpecSummary from '../../components/buyer/SpecSummary.astro';
 import BuyingChecklist from '../../components/editorial/BuyingChecklist.astro';
 
 import { loadEvidence, resolveEvidence } from '../../lib/evidence';
+import { getBuyerBrief } from '../../lib/buyer-brief';
 import Evidence from '../../components/buyer/Evidence.astro';
 import Author from '../../components/common/Author.astro';
 import Plate from '../../components/common/Plate.astro';
@@ -43,6 +44,7 @@ const item = await present(article, locale);
 const { Content } = await render(article);
 const authors = await getAuthors(article);
 const sourceNotes = resolveEvidence(item.data.evidenceRefs, loadEvidence());
+const buyerBrief = getBuyerBrief(item.href);
 
 const essay = item.data.format === 'photoessay';
 const blocks = item.data.rail ?? [];
@@ -128,11 +130,18 @@ const jsonLd = [
         {ui.by} {item.byline} · {item.date}
         {blog.showReadingTime && ` · ${ui.minutes(item.minutes)}`}
       </p>
+      {buyerBrief && (
+        <nav class="buyer-inpage-nav" aria-label={ui.editorial.onThisPage}>
+          <a href="#buyer-summary">{ui.editorial.jumpDetails}</a>
+          <a href="#buyer-questions">{ui.editorial.jumpQuestions}</a>
+          <a href="#source-notes">{ui.editorial.jumpSources}</a>
+        </nav>
+      )}
     </div>
   </div>
-  {item.data.pageType === 'product-editorial' && (
+  {buyerBrief && (
     <div class:list={[shell, 'mx-auto px-4']}>
-      <SpecSummary items={sourceNotes} />
+      <SpecSummary items={sourceNotes} brief={buyerBrief} />
     </div>
   )}
   {
@@ -175,8 +184,9 @@ const jsonLd = [
         scrolling inside its own box. */}
     <div class="article-body max-w-content min-w-0">
       <Content />
+      <BuyingChecklist compact brief={buyerBrief} id="buyer-questions" />
       <div id="source-notes">
-        <Evidence items={sourceNotes} />
+        <Evidence items={sourceNotes} brief={buyerBrief} />
       </div>
     </div>
     {rail && (
@@ -201,11 +211,6 @@ const jsonLd = [
       </div>
     </div>
   </div>
-  {item.data.pageType !== 'buyer-guide' && (
-    <div class="editorial-article-checklist">
-      <BuyingChecklist compact />
-    </div>
-  )}
   {reading.length > 0 && (
     <section class="max-w-content mx-auto mt-16 px-4 sm:mt-20" aria-labelledby="reading">
       <h2
