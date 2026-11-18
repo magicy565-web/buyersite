@@ -44,6 +44,7 @@ export function normalizeMediaAssets(assets = [], asOf = new Date().toISOString(
       credit: asset.credit.trim(),
       approved: Boolean(approved),
       grant_sha256: approved ? rights.grant_sha256 : null,
+      expires_at: approved ? rights.expires_at || null : null,
       // Rights metadata is retained; URLs in untrusted media descriptors
       // are deliberately not downloaded by the builder.
       rights_status: rights?.status || 'unconfirmed',
@@ -65,11 +66,12 @@ export function planMedia(articles, assets = [], asOf = new Date().toISOString()
     return licensed ? {
       page_id: article.slug, media_kind: 'licensed-photo', asset_id: licensed.asset_id,
       source_sha256: licensed.sha256, grant_sha256: licensed.grant_sha256,
+      expires_at: licensed.expires_at,
       alt: licensed.alt, credit: licensed.credit,
       fallback_reason: null,
     } : {
       page_id: article.slug, media_kind: 'generation-requested', asset_id: null,
-      source_sha256: null, grant_sha256: null,
+      source_sha256: null, grant_sha256: null, expires_at: null,
       alt: 'Conceptual editorial illustration for ' + article.title,
       credit: 'AI-generated concept illustration; not a supplier product photograph',
       fallback_reason: candidates.length ? 'NO_PUBLICATION_GRANT' : 'NO_APPROVED_ASSET',
