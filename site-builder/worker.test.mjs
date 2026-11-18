@@ -116,6 +116,29 @@ test('durable local worker queues one site build and serves only tenant-bound pr
     assert.equal(nested.status, 200);
     assert.match(await nested.text(), /Products/);
 
+    // Review artifacts are only available to the authenticated owning enterprise.
+    const reviewPng = Buffer.from('synthetic reviewer screenshot bytes');
+    const reviewHash = createHash('sha256').update(reviewPng).digest('hex');
+    await mkdir(join(dataDir, input.body.job.id, 'visual-review', 'screenshots'), { recursive: true });
+    await writeFile(join(dataDir, input.body.job.id, 'visual-review', 'screenshots', 'sample-desktop.png'), reviewPng);
+    const reviewPath = join(dataDir, input.body.job.id, 'visual-review.json');
+    const review = {
+      artifact_sha256: ready.artifactHash, status: 'REVISION_REQUIRED', publication: 'BLOCKED',
+      pages: [{ page_id: 'sample', screenshots: [{ private_file: 'sample-desktop.png', sha256: reviewHash }] }],
+    };
+    await writeFile(reviewPath, JSON.stringify(review));
+    const visibleReview = await request(worker, '/site-jobs/' + input.body.job.id + '/visual-review');
+    assert.equal(visibleReview.status, 200);
+    assert.equal((await visibleReview.json()).status, 'REVISION_REQUIRED');
+    const screenshot = await request(worker, '/site-jobs/' + input.body.job.id + '/visual-review/screenshot/sample-desktop.png');
+    assert.equal(screenshot.status, 200);
+    assert.deepEqual(Buffer.from(await screenshot.arrayBuffer()), reviewPng);
+    const hiddenReview = await request(worker, '/site-jobs/' + input.body.job.id + '/visual-review', { enterprise: 'ent_other' });
+    assert.equal(hiddenReview.status, 404);
+    await writeFile(reviewPath, JSON.stringify({ ...review, artifact_sha256: '0'.repeat(64) }));
+    const staleReview = await request(worker, '/site-jobs/' + input.body.job.id + '/visual-review');
+    assert.equal(staleReview.status, 409);
+
     await writeFile(
       join(dataDir, input.body.job.id, 'artifact-fixture', 'index.html'),
       '<!doctype html><h1>Tampered</h1>',
