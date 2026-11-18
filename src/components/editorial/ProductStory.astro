@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import type { Item } from '../../lib/content';
 import type { EvidenceItem } from '../../lib/evidence';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
 import { site } from '../../config';
 import { t } from '../../i18n';
 import '../../styles/editorial.css';
@@ -10,8 +11,9 @@ interface Props {
   item: Item;
   notes?: EvidenceItem[];
   heroAlreadyShown?: boolean;
+  brief?: BuyerBrief | null;
 }
-const { item, notes = [], heroAlreadyShown = false } = Astro.props;
+const { item, notes = [], heroAlreadyShown = false, brief } = Astro.props;
 const ui = t(Astro.currentLocale ?? site.locale);
 const headingId = `product-story-${item.id}`;
 ---
@@ -21,7 +23,7 @@ const headingId = `product-story-${item.id}`;
   <div class="product-story-intro">
     <p class="editorial-section-label">{heroAlreadyShown ? ui.editorial.specificationHeading : item.desk.data.name}</p>
     <h2 id={headingId}><a href={item.href}>{heroAlreadyShown ? ui.editorial.specificationTitle : item.data.title}</a></h2>
-    <p class="editorial-deck">{heroAlreadyShown ? ui.editorial.specificationScope : item.data.deck}</p>
+    <p class="editorial-deck">{brief?.summary ?? (heroAlreadyShown ? ui.editorial.specificationScope : item.data.deck)}</p>
     <a class="editorial-text-link" href={item.href + '#source-notes'}>{ui.editorial.readSpecification}</a>
   </div>
   {!heroAlreadyShown && (
@@ -36,6 +38,7 @@ const headingId = `product-story-${item.id}`;
     </figure>
   )}
   <div class="product-story-details">
+    <h3 class="editorial-details-heading">{ui.editorial.knownHeading}</h3>
     {notes.length > 0 ? (
       <dl class="editorial-facts">
         {notes.slice(0, 4).map((note) => (
@@ -43,6 +46,12 @@ const headingId = `product-story-${item.id}`;
         ))}
       </dl>
     ) : <p>{ui.editorial.specificationMissing}</p>}
-    <p class="editorial-source-note">{ui.editorial.commercialScope}</p>
+    {brief ? (
+      <div class="editorial-open-points">
+        <h3 class="editorial-details-heading">{ui.editorial.openHeading}</h3>
+        <ul>{brief.unconfirmed.slice(0, 3).map((item) => <li>{item.label}</li>)}</ul>
+        <a class="editorial-text-link" href={buyerEnquiryHref(brief)} data-buyer-context={brief.page_path}>{ui.prepareEnquiry}</a>
+      </div>
+    ) : <p class="editorial-source-note">{ui.editorial.commercialScope}</p>}
   </div>
 </section>

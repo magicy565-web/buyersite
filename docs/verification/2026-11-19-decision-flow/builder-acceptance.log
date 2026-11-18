@@ -1,0 +1,17 @@
+$ node site-builder/acceptance.mjs --static-only
+test:site-builder: PASS (1725ms)
+accept:site-worker: PASS (31909ms)
+check: PASS (9281ms)
+build: PASS (5407ms)
+verify:output: PASS (526ms)
+synthetic-cotton-textiles: artifact inventory SHA256 daafaa036aff28571c842651c488f90dc3f8297130d31bc961b17d5b61742418
+check: PASS (9500ms)
+build: PASS (5519ms)
+verify:output: PASS (564ms)
+synthetic-industrial-testing: artifact inventory SHA256 9fa9e3261a653db53d72de7d8be68a2836c35709e9084888bdc284768178695f
+check: PASS (9721ms)
+build: PASS (5096ms)
+verify:output: PASS (617ms)
+synthetic-empty-catalog: artifact inventory SHA256 84ad4423ea0bef6c003536adf31c69259244a571b5d4e8a0e3021d010215fd1c
+Acceptance: STATIC_PASS_BROWSER_NOT_TESTED
+Report: /workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T16-31-21-447Z/report.json

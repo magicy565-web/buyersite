@@ -27,7 +27,7 @@ function publicRecord(record, config) {
   };
 }
 
-export function searchSourceRecords(query, config) {
+export function searchSourceRecords(query, config, pagePath = null) {
   const terms = [...new Set(normalize(query).split(' ').filter((term) => term && !stopWords.has(term)))].slice(0, 30);
   if (!terms.length) return [];
   const records = Array.isArray(config.sourceRecords) ? config.sourceRecords.slice(0, 5_000) : [];
@@ -35,6 +35,7 @@ export function searchSourceRecords(query, config) {
   return records.flatMap((candidate) => {
     const record = publicRecord(candidate, config);
     if (!record || seen.has(record.id + '|' + record.page_path)) return [];
+    if (pagePath && record.page_path !== pagePath.replace(/\/+$/, '')) return [];
     seen.add(record.id + '|' + record.page_path);
     const fields = [[normalize(record.claim), 5], [normalize(record.value), 3], [normalize(record.title), 1]];
     let score = 0;
@@ -44,4 +45,20 @@ export function searchSourceRecords(query, config) {
     return score > 0 ? [{ record, score }] : [];
   }).sort((a, b) => b.score - a.score || a.record.id.localeCompare(b.record.id))
     .slice(0, 5).map(({ record }) => record);
+}
+
+export function buildSourceGuideReply(query, config, pagePath = null) {
+  const reply = {
+    mode: 'source-guide', method: 'keyword-search',
+    results: searchSourceRecords(query, config, pagePath), inference_performed: false,
+  };
+  if (!pagePath) return reply;
+  const key = pagePath.replace(/\/+$/, '') || '/';
+  const brief = (config.buyerBriefs ?? []).find((item) => item.page_path.replace(/\/+$/, '') === key);
+  if (!brief) return { ...reply, context: null };
+  return { ...reply, context: {
+    page_path: brief.page_path, title: brief.title,
+    unconfirmed: brief.unconfirmed.map(({ id, label, detail }) => ({ id, label, detail, status: 'unconfirmed' })),
+    questions: brief.questions.map(({ id, label, prompt }) => ({ id, label, prompt })),
+  } };
 }

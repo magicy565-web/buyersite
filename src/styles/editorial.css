@@ -71,3 +71,56 @@ html[data-editorial-style='industrial'] .product-story-summary { border-top-widt
   .editorial-facts > div { grid-template-columns: 1fr; row-gap: .4rem; }
   .supplier-feature, .product-story, .buying-checklist { gap: 1.75rem; }
 }
+
+
+/* Buying information reads as a dossier: clear sections, unboxed facts and useful links. */
+.editorial-reading-route { display: flex; flex-wrap: wrap; align-items: baseline; gap: .75rem 2rem; padding-block: 1.5rem; border-bottom: 1px solid var(--border); font-family: var(--font-heading); }
+.editorial-reading-route > p { color: var(--muted); font-size: .85rem; }
+.editorial-reading-route ul { display: flex; flex-wrap: wrap; gap: .5rem 1.75rem; list-style: none; margin: 0; padding: 0; }
+.editorial-reading-route a { display: inline-block; padding-block: .5rem; font-size: .95rem; text-underline-offset: .25em; }
+.editorial-details-heading { font-family: var(--font-heading); font-size: .95rem; font-weight: 600; }
+.product-story-details > .editorial-facts { margin-top: .8rem; }
+.editorial-open-points { margin-top: 1.5rem; }
+.editorial-open-points ul { display: flex; flex-wrap: wrap; gap: .45rem 1.4rem; padding-left: 1.2rem; margin-top: .7rem; list-style-type: disc; color: var(--muted); font-size: .95rem; line-height: 1.6; }
+.editorial-open-note { margin-top: 1.1rem; font-size: .925rem; line-height: 1.65; }
+.editorial-open-note strong { font-family: var(--font-heading); font-size: .875rem; }
+.supplier-enquiry-link { margin-left: 1.5rem; }
+.buyer-inpage-nav { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; padding-block: 1.25rem; margin-top: 1rem; border-bottom: 1px solid var(--border); font-family: var(--font-heading); font-size: .85rem; }
+.buyer-inpage-nav a { padding-block: .45rem; text-underline-offset: .25em; }
+.buyer-summary { padding-top: 2rem; margin-top: .5rem; scroll-margin-top: 9rem; }
+.buyer-summary > h2 { font-family: var(--font-heading); font-size: clamp(1.35rem, 3vw, 1.65rem); font-weight: 600; line-height: 1.2; }
+.buyer-summary-intro { max-width: 65ch; margin-top: 1rem; font-size: 1.05rem; line-height: 1.65; }
+.buyer-summary-columns { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 1.75rem; }
+.buyer-summary-columns > section { min-width: 0; padding-top: .85rem; border-top: 2px solid var(--foreground); }
+.buyer-summary-columns h3 { margin-bottom: .4rem; font-family: var(--font-heading); font-size: 1rem; font-weight: 600; }
+.buyer-known-facts > div, .buyer-open-facts > div { padding-block: 1rem; border-bottom: 1px solid var(--border); }
+.buyer-known-facts dt, .buyer-open-facts dt { font-family: var(--font-heading); font-size: .9rem; font-weight: 600; }
+.buyer-known-facts dd:not(.buyer-fact-source) { margin-top: .35rem; font-size: 1.25rem; line-height: 1.4; }
+.buyer-fact-source { margin-top: .5rem; font-family: var(--font-heading); font-size: .75rem; color: var(--muted); }
+.buyer-fact-source a { text-underline-offset: .25em; }
+.buyer-open-facts dd { margin-top: .4rem; color: var(--muted); font-size: .95rem; line-height: 1.6; }
+.buyer-summary-actions { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.5rem; margin-top: .35rem; }
+.buying-checklist { scroll-margin-top: 9rem; }
+.buying-checklist-questions ol { padding: 0; margin: 0; list-style: none; counter-reset: buying-question; }
+.buying-checklist-questions li { padding-block: 1.25rem; border-bottom: 1px solid var(--border); }
+.buying-checklist-questions li:first-child { padding-top: 0; }
+.buying-checklist-questions h3 { font-family: var(--font-heading); font-size: 1.08rem; font-weight: 600; line-height: 1.4; }
+.buying-checklist-questions li p { margin-top: .6rem; color: var(--muted); font-size: 1rem; line-height: 1.65; max-width: 60ch; }
+.buying-checklist-questions li > a { display: inline-block; margin-top: .6rem; padding-block: .4rem; font-family: var(--font-heading); font-size: .85rem; text-underline-offset: .25em; }
+.buyer-evidence { margin-top: 3rem; padding-top: 1.75rem; border-top: 2px solid var(--foreground); }
+.buyer-evidence h2 { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+.buyer-evidence .buyer-evidence-scope { color: var(--muted); font-size: .95rem; line-height: 1.6; margin-top: 1rem; }
+.buyer-evidence-list > div { padding-block: 1.5rem; border-bottom: 1px solid var(--border); scroll-margin-top: 9rem; }
+.buyer-evidence-list dt { font-family: var(--font-heading); font-size: 1rem; font-weight: 600; }
+.buyer-evidence-list dd { margin-top: .4rem; font-size: 1rem; line-height: 1.6; }
+.buyer-evidence-list .buyer-evidence-meta { display: flex; flex-wrap: wrap; gap: .3rem 1.15rem; margin-top: .75rem; color: var(--muted); font-family: var(--font-heading); font-size: .8rem; }
+.buyer-evidence-list .buyer-evidence-link { font-family: var(--font-heading); font-size: .85rem; }
+@media (min-width: 680px) {
+  .buyer-summary-columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+}
+@media (max-width: 480px) {
+  .editorial-reading-route, .editorial-reading-route ul { gap: .4rem 1.25rem; }
+  .supplier-enquiry-link { margin-left: 0; margin-right: 1.5rem; }
+  .buyer-summary { padding-top: 1.5rem; }
+  .buyer-summary-columns { gap: 1.75rem; }
+}

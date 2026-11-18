@@ -1,13 +1,23 @@
 ---
 import { site } from '../../config';
+import { loadBuyerBriefs } from '../../lib/buyer-brief';
+import { buyerNavigationPaths } from '../../lib/buyer-journey.mjs';
+const briefs = site.analyticsEnabled ? loadBuyerBriefs() : [];
 ---
-{site.analyticsEnabled && <span id="journey-config" data-site={site.slug} hidden></span>}
+{site.analyticsEnabled && <span id="journey-config" data-site={site.slug} data-paths={JSON.stringify(buyerNavigationPaths(briefs))} data-articles={JSON.stringify(briefs.map((brief) => brief.page_path))} hidden></span>}
 <script>
+  import { captureJourney, clearJourney, privacyOptOut } from '../../lib/buyer-journey.mjs';
   const config=document.querySelector<HTMLElement>('#journey-config');
-  const optedOut=()=>navigator.doNotTrack==='1'||(navigator as Navigator & {globalPrivacyControl?:boolean}).globalPrivacyControl===true;
+  const storage=()=>{try{return window.sessionStorage;}catch{return null;}};
+  const optedOut=()=>privacyOptOut(navigator);
+  if(config){
+    captureJourney(storage(),{siteSlug:config.dataset.site!,allowedPaths:JSON.parse(config.dataset.paths!),articlePaths:JSON.parse(config.dataset.articles!),path:location.pathname,search:location.search,optedOut:optedOut()});
+  }
   const names=new Set(['page_view','article_opened','enquiry_started','enquiry_submitted','assistant_opened','search_used','source_opened']);
   function track(name:string){
-    if(!config||optedOut()||!names.has(name))return;
+    if(!config)return;
+    if(optedOut()){clearJourney(storage(),config.dataset.site!);return;}
+    if(!names.has(name))return;
     const path=location.pathname;
     // No free text, search terms, email, IP, user ID or full referrer is sent.
     const event={name,path};

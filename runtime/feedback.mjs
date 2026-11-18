@@ -1,4 +1,5 @@
 import { authorizedOwner } from './gateway.mjs';
+import { sanitizeCampaign } from '../src/lib/buyer-journey.mjs';
 
 const EVENT_ROW_LIMIT = 20_000;
 const PAGE_ROW_LIMIT = 5_000;
@@ -22,6 +23,20 @@ const counts = (row = {}) => ({
   qualified: Number(row.qualified || 0),
   archived: Number(row.archived || 0),
 });
+
+function campaignGroups(rows) {
+  const grouped = new Map();
+  for (const row of rows.slice(0, PAGE_ROW_LIMIT)) {
+    let campaign = {};
+    // Older rows may predate label validation. Never return unsafe legacy free text.
+    try { campaign = sanitizeCampaign(JSON.parse(row.labels || '{}'), { strict: true }); } catch {}
+    const key = JSON.stringify(campaign);
+    const aggregate = grouped.get(key) ?? { ...campaign, total: 0, new: 0, qualified: 0, archived: 0 };
+    for (const [name, value] of Object.entries(counts(row))) aggregate[name] += value;
+    grouped.set(key, aggregate);
+  }
+  return [...grouped.values()].sort((a, b) => b.total - a.total);
+}
 
 /** Aggregate-only input for the existing editorial worker; never contains a buyer's brief. */
 export async function handleFeedback(request, env, config, { now = new Date() } = {}) {
@@ -61,6 +76,14 @@ export async function handleFeedback(request, env, config, { now = new Date() } 
         GROUP BY day ORDER BY day`).bind(...scope),
       env.DB.prepare(`SELECT page_path AS path, ${sums} FROM buyer_enquiries ${enquiryWhere}
         GROUP BY page_path ORDER BY total DESC, path LIMIT ?`).bind(...scope, PAGE_ROW_LIMIT + 1),
+      env.DB.prepare(`SELECT originating_page_path AS path, ${sums} FROM buyer_enquiries ${enquiryWhere}
+        GROUP BY originating_page_path ORDER BY total DESC, path LIMIT ?`).bind(...scope, PAGE_ROW_LIMIT + 1),
+      env.DB.prepare(`SELECT landing_page_path AS path, ${sums} FROM buyer_enquiries ${enquiryWhere}
+        GROUP BY landing_page_path ORDER BY total DESC, path LIMIT ?`).bind(...scope, PAGE_ROW_LIMIT + 1),
+      env.DB.prepare(`SELECT attribution_json AS labels, ${sums} FROM buyer_enquiries ${enquiryWhere}
+        GROUP BY attribution_json ORDER BY total DESC, labels LIMIT ?`).bind(...scope, PAGE_ROW_LIMIT + 1),
+      env.DB.prepare(`SELECT attribution_method AS method, ${sums} FROM buyer_enquiries ${enquiryWhere}
+        GROUP BY attribution_method ORDER BY total DESC, method`).bind(...scope),
     ];
     // D1 batch provides a consistent transaction across the aggregate queries.
     const result = await env.DB.batch(queries);
@@ -88,11 +111,20 @@ export async function handleFeedback(request, env, config, { now = new Date() } 
         by_day: (result[3].results ?? []).map((row) => ({ day: row.day, ...counts(row) })),
         by_page: pageRows.slice(0, PAGE_ROW_LIMIT).map((row) => ({ path: row.path, ...counts(row) })),
         pages_truncated: pageRows.length > PAGE_ROW_LIMIT,
+        by_originating_article: result[5].results.slice(0, PAGE_ROW_LIMIT).map((row) => ({ path: row.path, ...counts(row) })),
+        originating_articles_truncated: result[5].results.length > PAGE_ROW_LIMIT,
+        by_landing_page: result[6].results.slice(0, PAGE_ROW_LIMIT).map((row) => ({ path: row.path, ...counts(row) })),
+        landing_pages_truncated: result[6].results.length > PAGE_ROW_LIMIT,
+        by_campaign: campaignGroups(result[7].results),
+        campaigns_truncated: result[7].results.length > PAGE_ROW_LIMIT,
+        by_attribution_method: result[8].results.map((row) => ({ method: ['withheld', 'reported-session', 'reported-campaign'].includes(row.method) ? row.method : null, ...counts(row) })),
       },
       definitions: {
         events: 'Browser-reported action counts, including repeated actions. They are not unique visitor counts and may include automated traffic.',
         enquiries: 'Persisted enquiries created during this period, grouped by their current review status. Client-reported enquiry_submitted events do not determine these totals.',
-        page: 'The saved enquiry source path. It may be the enquiry page; this report does not infer an earlier article or acquisition campaign.',
+        page: 'The page on which the enquiry was submitted. Legacy records may contain an article path; this field does not establish the original landing page.',
+        originating_article: 'An article selected by the buyer and resolved against the server-owned published catalog. It is brief context, not proof of reading or causal acquisition. Null means no article was linked.',
+        attribution: 'Landing paths and bounded campaign labels are browser-reported session context, validated by the server but not independently verified. DNT/GPC or buyer removal withholds visit context. Null or empty labels mean unavailable or withheld; unsafe legacy labels are suppressed.',
         qualified: 'Marked qualified by the owner. This is not proof of a supplier quote, message, order or sale.',
         scope: 'Counts describe this site and date window only. Empty counts do not establish demand absence.',
       },

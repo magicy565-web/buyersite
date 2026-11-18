@@ -5,6 +5,7 @@ import { isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { normalizeMediaAssets } from './media-policy.mjs';
+import { assertCurrentLicensedSelection, revokePublicationGrant } from './media-rights.mjs';
 
 async function boundedRegularFile(path, maximum, minimum = 1) {
   if (typeof path !== 'string' || !path) throw Error('MEDIA_IMAGE_AND_GRANT_REQUIRED');
@@ -47,13 +48,13 @@ async function storeVerifiedFile(path, bytes, hash, limit) {
 }
 
 // Trusted, operator-only importer. A rights grant document is required and
-// its SHA is retained, but a human must still verify that the grant genuinely
-// covers publication, cropping and resizing. No external image URLs are fetched.
+// its SHA is retained. The authenticated caller must verify the grant actually
+// covers commercial publication, cropping, resizing, this tenant and this page.
 export async function importApprovedPhoto({
   mediaRoot, enterpriseId, pageId, assetId, imagePath, rightsDocumentPath,
-  alt, credit, grantedBy, expiresAt = null, attestRights = false,
+  alt, credit, grantedBy, expiresAt = null, attestRights = false, attestCommercialUse = false,
 }) {
-  if (attestRights !== true) throw Error('MEDIA_RIGHTS_ATTESTATION_REQUIRED: authorized operator must review the grant');
+  if (attestRights !== true || attestCommercialUse !== true) throw Error('MEDIA_RIGHTS_ATTESTATION_REQUIRED: applicable commercial rights and transformations must be explicitly confirmed');
   if (typeof mediaRoot !== 'string' || !isAbsolute(mediaRoot)) throw Error('MEDIA_ROOT_ABSOLUTE_REQUIRED');
   if (typeof enterpriseId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$/.test(enterpriseId)) {
     throw Error('MEDIA_TENANT_INVALID');
@@ -74,12 +75,14 @@ export async function importApprovedPhoto({
     asset_id: assetId, page_id: pageId, sha256: sha256(image), alt, credit,
     rights: {
       status: 'approved-public', scope: 'buyer-magazine-site',
+      enterprise_id: enterpriseId, page_ids: [pageId], allow_commercial: true,
       grant_sha256: sha256(evidence), granted_by: grantedBy,
       approved_at: now, expires_at: expiresAt,
       allow_resize: true, allow_crop: true,
     },
   };
-  if (!normalizeMediaAssets([descriptor], now)[0].approved) {
+  const normalized = normalizeMediaAssets([descriptor], now)[0];
+  if (!normalized.approved) {
     throw Error('MEDIA_RIGHTS_INVALID_OR_EXPIRED');
   }
   await mkdir(mediaRoot, { recursive: true, mode: 0o700 });
@@ -90,18 +93,31 @@ export async function importApprovedPhoto({
   const path = join(root, descriptor.sha256 + '.bin');
   await storeVerifiedFile(join(grants, descriptor.rights.grant_sha256 + '.bin'), evidence, descriptor.rights.grant_sha256, 2_000_000);
   await storeVerifiedFile(path, image, descriptor.sha256, 12_000_000);
+  const rightsRoot = join(root, 'rights');
+  await privateDirectory(rightsRoot);
+  const receipt = Buffer.from(JSON.stringify({ schema_version: '1.0.0', enterprise_id: enterpriseId, descriptor }) + '\n');
+  await storeVerifiedFile(join(rightsRoot, assetId + '.json'), receipt, sha256(receipt), 32_000);
+  await assertCurrentLicensedSelection({ mediaRoot, enterpriseId, asset: {
+    ...normalized, source_sha256: normalized.sha256, rights_sha256: sha256(JSON.stringify(normalized.rights)),
+  } });
   return { descriptor, storage: 'private-sha256-registry', publication: 'BLOCKED_PENDING_FINAL_REVIEW' };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [mediaRoot, enterpriseId, pageId, assetId, imagePath, rightsDocumentPath, alt, credit, grantedBy, attestation, expiresFlag, expiresValue, ...extra] = process.argv.slice(2);
-  if (attestation !== '--attest-rights-and-transforms' || extra.length ||
+  if (mediaRoot === '--revoke-grant') {
+    const [registry, tenant, grantSha256, revokedBy, reason, ...rest] = process.argv.slice(3);
+    try {
+      if (rest.length) throw Error('MEDIA_REVOCATION_INVALID');
+      console.log(JSON.stringify(await revokePublicationGrant({ mediaRoot: registry, enterpriseId: tenant, grantSha256, revokedBy, reason })));
+    } catch (error) { console.error(error.code || error.message); process.exitCode = 1; }
+  } else if (attestation !== '--attest-commercial-rights-and-transforms' || extra.length ||
       (expiresFlag !== undefined && (expiresFlag !== '--expires-at' || !expiresValue))) {
-    console.error('Usage: node site-builder/media-import.mjs <absolute-media-root> <enterprise-id> <page-id> <asset-id> <image> <grant-document> <alt> <credit> <granted-by> --attest-rights-and-transforms [--expires-at <ISO-timestamp>]');
+    console.error('Usage: node site-builder/media-import.mjs <absolute-media-root> <enterprise-id> <page-id> <asset-id> <image> <grant-document> <alt> <credit> <granted-by> --attest-commercial-rights-and-transforms [--expires-at <ISO-timestamp>]');
     process.exitCode = 2;
   } else {
     try {
-      const result = await importApprovedPhoto({ mediaRoot, enterpriseId, pageId, assetId, imagePath, rightsDocumentPath, alt, credit, grantedBy, attestRights: true, expiresAt: expiresValue || null });
+      const result = await importApprovedPhoto({ mediaRoot, enterpriseId, pageId, assetId, imagePath, rightsDocumentPath, alt, credit, grantedBy, attestRights: true, attestCommercialUse: true, expiresAt: expiresValue || null });
       console.log(JSON.stringify(result, null, 2));
     } catch (e) { console.error(e.code || e.message); process.exitCode = 1; }
   }

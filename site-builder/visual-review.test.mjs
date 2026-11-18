@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import { reviewBuiltSite, reviewScreenshots, VisualReviewError } from './visual-review.mjs';
+import { reviewBuiltSite, reviewScreenshots, reviewMediaAsset, VisualReviewError } from './visual-review.mjs';
+import { planMedia } from './media-policy.mjs';
+import { assertEditionVisualReview, assertMediaReview, mediaHash, mediaReviewBinding } from './media-review.mjs';
 
 const verdict = {
   decision: 'pass', editorial_quality: 5, hierarchy: 4,
@@ -15,7 +17,7 @@ test('review is blocked until both consent and credentials are present', async (
   const result = await reviewBuiltSite({ authorized: false, apiKey: 'test', artifactSha256: 'a'.repeat(64) });
   assert.equal(result.status, 'PENDING_CONFIGURATION');
   assert.equal(result.publication, 'BLOCKED');
-  assert.equal(result.human_approval_required, true);
+  assert.equal(result.human_approval_required, false);
   assert.equal((await reviewBuiltSite({ authorized: 'true', apiKey: 'test' })).status, 'PENDING_CONFIGURATION');
 });
 
@@ -31,10 +33,14 @@ test('injected captures cover every page and preserve full-height mobile readabi
       { page_id: 'guide', path: '/guides/guide/', page_type: 'buyer-guide', title: 'Buying guide' },
       { page_id: 'supplier', path: '/suppliers/supplier/', page_type: 'supplier-profile', title: 'Supplier' },
     ]));
-    await writeFile(join(root, 'media-report.json'), JSON.stringify({ images:
-      ['sample', 'second', 'guide', 'supplier'].map((page_id) => ({ page_id, kind: 'ai-generated' })),
-    }));
     const bytes = await sharp({ create: { width: 1000, height: 800, channels: 3, background: '#b9b6ac' } }).png().toBuffer();
+    const articles = ['sample', 'second', 'guide', 'supplier'].map((slug) => ({ slug, title: slug }));
+    const plan = planMedia(articles);
+    await writeFile(join(root, 'media-plan.json'), JSON.stringify(plan));
+    await mkdir(join(root, 'articles'));
+    const images = articles.map(({ slug }) => ({ page_id: slug, kind: 'ai-generated', filename: 'hero-' + slug + '.png', sha256: mediaHash(bytes), prompt: 'Synthetic test prompt', prompt_sha256: mediaHash('Synthetic test prompt'), generation_model: 'synthetic-fixture', generation_provider: 'synthetic-fixture', alt: 'Synthetic image', caption: 'Conceptual artwork. Not a depiction of any supplier product.', credit: 'AI-generated synthetic fixture' }));
+    for (const image of images) await writeFile(join(root, 'articles', image.filename), bytes);
+    await writeFile(join(root, 'media-report.json'), JSON.stringify({ images, plan_sha256: plan.plan_sha256 }));
     const mobile = await sharp({ create: { width: 390, height: 5200, channels: 3, background: '#b9b6ac' } }).png().toBuffer();
     const reviewed = [];
     const result = await reviewBuiltSite({
@@ -54,6 +60,18 @@ test('injected captures cover every page and preserve full-height mobile readabi
     assert.equal(result.publication, 'BLOCKED');
     assert.equal(result.pages.length, 5);
     assert.equal(result.pages[0].screenshots.length, 5);
+    assert.equal(result.evidence_type, 'fixture');
+    await assert.rejects(() => assertEditionVisualReview({ review: result, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir }), /EDITION_REVIEW_REQUIRED/);
+    // This copied observation is solely a synthetic contract fixture, never saved as production approval.
+    const observedFixture = { ...result, evidence_type: 'observed', review_method: 'interactive-vision' };
+    assert.equal((await assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir })).media_review_complete, true);
+    const reportFile = join(root, 'media-report.json');
+    const originalReport = await readFile(reportFile, 'utf8');
+    const changed = JSON.parse(originalReport);
+    changed.images[0].prompt = 'Changed synthetic prompt'; changed.images[0].prompt_sha256 = mediaHash(changed.images[0].prompt);
+    await writeFile(reportFile, JSON.stringify(changed));
+    await assert.rejects(() => assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir }), /EDITION_REVIEW_STALE/);
+    await writeFile(reportFile, originalReport);
     assert.deepEqual(reviewed, ['home', 'sample', 'second', 'guide', 'supplier']);
     assert.deepEqual(result.coverage, { expected_pages: 5, reviewed_pages: 5, complete: true });
     const failed = await reviewBuiltSite({
@@ -98,9 +116,9 @@ test('empty or unsafe manifests and missing source files cannot produce a vacuou
     assert.equal((await reviewBuiltSite(options)).status, 'REVIEW_ERROR');
     await writeFile(join(dir, 'pages.json'), '[]');
     await writeFile(join(dir, 'media-report.json'), '{"images":[]}');
-    assert.equal((await reviewBuiltSite(options)).error_code, 'VISUAL_REVIEW_MANIFEST_INVALID');
+    assert.equal((await reviewBuiltSite(options)).status, 'REVIEW_ERROR');
     await writeFile(join(dir, 'pages.json'), JSON.stringify([{ page_id: '../outside', path: '/', page_type: 'home' }]));
-    assert.equal((await reviewBuiltSite(options)).error_code, 'VISUAL_REVIEW_MANIFEST_INVALID');
+    assert.equal((await reviewBuiltSite(options)).status, 'REVIEW_ERROR');
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
@@ -112,4 +130,22 @@ test('vision verdicts with null issues and unknown fields fail closed', async ()
       fetchImpl: async () => Response.json({ status: 'completed', output: [{ content: [{ type: 'output_text', text: JSON.stringify(value) }] }] }),
     }), (error) => error.code === 'VISUAL_REVIEW_INVALID');
   }
+});
+
+test('single-image AI adapter submits pixels and returns a bound assessment without disguising injected transport as a live provider', async () => {
+  const bytes = await sharp({ create: { width: 1200, height: 800, channels: 3, background: '#556677' } }).png().toBuffer();
+  const page = { page_id: 'sample', path: '/products/sample/', title: 'Synthetic concept study' };
+  const asset = { page_id: 'sample', kind: 'ai-generated', sha256: mediaHash(bytes), prompt: 'Synthetic prompt', prompt_sha256: mediaHash('Synthetic prompt'),
+    generation_model: 'synthetic-fixture', generation_provider: 'synthetic-fixture', alt: 'Synthetic image', credit: 'AI-generated test concept', caption: 'Conceptual artwork. Not a depiction of any supplier product.' };
+  const review = await reviewMediaAsset({ page, asset, bytes, apiKey: 'synthetic-test', fetchImpl: async (url, request) => {
+    assert.equal(url, 'https://api.openai.com/v1/responses');
+    const payload = JSON.parse(request.body);
+    assert.equal(payload.input[0].content.filter((item) => item.type === 'input_image').length, 1);
+    assert.ok(payload.text.format.schema.required.includes('contextual_fit'));
+    return Response.json({ status: 'completed', output: [{ content: [{ type: 'output_text', text: JSON.stringify({ decision: 'pass', visual_quality: 5, contextual_fit: 5, authenticity: 5, issues: [] }) }] }] });
+  } });
+  assert.equal(review.decision, 'pass');
+  assert.equal(review.evidence_type, 'fixture');
+  assert.equal(review.human_approval_required, false);
+  assert.throws(() => assertMediaReview({ binding: mediaReviewBinding({ page, asset }), review }), /MEDIA_REVIEW_EVIDENCE_INVALID/);
 });

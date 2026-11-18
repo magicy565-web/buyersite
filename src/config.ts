@@ -62,7 +62,8 @@ export const nav = {
     {
       title: 'More',
       links: [
-        { label: 'Sources & scope', href: '/colophon' },
+        { label: 'Source notebook', href: '/sources' },
+        { label: 'Editorial scope', href: '/colophon' },
         { label: 'Feed', href: '/rss.xml' },
         { label: 'Search', href: '/search' },
         { label: 'Privacy', href: '/privacy' },

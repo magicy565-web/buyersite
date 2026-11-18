@@ -1,0 +1,2 @@
+$ node scripts/verify-output.mjs
+Verified 4 core routes and all 13 HTML files: evidence, public indexing policy, canonical, structured data, local links/assets and enquiry. This static check does not establish hosted conversion acceptance.

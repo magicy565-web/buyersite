@@ -1,0 +1,108 @@
+{
+  "checked_at": "2026-11-18T16:53:40.638Z",
+  "origin": "https://buyersite.magicy565.chatgpt.site",
+  "checks": {
+    "/api/buyer/config": {
+      "status": 200,
+      "content_type": "application/json; charset=utf-8"
+    },
+    "/buyer-data.json": {
+      "status": 200,
+      "content_type": "application/json"
+    },
+    "/api/buyer/admin/enquiries": {
+      "status": 401,
+      "content_type": "application/json; charset=utf-8"
+    },
+    "/api/buyer/admin/feedback?days=30": {
+      "status": 401,
+      "content_type": "application/json; charset=utf-8"
+    },
+    "/robots.txt": {
+      "status": 200,
+      "content_type": "text/plain"
+    },
+    "/sitemap-index.xml": {
+      "status": 200,
+      "content_type": "text/xml"
+    }
+  },
+  "capabilities": {
+    "site_slug": "material-notes",
+    "enquiries": true,
+    "assistant": false,
+    "assistant_mode": "source-guide",
+    "source_guide": true,
+    "consent_version": "buyer-enquiry-v1"
+  },
+  "knowledge_revision": "a6f97692b74eb66f0858b667e2e50cfc106b77f89f636e5353e68beb61b9d2fd",
+  "knowledge_matches_local": true,
+  "robots": "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /enquiry/\nDisallow: /search/\nSitemap: https://buyersite.magicy565.chatgpt.site/sitemap-index.xml\n",
+  "scoped_source": {
+    "status": 200,
+    "body": {
+      "mode": "source-guide",
+      "method": "keyword-search",
+      "results": [
+        {
+          "id": "silver-width",
+          "title": "Silver wool fabric: establish the specification",
+          "claim": "Silver width",
+          "value": "140 cm",
+          "page_path": "/materials/silver-wool-fabric",
+          "source_url": "https://burelfactory.com/en/products/prata",
+          "status": "supplier-stated",
+          "captured_at": "2026-11-18T13:14:10.681159+00:00"
+        }
+      ],
+      "inference_performed": false,
+      "context": {
+        "page_path": "/materials/silver-wool-fabric/",
+        "title": "Silver wool fabric: establish the specification",
+        "unconfirmed": [
+          {
+            "id": "weight-basis",
+            "label": "Weight basis and usable width",
+            "detail": "The source writes 800 g/m. Confirm the measurement basis, tolerance and usable width on the current technical sheet.",
+            "status": "unconfirmed"
+          },
+          {
+            "id": "application-fit",
+            "label": "Suitability for your project",
+            "detail": "No application-specific performance or test results are verified in this review.",
+            "status": "unconfirmed"
+          },
+          {
+            "id": "trade-terms",
+            "label": "MOQ and trade price",
+            "detail": "Request the order minimum, price, currency and sample charges for your quantity.",
+            "status": "unconfirmed"
+          },
+          {
+            "id": "delivery",
+            "label": "Stock and delivery",
+            "detail": "Availability, production lead time and delivery to your destination are unconfirmed.",
+            "status": "unconfirmed"
+          }
+        ],
+        "questions": [
+          {
+            "id": "technical-sheet",
+            "label": "Confirm the fabric specification",
+            "prompt": "Please share the current technical sheet for Silver wool fabric, including composition, usable width, weight measurement basis and tolerances. The public page lists 800 g/m; please confirm what that unit refers to."
+          },
+          {
+            "id": "sample",
+            "label": "Request a sample for the intended use",
+            "prompt": "Is a sample of Silver wool fabric available for our project? Please confirm its size, any charge, colour reference and relevant performance documents for our intended application."
+          },
+          {
+            "id": "written-offer",
+            "label": "Ask for a comparable written offer",
+            "prompt": "Please confirm the minimum order, trade price and currency, current availability, production lead time, packing and delivery terms for our quantity and destination."
+          }
+        ]
+      }
+    }
+  }
+}

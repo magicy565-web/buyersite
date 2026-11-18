@@ -2,14 +2,16 @@ import Ajv from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { createHash } from 'node:crypto';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { assertCurrentLicensedSelection } from '../site-builder/media-rights.mjs';
+import { normalizeLicensedPhoto } from '../site-builder/media-render.mjs';
 const load = async p => JSON.parse(await readFile(p, 'utf8'));
 const ajv = new Ajv({allErrors:true,strict:false}); addFormats(ajv);
 const validators = Object.fromEntries(await Promise.all(['site-manifest','magazine-page','site-evidence'].map(async name => [name,ajv.compile(await load('legacy/schemas/'+name+'.schema.json'))])));
 const editionRoot = process.env.BUYERSITE_BUILD_ROOT;
 if (editionRoot) {
   const root = (name) => editionRoot.replace(/\/$/, '') + '/' + name;
-  const [manifest, pages, evidence, site, snapshots, visualPlan, mediaPlan, mediaReport] = await Promise.all(
-    ['manifest.json', 'pages.json', 'evidence.json', 'site.json', 'sources.json', 'visual-plan.json', 'media-plan.json', 'media-report.json'].map((name) => load(root(name)))
+  const [manifest, pages, evidence, site, snapshots, visualPlan, mediaPlan, mediaReport, buildReceipt] = await Promise.all(
+    ['manifest.json', 'pages.json', 'evidence.json', 'site.json', 'sources.json', 'visual-plan.json', 'media-plan.json', 'media-report.json', 'receipt.json'].map((name) => load(root(name)))
   );
   const check = (name, value) => {
     if (!validators[name](value)) throw Error(name + ': ' + JSON.stringify(validators[name].errors));
@@ -48,7 +50,7 @@ if (editionRoot) {
     if (!selected || !visualPlan.images.some((entry) => entry.page_id === photo.page_id) ||
         (photo.kind === 'licensed-photo' && (selected.media_kind !== 'licensed-photo' ||
           photo.source_sha256 !== selected.source_sha256 || photo.grant_sha256 !== selected.grant_sha256 ||
-          photo.asset_id !== selected.asset_id || photo.alt !== selected.alt || photo.credit !== selected.credit ||
+          photo.asset_id !== selected.asset_id || photo.rights_sha256 !== selected.rights_sha256 || photo.alt !== selected.alt || photo.credit !== selected.credit ||
           (photo.rights_expires_at || null) !== (selected.expires_at || null))) ||
         (photo.kind !== 'licensed-photo' && (selected.media_kind !== 'generation-requested' ||
           photo.source_sha256 !== null || photo.grant_sha256 !== null))) {
@@ -57,6 +59,12 @@ if (editionRoot) {
     if (photo.kind === 'licensed-photo' && photo.rights_expires_at && Date.parse(photo.rights_expires_at) <= Date.now()) {
       throw Error('Licensed media publication rights expired before build');
     }
+    if (photo.kind === 'licensed-photo') {
+      const { sourceBytes } = await assertCurrentLicensedSelection({
+        asset: selected, enterpriseId: buildReceipt.enterprise_id, mediaRoot: process.env.BUYERSITE_MEDIA_ROOT,
+      });
+      if (createHash('sha256').update(await normalizeLicensedPhoto(sourceBytes)).digest('hex') !== photo.sha256) throw Error('Licensed output differs from its authorized source');
+    }
     const raw = await readFile(root('articles/' + photo.filename));
     const digest = (await import('node:crypto')).createHash('sha256').update(raw).digest('hex');
     if (digest !== photo.sha256) throw Error('Generated hero changed after media review');
@@ -64,7 +72,8 @@ if (editionRoot) {
         !/^[a-f0-9]{64}$/.test(photo.source_sha256 || ''))) {
       throw Error('Licensed photograph is missing provenance or grant hash');
     }
-    if (photo.kind === 'ai-generated' && (!photo.generation_model || !/^[a-f0-9]{64}$/.test(photo.prompt_sha256 || ''))) {
+    if (photo.kind === 'ai-generated' && (!photo.generation_model || !photo.generation_provider ||
+        typeof photo.prompt !== 'string' || createHash('sha256').update(photo.prompt).digest('hex') !== photo.prompt_sha256)) {
       throw Error('Generated media missing image model or prompt digest');
     }
     if (photo.kind !== 'licensed-photo' && !/not (?:a supplier |product )?photograph|conceptual artwork/i.test(photo.caption + ' ' + photo.credit)) {

@@ -1,8 +1,9 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
-import { dirname, isAbsolute, join, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
 import sharp from 'sharp';
 import { renderEditorialArtwork } from './visual-director.mjs';
+import { assertCurrentLicensedSelection } from './media-rights.mjs';
 import { assertPng, generateEditorialPng, makeEditorialPrompt, IMAGE_MODELS } from './image-generator.mjs';
 
 export class MediaRenderError extends Error {
@@ -81,34 +82,11 @@ async function cachedGeneration({ cacheDir, enterpriseId, article, prompt, model
 }
 
 async function licensedBytes({ asset, enterpriseId, mediaRoot }) {
-  if (asset.expires_at && (!/^\d{4}-\d{2}-\d{2}T/.test(asset.expires_at) ||
-      !Number.isFinite(Date.parse(asset.expires_at)) || Date.parse(asset.expires_at) <= Date.now())) {
-    fail('APPROVED_MEDIA_RIGHTS_EXPIRED', 'Publication rights expired or have an invalid expiry');
-  }
-  if (typeof mediaRoot !== 'string' || !isAbsolute(mediaRoot)) fail('APPROVED_MEDIA_ROOT_REQUIRED', 'Configured private absolute media root required for licensed photography');
-  if (typeof enterpriseId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$/.test(enterpriseId)) fail('APPROVED_MEDIA_TENANT_INVALID', 'Unsafe tenant identifier');
-  const root = await realpath(mediaRoot);
-  const tenant = join(root, enterpriseId);
-  const tenantInfo = await lstat(tenant);
-  if (!tenantInfo.isDirectory() || tenantInfo.isSymbolicLink() || (await realpath(tenant)) !== tenant) {
-    fail('APPROVED_MEDIA_TENANT_INVALID', 'Tenant media storage must not be linked');
-  }
-  const grantFile = join(tenant, 'grants', asset.grant_sha256 + '.bin');
-  try {
-    const grantInfo = await lstat(grantFile);
-    if (!grantInfo.isFile() || grantInfo.isSymbolicLink() || grantInfo.size < 32 || grantInfo.size > 2_000_000 ||
-        await realpath(grantFile) !== grantFile || sha256(await readFile(grantFile)) !== asset.grant_sha256) {
-      throw Error('invalid grant');
-    }
-  } catch {
-    fail('APPROVED_MEDIA_GRANT_MISMATCH', 'Retained tenant grant bytes are missing or changed');
-  }
-  const file = resolve(tenant, asset.source_sha256 + '.bin');
-  if (!file.startsWith(tenant + sep)) fail('APPROVED_MEDIA_PATH_INVALID', 'Cross-tenant path blocked');
-  const info = await lstat(file);
-  if (!info.isFile() || info.isSymbolicLink() || info.size > 12_000_000) fail('APPROVED_MEDIA_INVALID', 'Private asset must be a bounded regular file');
-  const bytes = await readFile(file);
-  if (sha256(bytes) !== asset.source_sha256) fail('APPROVED_MEDIA_HASH_MISMATCH', 'Media bytes do not match frozen asset hash');
+  const { sourceBytes } = await assertCurrentLicensedSelection({ asset, enterpriseId, mediaRoot });
+  return normalizeLicensedPhoto(sourceBytes);
+}
+
+export async function normalizeLicensedPhoto(bytes) {
   const meta = await sharp(bytes, { limitInputPixels: 40_000_000 }).metadata().catch(() => null);
   if (!meta || !['png', 'jpeg', 'webp'].includes(meta.format) ||
       (meta.pages || 1) !== 1 || meta.width < 640 || meta.height < 400 ||
@@ -152,7 +130,7 @@ export async function materializeEditionMedia({
     if (!planned || !drawing || drawing.asset !== 'hero-' + article.slug + '.png') {
       fail('MEDIA_PLAN_INVALID', 'Page is not bound to its own approved hero');
     }
-    let kind, bytes, promptSha = null, model = null;
+    let kind, bytes, promptSha = null, model = null, prompt = null;
     if (planned.media_kind === 'licensed-photo') {
       if (!HEX.test(planned.source_sha256 || '') || !HEX.test(planned.grant_sha256 || '') ||
           typeof planned.alt !== 'string' || !planned.alt.trim() || typeof planned.credit !== 'string' || !planned.credit.trim()) {
@@ -162,7 +140,7 @@ export async function materializeEditionMedia({
       kind = 'licensed-photo';
     } else if (planned.media_kind === 'generation-requested') {
       if (aiGenerationAuthorized === true && apiKey && generatedCount < maxAiImages) {
-        const prompt = makeEditorialPrompt({ title: article.title, pageType: article.pageType, direction: visualPlan.art_direction });
+        prompt = makeEditorialPrompt({ title: article.title, pageType: article.pageType, direction: visualPlan.art_direction });
         const result = await cachedGeneration({
           cacheDir: mediaCacheDir || join(dirname(articlesDir), '.media-cache'),
           enterpriseId, article, prompt, model: imageModel, apiKey, imageGenerator,
@@ -201,14 +179,17 @@ export async function materializeEditionMedia({
       grant_sha256: kind === 'licensed-photo' ? planned.grant_sha256 : null,
       asset_id: kind === 'licensed-photo' ? planned.asset_id : null,
       rights_expires_at: kind === 'licensed-photo' ? planned.expires_at : null,
+      rights_sha256: kind === 'licensed-photo' ? planned.rights_sha256 : null,
       reused_from_page_id: reusedFrom,
       generation_model: model,
+      generation_provider: model ? 'openai-images' : null,
+      prompt,
       prompt_sha256: promptSha,
       alt: kind === 'licensed-photo' ? planned.alt : 'Conceptual editorial illustration for ' + article.title,
       credit: kind === 'licensed-photo' ? planned.credit :
         kind === 'ai-generated' ? 'AI-generated editorial concept illustration; not product photography' :
           'Original abstract editorial artwork; not product photography',
-      caption: kind === 'licensed-photo' ? 'Approved supplier-supplied editorial photo. Product facts still require citations.' :
+      caption: kind === 'licensed-photo' ? 'Licensed editorial image, used with permission. Product facts still require citations.' :
         'Conceptual artwork only. Not a depiction of any supplier product, factory or certification.',
     });
   }

@@ -10,6 +10,7 @@ import ThemeToggle from '../components/common/ThemeToggle.astro';
 import JourneyAnalytics from '../components/buyer/JourneyAnalytics.astro';
 import { features, nav, site } from '../config';
 import { t } from '../i18n';
+import { getBuyerBrief } from '../lib/buyer-brief';
 
 // `nameplate` prints the wordmark in the sticky bar. The home page sets it false: there the
 // wordmark is the cover, set across the photograph, and a second small one above it reads as
@@ -20,6 +21,8 @@ const locale = Astro.currentLocale ?? site.locale;
 const ui = t(locale);
 const year = new Date().getFullYear();
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const pageBrief = getBuyerBrief(path);
+const enquiryHref = pageBrief ? '/enquiry?from=' + encodeURIComponent(pageBrief.page_path) : '/enquiry';
 const themeCredit = 'https://ondelva.com/themes/halftone';
 ---
 
@@ -67,8 +70,8 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
 
     {/* One line, hairline rule under it. The desks are the navigation; there is nothing else
         in it, because everything else about this magazine is on the page below. */}
-    <header class="bg-background border-border sticky top-0 z-40 border-b">
-      <div class="max-w-wide mx-auto flex flex-wrap items-baseline gap-x-5 gap-y-1 px-4 py-2.5">
+    <header class="buyer-header bg-background border-border sticky top-0 z-40 border-b">
+      <div class="buyer-header-inner max-w-wide mx-auto flex flex-wrap items-baseline gap-x-5 gap-y-1 px-4 py-2.5">
         {nameplate && (
           <a
             class="font-ui text-primary shrink-0 text-lg leading-none font-black tracking-[-0.035em] no-underline"
@@ -77,7 +80,7 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
             {site.name}
           </a>
         )}
-        <div class="flex w-full flex-wrap items-baseline gap-x-5 gap-y-1 sm:ms-auto sm:w-auto sm:justify-end">
+        <div class="buyer-header-menu flex w-full flex-wrap items-baseline gap-x-5 gap-y-1 sm:ms-auto sm:w-auto sm:justify-end">
           <nav aria-label={ui.desks} class="font-ui flex flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
             {nav.header.map((item) => (
               <a
@@ -93,11 +96,11 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
             ))}
           </nav>
           <a class="header-action" href="/search" aria-label="Search this edition">Search</a>
-          <a class="header-action" href="/enquiry">
-            {ui.prepareEnquiry}
+          <a class="header-action" href={enquiryHref} aria-label={ui.prepareEnquiry}>
+            <span class="header-label-full">{ui.prepareEnquiry}</span><span class="header-label-short" aria-hidden="true">{ui.enquiryNav}</span>
           </a>
-          <button class="header-action" type="button" data-assistant-open>
-            {ui.askSourcing}
+          <button class="header-action" type="button" data-assistant-open aria-label={ui.askSourcing}>
+            <span class="header-label-full">{ui.askSourcing}</span><span class="header-label-short" aria-hidden="true">{ui.sourcingNav}</span>
           </button>
           {features.darkMode && <ThemeToggle />}
         </div>

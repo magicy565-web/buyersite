@@ -12,7 +12,7 @@ const now = new Date('2026-11-18T13:30:00.000Z');
 function setup(t) {
   const sqlite = new DatabaseSync(':memory:');
   t.after(() => sqlite.close());
-  for (const file of ['0000_buyer_enquiries.sql', '0001_buyer_events.sql']) sqlite.exec(readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'));
+  for (const file of ['0000_buyer_enquiries.sql', '0001_buyer_events.sql', '0002_enquiry_context.sql']) sqlite.exec(readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'));
   const DB = {
     prepare(sql) {
       let values = [];
@@ -31,7 +31,7 @@ function setup(t) {
   return { sqlite, env: { DB, BUYERSITE_ADMIN_TOKEN: token } };
 }
 
-function addEnquiry(sqlite, { site = config.siteSlug, date = now.toISOString(), status = 'new', path = '/enquiry' } = {}) {
+function addEnquiry(sqlite, { site = config.siteSlug, date = now.toISOString(), status = 'new', path = '/enquiry', article = null, landing = null, campaign = {}, method = null } = {}) {
   const id = crypto.randomUUID();
   sqlite.prepare(`INSERT INTO buyer_enquiries
     (id, site_slug, idempotency_key_hash, payload_hash, created_at, updated_at, status, email, name, company,
@@ -39,6 +39,8 @@ function addEnquiry(sqlite, { site = config.siteSlug, date = now.toISOString(), 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     .run(id, site, id, 'private-payload-hash', date, date, status, 'never-return@example.test', 'PRIVATE_CONTACT_NAME',
       'PRIVATE_COMPANY', 'PRIVATE_BRIEF', 'PRIVATE_QUANTITY', 'PRIVATE_APPLICATION', 'PRIVATE_DELIVERY', path, '{}', 'buyer-enquiry-v1', date);
+  sqlite.prepare('UPDATE buyer_enquiries SET originating_page_path = ?, landing_page_path = ?, attribution_json = ?, attribution_method = ? WHERE id = ?')
+    .run(article, landing, JSON.stringify(campaign), method, id);
 }
 
 function request(query = '', auth = true, method = 'GET') {
@@ -95,4 +97,24 @@ test('feedback requires owner auth, bounds calendar windows to 90 days and handl
   // A malformed adapter result must fail, rather than masquerading as zero demand.
   const broken = { ...env, DB: { ...env.DB, async batch() { return [{ success: true }]; } } };
   assert.equal((await handleFeedback(request(), broken, config, { now })).status, 503);
+});
+
+test('context report distinguishes selected article, reported landing and bounded campaign while suppressing unsafe legacy labels', async (t) => {
+  const { sqlite, env } = setup(t);
+  addEnquiry(sqlite, { article: '/materials/wool', landing: '/', campaign: { source: 'newsletter', medium: 'email', campaign: 'wool-launch' }, method: 'reported-session' });
+  addEnquiry(sqlite, { article: '/materials/wool', landing: '/materials/wool', campaign: { source: 'newsletter', medium: 'email', campaign: 'wool-launch' }, method: 'reported-session', status: 'qualified' });
+  addEnquiry(sqlite, { article: '/suppliers/mill', method: 'withheld', status: 'archived' });
+  addEnquiry(sqlite, { campaign: { source: 'PRIVATE_CAMPAIGN@example.test' } });
+  const response = await handleFeedback(request(), env, config, { now });
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.deepEqual(data.enquiries.counts, { total: 4, new: 2, qualified: 1, archived: 1 });
+  assert.equal(data.enquiries.by_originating_article.find((row) => row.path === '/materials/wool').total, 2);
+  assert.equal(data.enquiries.by_landing_page.find((row) => row.path === '/').total, 1);
+  assert.equal(data.enquiries.by_campaign.find((row) => row.source === 'newsletter').total, 2);
+  assert.equal(data.enquiries.by_campaign.find((row) => !row.source).total, 2);
+  assert.equal(data.enquiries.by_attribution_method.find((row) => row.method === 'withheld').archived, 1);
+  assert.match(data.definitions.attribution, /not independently verified/);
+  assert.match(data.definitions.originating_article, /not proof of reading/);
+  assert.doesNotMatch(JSON.stringify(data), /PRIVATE_|never-return|private-payload/);
 });

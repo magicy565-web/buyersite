@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/common/PageHead.astro';
+import { loadBuyerKnowledge } from '../lib/buyer-knowledge';
+const knowledge = loadBuyerKnowledge();
+---
+<Base title="The source notebook" description="Trace each published specification to its source, capture date and buying brief.">
+  <article class="max-w-content mx-auto px-4 py-12 source-notebook">
+    <PageHead title="The source notebook" lede="What the source says. When we recorded it. What still needs an answer." />
+    <p class="mt-6">These are supplier statements for the items and policies named below. They are not an independent product test, supplier audit or current quotation. A capture date records when a source was read; it does not guarantee that its terms still apply.</p>
+    <p class="mt-4"><a href="/buyer-data.json">Read the structured edition data</a> · <a href="/colophon">Editorial and image policy</a></p>
+    <div class="mt-10">
+      {knowledge.evidence.length === 0 && <p>No source records in this edition have been cleared for public distribution. Article notes remain part of the private review.</p>}
+      {knowledge.evidence.map((record) => (
+        <section id={record.evidence_id} class="source-entry">
+          <h2>{record.claim}</h2>
+          <p class="source-entry-value">{record.value}</p>
+          <dl>
+            <div><dt>Evidence status</dt><dd>{record.status.replaceAll('-', ' ')} · {record.verification.replaceAll('-', ' ')}</dd></div>
+            <div><dt>Source captured</dt><dd>{record.captured_at ? <time datetime={record.captured_at}>{record.captured_at.slice(0, 10)}</time> : 'Date not recorded'}</dd></div>
+            <div><dt>Valid until</dt><dd>{record.valid_until ? <time datetime={record.valid_until}>{record.valid_until.slice(0, 10)}</time> : 'No validity date supplied; confirm before buying'}</dd></div>
+          </dl>
+          <p><a href={record.source_url!} rel="noopener noreferrer">Open the original source</a></p>
+          <ul>{knowledge.briefs.filter((brief) => brief.evidence_ids.includes(record.evidence_id)).map((brief) => <li><a href={brief.page_path}>{brief.title}</a></li>)}</ul>
+        </section>
+      ))}
+    </div>
+  </article>
+</Base>
+<style>
+  .source-notebook { line-height: 1.65; }
+  .source-notebook a { text-decoration: underline; text-underline-offset: .2em; }
+  .source-entry { border-top: 2px solid var(--foreground); padding-block: 1.75rem 2.5rem; scroll-margin-top: 8rem; }
+  .source-entry h2 { font-family: var(--font-heading); font-weight: 700; font-size: 1.45rem; line-height: 1.2; }
+  .source-entry-value { font-size: 1.25rem; margin-block: .75rem 1.5rem; }
+  .source-entry dl > div { border-bottom: 1px solid var(--border); padding-block: .75rem; display: grid; grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr); gap: 1rem; }
+  .source-entry dt { font-family: var(--font-heading); font-size: .875rem; }
+  .source-entry dd { overflow-wrap: anywhere; }
+  .source-entry > p:not(.source-entry-value), .source-entry ul { margin-top: 1rem; }
+  @media (max-width: 480px) { .source-entry dl > div { grid-template-columns: 1fr; gap: .2rem; } }
+</style>

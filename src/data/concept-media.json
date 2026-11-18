@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "created_at": "2026-11-18T13:13:51.381Z",
   "generation_provider": "ChatGPT image_gen",
   "model": "not exposed by built-in tool",
@@ -15,6 +15,29 @@
       "sha256": "12dfecbbf033210eaad6eeac9d9dd6fc4f39d3b3e4e849e61d5af59d2b71502a",
       "prompt_sha256": "c2c7cca543ced4e107360c3cdfd66c22bd4191c976727aa64d86785ce8e9076e",
       "review": {
+        "policy": "buyer-media-review/v1",
+        "binding_sha256": "498c22cb7360739e775cfb78d82e5c677ad8f726a5ae2bd85e064c03ed18dc9a",
+        "image_sha256": "12dfecbbf033210eaad6eeac9d9dd6fc4f39d3b3e4e849e61d5af59d2b71502a",
+        "page_id": "silver-wool-fabric",
+        "path": "/materials/silver-wool-fabric/",
+        "decision": "pass",
+        "reviewer_type": "ai",
+        "method": "interactive-vision",
+        "reviewer": "ChatGPT",
+        "model": "ChatGPT interactive vision; deployed model identifier not exposed",
+        "reviewed_at": "2026-11-18T16:21:07.357Z",
+        "evidence_type": "observed",
+        "human_approval_required": false,
+        "assessment": {
+          "decision": "pass",
+          "visual_quality": 5,
+          "contextual_fit": 5,
+          "authenticity": 5,
+          "issues": []
+        },
+        "notes": "Direct visual inspection of the original PNG in ChatGPT: grey textile folds have coherent texture and lighting, no text, trademark, watermark or technical claims. Approved only as an explicitly labelled concept study; it does not establish supplier material appearance or composition."
+      },
+      "prior_review": {
         "status": "accepted-concept-image",
         "reviewer": "ChatGPT",
         "method": "direct visual inspection of generated image",
@@ -31,6 +54,29 @@
       "sha256": "27aca4a44a029ab2b00da7517669e03b739575a3d354352a53c021409cdc32c4",
       "prompt_sha256": "81ea1dc4a827b50ab108766a643c61e543df32cb78a37c00175b6c4e7766235f",
       "review": {
+        "policy": "buyer-media-review/v1",
+        "binding_sha256": "5efe1427b6721c9bbb5995583758a570776d0e20a0c857d1ebaf646c261a2cbc",
+        "image_sha256": "27aca4a44a029ab2b00da7517669e03b739575a3d354352a53c021409cdc32c4",
+        "page_id": "burel-factory",
+        "path": "/suppliers/burel-factory/",
+        "decision": "pass",
+        "reviewer_type": "ai",
+        "method": "interactive-vision",
+        "reviewer": "ChatGPT",
+        "model": "ChatGPT interactive vision; deployed model identifier not exposed",
+        "reviewed_at": "2026-11-18T16:21:07.359Z",
+        "evidence_type": "observed",
+        "human_approval_required": false,
+        "assessment": {
+          "decision": "pass",
+          "visual_quality": 5,
+          "contextual_fit": 5,
+          "authenticity": 5,
+          "issues": []
+        },
+        "notes": "Direct visual inspection of the original PNG in ChatGPT: unbranded wooden shuttle and grey threads, no people, building, company identity, certificates or text. Approved as a conceptual weaving study, not evidence of this supplier's process or factory."
+      },
+      "prior_review": {
         "status": "accepted-concept-image",
         "reviewer": "ChatGPT",
         "method": "direct visual inspection of generated image",
@@ -47,6 +93,29 @@
       "sha256": "f194cb082762fa1beee7d7d67a16c68bc52163cb272aa27ac12bedf2f59df796",
       "prompt_sha256": "99ed3f78a02a13610c048d8dfb18f378dd83e93291fd4b23cfe89a9a65993c9d",
       "review": {
+        "policy": "buyer-media-review/v1",
+        "binding_sha256": "cab79236e7646a889611bd45a7a369d35ef5836ccc57e507112f4f835ed8cf12",
+        "image_sha256": "f194cb082762fa1beee7d7d67a16c68bc52163cb272aa27ac12bedf2f59df796",
+        "page_id": "burel-project-brief",
+        "path": "/guides/burel-project-brief/",
+        "decision": "pass",
+        "reviewer_type": "ai",
+        "method": "interactive-vision",
+        "reviewer": "ChatGPT",
+        "model": "ChatGPT interactive vision; deployed model identifier not exposed",
+        "reviewed_at": "2026-11-18T16:21:07.359Z",
+        "evidence_type": "observed",
+        "human_approval_required": false,
+        "assessment": {
+          "decision": "pass",
+          "visual_quality": 5,
+          "contextual_fit": 5,
+          "authenticity": 5,
+          "issues": []
+        },
+        "notes": "Direct visual inspection of the original PNG in ChatGPT: three unbranded conceptual swatches, a blank sheet and unmarked straightedge; no fabricated measurements, specifications, logos or certificates. Approved as a buying-guide concept, not a representation of supplied samples."
+      },
+      "prior_review": {
         "status": "accepted-concept-image",
         "reviewer": "ChatGPT",
         "method": "direct visual inspection of generated image",

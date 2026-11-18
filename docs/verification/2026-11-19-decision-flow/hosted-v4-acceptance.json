@@ -1,0 +1,136 @@
+{
+  "checked_at": "2026-11-18T16:57:29.483Z",
+  "scope": "Hosted Cloudflare Worker and native Sites D1 read-back; synthetic release QA only",
+  "deployment": {
+    "project_id": "appgprj_6afda3077ba88191b52925a23dc9e3e1",
+    "id": "appgdep_6afdd7ed68f481918893cdec23fc8cc8",
+    "version_id": "appgprj_6afda3077ba88191b52925a23dc9e3e1~appgver_e3f1e535268881919da1d6c541c7709f",
+    "version_number": 4,
+    "status": "succeeded",
+    "url": "https://buyersite.magicy565.chatgpt.site",
+    "source_commit": "0728ea64bb00f261404b9ccc0815bc380febc3eb",
+    "source_sha256": "76fdf7b32ede89a993d33e28c57b2e3c759d6d8fbf8289646035ac2a51c97272"
+  },
+  "database": {
+    "binding": "DB",
+    "table": "buyer_enquiries",
+    "new_columns": [
+      "context_json",
+      "originating_page_path",
+      "landing_page_path",
+      "attribution_method"
+    ],
+    "columns_verified": [
+      "id",
+      "site_slug",
+      "idempotency_key_hash",
+      "payload_hash",
+      "created_at",
+      "updated_at",
+      "status",
+      "email",
+      "name",
+      "company",
+      "material",
+      "quantity",
+      "application",
+      "delivery",
+      "page_path",
+      "attribution_json",
+      "consent_version",
+      "consent_at",
+      "context_json",
+      "originating_page_path",
+      "landing_page_path",
+      "attribution_method"
+    ],
+    "legacy_rows_preserved": [
+      {
+        "id": "309a7625-b82f-4108-b869-e52c6aefcde1",
+        "status": "archived",
+        "context_json": null
+      },
+      {
+        "id": "ef484f50-160a-4bd0-8021-b05c460b95fd",
+        "status": "archived",
+        "context_json": null
+      }
+    ],
+    "projection_truncated": false
+  },
+  "receipt": {
+    "id": "75891cf5-889d-48c1-b597-773cf972f7ce",
+    "created_at": "2026-11-18T16:55:11.535Z",
+    "status": "new",
+    "rows_for_receipt": 1,
+    "originating_page_path": "/materials/silver-wool-fabric",
+    "landing_page_path": "/",
+    "attribution_method": "reported-session",
+    "context": {
+      "page_path": "/materials/silver-wool-fabric",
+      "title": "Silver wool fabric: establish the specification",
+      "product_name": "Burel Factory Silver wool fabric",
+      "product_id": "burel-silver",
+      "supplier_id": "burel-factory",
+      "source_url": "https://burelfactory.com/en/products/prata",
+      "knowledge_revision": "a6f97692b74eb66f0858b667e2e50cfc106b77f89f636e5353e68beb61b9d2fd",
+      "evidence_ids": [
+        "silver-composition",
+        "silver-width",
+        "silver-weight"
+      ],
+      "unconfirmed": [
+        {
+          "id": "weight-basis",
+          "label": "Weight basis and usable width",
+          "detail": "The source writes 800 g/m. Confirm the measurement basis, tolerance and usable width on the current technical sheet."
+        },
+        {
+          "id": "application-fit",
+          "label": "Suitability for your project",
+          "detail": "No application-specific performance or test results are verified in this review."
+        },
+        {
+          "id": "trade-terms",
+          "label": "MOQ and trade price",
+          "detail": "Request the order minimum, price, currency and sample charges for your quantity."
+        },
+        {
+          "id": "delivery",
+          "label": "Stock and delivery",
+          "detail": "Availability, production lead time and delivery to your destination are unconfirmed."
+        }
+      ],
+      "questions": [
+        {
+          "id": "technical-sheet",
+          "label": "Confirm the fabric specification",
+          "prompt": "Please share the current technical sheet for Silver wool fabric, including composition, usable width, weight measurement basis and tolerances. The public page lists 800 g/m; please confirm what that unit refers to."
+        }
+      ]
+    },
+    "restored_after_reload": true,
+    "supplier_sent": false,
+    "synthetic": true,
+    "archived": false
+  },
+  "capabilities": {
+    "source_guide": "LIVE_VERIFIED",
+    "enquiries": "LIVE_D1_VERIFIED",
+    "live_ai": "UNCONFIGURED"
+  },
+  "limits": {
+    "authenticated_admin_api": "Not re-tested: the existing owner token was not available to this session; no credential was rotated.",
+    "live_same_key_retry": "Not repeated for the browser-generated key; actual SQLite tests cover idempotency and legacy replay.",
+    "test_archival": "QA row remains new, explicitly labelled synthetic and do not contact; it is not qualified demand.",
+    "authenticated_aggregate_query": "Real SQL tests passed locally; hosted owner-authenticated report not re-tested."
+  },
+  "qualified_enquiries_in_bounded_read": 0,
+  "public_browser": {
+    "search_query": "wool",
+    "result_count": 2,
+    "sources_url": "https://buyersite.magicy565.chatgpt.site/sources/",
+    "homepage_url": "https://buyersite.magicy565.chatgpt.site/",
+    "homepage_deliverable": true
+  }
+}

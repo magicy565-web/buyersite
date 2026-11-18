@@ -4,7 +4,10 @@ import { conversion } from '../../i18n/conversion';
 import { site } from '../../config';
 import SourcingAssistant from './SourcingAssistant';
 import '../../styles/conversion.css';
+import '../../styles/sourcing-desk.css';
+import { loadBuyerBriefs } from '../../lib/buyer-brief';
 const ui = t(Astro.currentLocale);
+const briefs = loadBuyerBriefs();
 ---
 <button type="button" data-assistant-open class="buyer-action">{ui.askSourcing}</button>
 <dialog id="buyer-assistant" class="buyer-dialog sourcing-dialog" aria-labelledby="assistant-title" data-site-slug={site.slug}>
@@ -14,7 +17,7 @@ const ui = t(Astro.currentLocale);
       <button type="submit" class="sourcing-close" aria-label={conversion.close}><span aria-hidden="true">×</span></button>
     </form>
   </div>
-  <SourcingAssistant client:visible siteSlug={site.slug} guideHref={'/guides/' + site.guideSlug} enabled={site.enquiriesEnabled} />
+  <SourcingAssistant client:visible siteSlug={site.slug} guideHref={'/guides/' + site.guideSlug} enabled={site.enquiriesEnabled} briefs={briefs} initialPath={Astro.url.pathname} />
 </dialog>
 <script>
   const panel = document.querySelector<HTMLDialogElement>('#buyer-assistant');

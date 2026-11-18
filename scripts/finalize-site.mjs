@@ -21,7 +21,8 @@ try{
 if(edition){console.log('Finalized private edition with isolated local search.');process.exit(0);}
 const publication=JSON.parse(await readFile('src/data/publication.json','utf8'));
 const manifest=JSON.parse(await readFile('.generated/site-manifest.json','utf8'));
-const config={siteSlug:manifest.site_slug,siteName:manifest.publication.name,publication:publication.mode,enquiriesEnabled:publication.enquiriesEnabled,analyticsEnabled:publication.analyticsEnabled,origin:publication.origin,allowedPaths:[...pages.map(p=>p.path),'/enquiry','/search','/colophon','/privacy','/materials','/suppliers','/guides']};
+const knowledge=JSON.parse(await readFile('dist/buyer-data.json','utf8'));
+const config={siteSlug:manifest.site_slug,siteName:manifest.publication.name,publication:publication.mode,enquiriesEnabled:publication.enquiriesEnabled,analyticsEnabled:publication.analyticsEnabled,origin:publication.origin,allowedPaths:[...pages.map(p=>p.path),'/enquiry','/search','/colophon','/privacy','/sources','/materials','/suppliers','/guides'],buyerBriefs:knowledge.briefs,knowledgeRevision:knowledge.revision};
 config.sourceRecords=pages.filter(p=>p.page_type!=='home').flatMap(page=>page.evidence_refs.map(id=>{
   const record=evidence.find(e=>e.evidence_id===id&&e.publication_permission==='approved');
   return record?{id:record.evidence_id,title:page.title,claim:record.claim,value:record.value,source_url:record.source_url,page_path:page.path,status:record.status,captured_at:record.captured_at}:null;

@@ -3,6 +3,7 @@
 import type { ImageMetadata } from 'astro';
 import { seo, site } from '../../config';
 import { cardSize, shareCard } from '../../lib/content';
+import { buyerStructuredData } from '../../lib/buyer-knowledge';
 
 interface Props {
   title?: string; // site name only when omitted
@@ -39,7 +40,7 @@ const schema = [
     inLanguage: locale,
     publisher: { '@type': seo.jsonLd.type, name: seo.jsonLd.name, url: home },
   },
-  ...jsonLd.map((d) => ({ '@context': 'https://schema.org', ...d })),
+  ...[...jsonLd, ...buyerStructuredData(Astro.url.pathname)].map((d) => ({ '@context': 'https://schema.org', ...d })),
 ];
 // prevent </script> injection
 const schemaJson = JSON.stringify(schema).replace(/</g, '\\u003c');
@@ -52,6 +53,7 @@ const schemaJson = JSON.stringify(schema).replace(/</g, '\\u003c');
 <link rel="canonical" href={canonical} />
 <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
 <link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="application/json" title="Source-backed buying notes" href="/buyer-data.json" />
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={site.name} />
