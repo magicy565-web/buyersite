@@ -107,6 +107,10 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
   const selectedProducts = job.input.productIds.map((id) =>
     products.find((product) => product.id === id),
   );
+  if (Array.isArray(snapshot.mediaAssets) && snapshot.mediaAssets.length > 0 &&
+      !(snapshot.mediaUsageAuthorized === true && job.input?.allowApprovedMedia === true)) {
+    fail('STUDIO_MEDIA_PERMISSION_REQUIRED', 'Use of licensed images requires frozen source and server-owned permission');
+  }
   const sourceBinding = {
     job_id: job.id,
     enterprise_id: job.enterpriseId,
@@ -134,8 +138,13 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
           description,
         })),
       },
+      media_assets: snapshot.mediaUsageAuthorized === true && job.input?.allowApprovedMedia === true
+        ? snapshot.mediaAssets || [] : [],
     },
-    options,
+    {
+      ...options,
+      aiGenerationAuthorized: snapshot.mediaGenerationAuthorized === true && job.input?.allowAiGeneration === true,
+    },
   );
   return { ...result, source_binding: sourceBinding };
 }
@@ -157,7 +166,7 @@ function defaultSlug(enterprise) {
 /** The caller supplies an authenticated native-library export, never a browser-supplied tenant header. */
 export async function createSiteFromEnterprise(
   exportData,
-  { capture = captureCompanyHomepage, outputBase } = {},
+  { capture = captureCompanyHomepage, outputBase, ...renderOptions } = {},
 ) {
   if (!exportData || !exportData.enterprise || !exportData.enterprise.company) {
     throw new Error('Missing authenticated enterprise export');
@@ -176,8 +185,9 @@ export async function createSiteFromEnterprise(
       products: exportData.enterprise.products || [],
     },
     website_pages: [snapshot],
+    media_assets: exportData.media_assets || [],
   };
-  return writeSitePreview(request, outputBase);
+  return writeSitePreview(request, outputBase, renderOptions);
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const inputPath = process.argv[2];
