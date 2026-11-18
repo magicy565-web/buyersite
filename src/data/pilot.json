@@ -66,12 +66,5 @@
   ],
   "product_id": "burel-silver",
   "supplier_id": "burel-factory",
-  "media": [
-    {
-      "url": "https://cdn.shopify.com/s/files/1/0550/0964/0503/files/prata-botanica2.jpg?v=1710519014",
-      "file": "silver.jpg",
-      "source_url": "https://burelfactory.com/en/products/prata",
-      "permission": "public-source-review-only"
-    }
-  ]
+  "media": []
 }

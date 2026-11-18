@@ -20,6 +20,7 @@ const {
   image = site.defaultOgImage,
   type = 'website',
   jsonLd = [],
+  noindex = false,
 } = Astro.props;
 
 const fullTitle = title ? seo.titleTemplate.replace('%s', title) : site.name;
@@ -46,7 +47,8 @@ const schemaJson = JSON.stringify(schema).replace(/</g, '\\u003c');
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<meta name="robots" content="noindex, nofollow" />
+<meta name="robots" content={site.privatePreview || noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+{site.googleSiteVerification && <meta name="google-site-verification" content={site.googleSiteVerification} />}
 <link rel="canonical" href={canonical} />
 <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
 <link rel="sitemap" href="/sitemap-index.xml" />

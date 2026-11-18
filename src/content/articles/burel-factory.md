@@ -4,10 +4,11 @@ deck: "A supplier profile for material buyers reviewing wool textiles and interi
 desk: "suppliers"
 byline: ["editorial"]
 date: "2026-11-12"
-hero: "../../assets/review/silver.jpg"
-heroAlt: "Silver wool fabric shown on the supplier product page"
-heroCredit: "Burel Factory product photography \u2014 private review only"
-format: "report"
+hero: "../../assets/concepts/weaving-study.png"
+heroAlt: "AI concept illustration of a wooden shuttle and yarn; not the supplier mill"
+heroCredit: "AI-generated editorial concept · Buyersite"
+heroCaption: "AI-generated concept illustration. It does not depict this supplier's product or factory."
+format: "photoessay"
 featured: false
 evidenceRefs: ["mill-location"]
 pageType: "supplier-profile"

@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/common/PageHead.astro';
+---
+<Base title="Search the edition" noindex>
+  <section class="max-w-content mx-auto px-4 py-12" data-pagefind-ignore>
+    <PageHead title="Find a material, source or buying question" lede="Search the articles and source notes in this edition." />
+    <form id="edition-search" role="search" class="mt-8">
+      <label for="search-query">Search this edition</label>
+      <div class="search-controls"><input id="search-query" name="q" type="search" maxlength="120" autocomplete="off" placeholder="Try wool, samples or delivery" required /><button type="submit" class="buyer-action">Search</button></div>
+    </form>
+    <p id="search-status" class="mt-6" role="status"></p>
+    <ol id="search-results" class="search-results"></ol>
+    <noscript>Search needs JavaScript. <a href="/">Browse the edition</a> or <a href="/enquiry">prepare a sourcing brief</a>.</noscript>
+  </section>
+</Base>
+<style>
+  .search-controls{display:flex;gap:.6rem;margin-top:.6rem}.search-controls input{width:100%;min-width:0;border:1px solid currentColor;background:var(--background);padding:.8rem;color:var(--foreground)}.search-results{list-style:none;padding:0}.search-results :global(li){padding:1.5rem 0;border-bottom:1px solid var(--border)}.search-results :global(a){font-family:var(--font-heading);font-size:1.3rem;font-weight:700}.search-results :global(p){margin-top:.6rem}
+  @media(max-width:400px){.search-controls{flex-direction:column}}
+</style>
+<script is:inline type="module">
+  const form=document.querySelector('#edition-search');
+  const input=document.querySelector('#search-query');
+  const status=document.querySelector('#search-status');
+  const results=document.querySelector('#search-results');
+  let index;let sequence=0;
+  async function search(){
+    const q=input.value.trim();if(!q)return;const run=++sequence;
+    status.textContent='Searching…';results.replaceChildren();
+    try{
+      const modulePath='/pagefind/pagefind.js';
+      index??=await import(/* @vite-ignore */ modulePath);
+      const response=await index.search(q);const hits=await Promise.all(response.results.slice(0,12).map(r=>r.data()));
+      if(run!==sequence)return;
+      status.textContent=hits.length ? `${response.results.length} matching ${response.results.length===1?'article':'articles'}.` : 'No articles matched. Try a material name or a shorter phrase.';
+      for(const hit of hits){
+        const url=new URL(hit.url,location.origin);if(url.origin!==location.origin)continue;
+        const li=document.createElement('li');const a=document.createElement('a');a.href=url.pathname;a.textContent=hit.meta.title||'Read article';
+        const p=document.createElement('p');const parsed=new DOMParser().parseFromString(hit.excerpt,'text/html');p.textContent=parsed.body.textContent;
+        li.append(a,p);results.append(li);
+      }
+      window.dispatchEvent(new CustomEvent('buyersite:event',{detail:{name:'search_used'}}));
+    }catch{status.textContent='Search is available on the published edition. You can browse the articles from the cover.';}
+  }
+  form.addEventListener('submit',e=>{e.preventDefault();void search();});
+  const initial=new URLSearchParams(location.search).get('q');if(initial){input.value=initial.slice(0,120);void search();}
+</script>

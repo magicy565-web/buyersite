@@ -1,0 +1,205 @@
+{
+  "schema_version": "buyersite-editorial-release-v1",
+  "status": "APPROVED_EDITORIAL_RELEASE",
+  "reviewed_at": "2026-11-18T13:44:36.100Z",
+  "reviewer": {
+    "kind": "ai_interactive_review",
+    "name": "ChatGPT",
+    "scope": "Direct inspection of generated images, rendered browser screenshots, accessibility states and factual source notes. This is not a fabricated Responses API verdict or human sign-off."
+  },
+  "source_commit_reviewed": "d1947029dcab5d5f00d46fbdf63ec89a57c63ad2",
+  "source_sha256": "73e02c0d5cbc059556f9f65712d9619c1f073e7548462596312bceb9ed96c2ed",
+  "artifact_sha256_reviewed": "9fb875c998852b94fe4d1ec8dfd9f72609fe700d93f5a53478e0c1471f33ac44",
+  "visual_review": {
+    "complete": true,
+    "decision": "pass",
+    "unresolved_blocking_findings": 0,
+    "reviewed_paths": [
+      "/",
+      "/materials/silver-wool-fabric/",
+      "/suppliers/burel-factory/",
+      "/guides/burel-project-brief/",
+      "/enquiry/",
+      "/search/",
+      "/colophon/",
+      "/privacy/"
+    ],
+    "coverage": "Desktop rendered views for all listed routes; narrow responsive review for home, all three articles, enquiry and assistant. 360 px iframe with 345 px content width due to the browser scrollbar; no device emulation claimed.",
+    "checks": [
+      "Image crop, labels and page bindings",
+      "Readable type and source notes",
+      "No horizontal overflow on reviewed narrow layouts",
+      "Enquiry input, consent and truthful saved receipt",
+      "Pagefind search returned two wool-related articles",
+      "Source guide returned exact cited facts, explicitly not AI chat",
+      "Assistant dialog opens, closes and restores focus"
+    ],
+    "resolved_findings": [
+      "Search module was emitted with an unresolved preload symbol; inline native module imports repaired and successful search observed."
+    ],
+    "screenshots": [
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/assistant-mobile.jpg",
+        "sha256": "7640fdf7a98cf5b746872f2e14ad27b62d109d75756a660c43c308f78eae13c8"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/colophon-desktop.jpg",
+        "sha256": "b67004db0a4240c6dd520f5ac3b3166caa402be52adad3e38c3ba4fb2ebf5503"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/enquiry-mobile-fields.jpg",
+        "sha256": "74e836973219b01900c7c1b5e75695e9f2bdef3620bb6cd372db4ab30ccba9c9"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/enquiry-mobile.jpg",
+        "sha256": "c6e884cc4311641be9eff10dd3fd7f53f6e884d62f7452c81f96b5001a50d13d"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/enquiry-receipt-local.jpg",
+        "sha256": "0b67afd2b617f7bdb3a5a5f6e6fca756db36ce5de74a326426e5e4748987dfea"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/guide-desktop.jpg",
+        "sha256": "78915122899bf1e51906f21a33b28efd9f609ad8187912dcf56d225efdf99b3f"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/guide-mobile.jpg",
+        "sha256": "8a9582c4a58fe3efcb0573db2a3ba4ed9651aaf53ebc84df39e5c17444b829f8"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/home-desktop.jpg",
+        "sha256": "8242fcc772712235763cd9c240af1ab0f3fdca7a6497e26cb503e5519df3b9ef"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/home-mobile-360.jpg",
+        "sha256": "bb5d997ae62bcf26a0db80b5d514272f719f362b683de9c9e51392fd72629366"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/home-mobile-end.jpg",
+        "sha256": "51843bfce3a34930c0fd96d5856a0f6ed881eba103188e37227cd2900891f151"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/home-mobile-middle.jpg",
+        "sha256": "2f383a7497a250a4ba28e2b443c370cca9db0563833999f6bd1f33b5b0b34569"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/privacy-desktop.jpg",
+        "sha256": "69d8fbd2f277e16c17b31818745e0828a30c1fe1cb1f91b6e1b38ca714c4890a"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/product-desktop.jpg",
+        "sha256": "892e4bedc7f5a2742df19c3e4f6d53b2681648922cfe3f312c2de001111f963a"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/product-mobile.jpg",
+        "sha256": "7e3bc81851d72ba23f05aef0db7cb25fb9d4187203066beed6ed675d188afe8a"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/search-results.jpg",
+        "sha256": "dae6048fff7dd922e5d6c8622f64208d9be297b79c8f290c7d31003c44e1779b"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/source-guide-results.jpg",
+        "sha256": "7ea6483cd8a1ea7d6c8dd6130755f287bfcebb14efad69ef495fab8c55d4b60e"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/supplier-desktop.jpg",
+        "sha256": "d56b8910b0a38ab6ed58aba9aafb617bd76c91aacc94e2fc87489a63bb2b9f0b"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/supplier-mobile.jpg",
+        "sha256": "cee5aeb67aead0be00b55beba34814a3dc5ce5d1d7fc7742bc657a5492e9fc80"
+      }
+    ]
+  },
+  "media": {
+    "mode": "ai-generated-concepts",
+    "asset_count": 3,
+    "provenance": "src/data/concept-media.json",
+    "actual_supplier_photography": false,
+    "licensed_photo_path": "Implemented and tested with synthetic grant fixtures only; no real commercial license acceptance claimed."
+  },
+  "conversion": {
+    "persisted_receipt_verified": true,
+    "environment": "Hosted Cloudflare Worker and D1",
+    "receipt_id": "ef484f50-160a-4bd0-8021-b05c460b95fd",
+    "owner_read_verified": true,
+    "independent_database_tool_verified": true,
+    "retry_returned_same_receipt": true,
+    "test_record_archived": true,
+    "public_inbox_status": 401,
+    "feedback_status": 200,
+    "supplier_sent": false,
+    "evidence": "docs/verification/2026-11-18-launch/hosted-api-acceptance.json"
+  },
+  "verification": {
+    "unit_tests": {
+      "passed": 46,
+      "failed": 0,
+      "skipped": 0,
+      "node": "24.22.3"
+    },
+    "synthetic_editions": {
+      "count": 3,
+      "status": "STATIC_PASS_BROWSER_NOT_TESTED",
+      "scope": "Actual Astro check/build/output verification. Current enterprise Playwright suite was not executed in this session."
+    },
+    "contrast_profiles": [
+      "atelier",
+      "industrial",
+      "editorial"
+    ],
+    "hosted_ci": "Not claimed green; prior GitHub runs were blocked before runner allocation by account billing."
+  },
+  "release_policy_change": "Publication mode may switch from private to public without changing the reviewed editorial source. Canonical, robots and headers are checked again after build/deployment.",
+  "external_connections": {
+    "live_ai": "UNCONFIGURED: no compatible deployed OpenMausBot sessions/chat service verified",
+    "google_search_console": "UNCONNECTED",
+    "umami": "UNCONNECTED",
+    "first_party_feedback": "Hosted owner API verified"
+  },
+  "notes": [
+    "Synthetic acceptance records and validation traffic are not customer demand.",
+    "No supplier contact, order, quote confirmation or automatic content publication was performed."
+  ],
+  "public_release_verification": {
+    "verified_at": "2026-11-18T13:52:06.392Z",
+    "source_commit": "ba1c3761f0fc4e4cf899ca1291703202bc649d5e",
+    "deployment_id": "appgdep_6afdac313b488191bbce94ee3151bbd0",
+    "url": "https://buyersite.magicy565.chatgpt.site/",
+    "access": "public",
+    "artifact_sha256": "5d6d0509287e99e4819b2255b42cdd910bf9417f9d2289ea693b2d20c6c73281",
+    "homepage_status": 200,
+    "canonical": "https://buyersite.magicy565.chatgpt.site/",
+    "homepage_robots": "index, follow, max-image-preview:large",
+    "robots_and_sitemap_status": 200,
+    "public_inbox_status": 401,
+    "search_result_count": 2,
+    "search_test_query": "wool",
+    "browser_receipt_id": "309a7625-b82f-4108-b869-e52c6aefcde1",
+    "receipt_verified_by_owner_api": true,
+    "test_archived": true,
+    "feedback_counts": {
+      "total": 2,
+      "new": 0,
+      "qualified": 0,
+      "archived": 2
+    },
+    "event_collection": "Actual hosted aggregates observed; contains QA and automated traffic, not validated customer acquisition.",
+    "screenshots": [
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/public-home.jpg",
+        "sha256": "7bb22ecab20f07ca9fc1ec5594c6aa168676f442e912e36766835e60ce992f35"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/public-search.jpg",
+        "sha256": "6deb453865a0cf6aebd12d8303e51be94bfbef92e6ade6c2d0a2e0f66e84c3da"
+      },
+      {
+        "path": "docs/verification/2026-11-18-launch/screenshots/public-enquiry-receipt.jpg",
+        "sha256": "ddee4d250179b3b1e6412d18a7260657f60c1560e4efe7c3f7409443a62607fa"
+      }
+    ],
+    "evidence": "docs/verification/2026-11-18-launch/public-feedback-acceptance.json"
+  }
+}

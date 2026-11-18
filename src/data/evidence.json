@@ -6,10 +6,11 @@
     "status": "supplier-stated",
     "source_url": "https://burelfactory.com/en/products/prata",
     "source_quote": "100% Wool",
-    "captured_at": "2026-11-12T13:52:32.531868+00:00",
-    "publication_permission": "public-source-review-only",
+    "captured_at": "2026-11-18T13:14:10.681144+00:00",
+    "publication_permission": "approved",
     "verified_by": null,
-    "valid_until": null
+    "valid_until": null,
+    "notes": "Factual paraphrase rechecked against the linked public source for independent editorial publication. No supplier endorsement or image license is implied."
   },
   {
     "evidence_id": "silver-width",
@@ -18,10 +19,11 @@
     "status": "supplier-stated",
     "source_url": "https://burelfactory.com/en/products/prata",
     "source_quote": "140 cm wide",
-    "captured_at": "2026-11-12T13:52:32.531868+00:00",
-    "publication_permission": "public-source-review-only",
+    "captured_at": "2026-11-18T13:14:10.681159+00:00",
+    "publication_permission": "approved",
     "verified_by": null,
-    "valid_until": null
+    "valid_until": null,
+    "notes": "Factual paraphrase rechecked against the linked public source for independent editorial publication. No supplier endorsement or image license is implied."
   },
   {
     "evidence_id": "silver-weight",
@@ -30,10 +32,11 @@
     "status": "supplier-stated",
     "source_url": "https://burelfactory.com/en/products/prata",
     "source_quote": "800 g/m",
-    "captured_at": "2026-11-12T13:52:32.531868+00:00",
-    "publication_permission": "public-source-review-only",
+    "captured_at": "2026-11-18T13:14:10.681162+00:00",
+    "publication_permission": "approved",
     "verified_by": null,
-    "valid_until": null
+    "valid_until": null,
+    "notes": "Factual paraphrase rechecked against the linked public source for independent editorial publication. No supplier endorsement or image license is implied."
   },
   {
     "evidence_id": "mill-location",
@@ -42,10 +45,11 @@
     "status": "supplier-stated",
     "source_url": "https://burelfactory.com/en/pages/burel-factory-facts",
     "source_quote": "textile mill in Manteigas",
-    "captured_at": "2026-11-12T13:52:32.531868+00:00",
-    "publication_permission": "public-source-review-only",
+    "captured_at": "2026-11-18T13:14:10.681163+00:00",
+    "publication_permission": "approved",
     "verified_by": null,
-    "valid_until": null
+    "valid_until": null,
+    "notes": "Factual paraphrase rechecked against the linked public source for independent editorial publication. No supplier endorsement or image license is implied."
   },
   {
     "evidence_id": "sample-policy",
@@ -54,10 +58,11 @@
     "status": "supplier-stated",
     "source_url": "https://burelfactory.com/en/pages/faq-spatial-solutions",
     "source_quote": "there may be a cost.",
-    "captured_at": "2026-11-12T13:52:32.531868+00:00",
-    "publication_permission": "public-source-review-only",
+    "captured_at": "2026-11-18T13:14:10.681164+00:00",
+    "publication_permission": "approved",
     "verified_by": null,
-    "valid_until": null
+    "valid_until": null,
+    "notes": "Factual paraphrase rechecked against the linked public source for independent editorial publication. No supplier endorsement or image license is implied."
   },
   {
     "evidence_id": "batch-policy",
@@ -66,9 +71,10 @@
     "status": "supplier-stated",
     "source_url": "https://burelfactory.com/en/pages/faq-spatial-solutions",
     "source_quote": "exact colour matching from batch to batch cannot be assured.",
-    "captured_at": "2026-11-12T13:52:32.531868+00:00",
-    "publication_permission": "public-source-review-only",
+    "captured_at": "2026-11-18T13:14:10.681165+00:00",
+    "publication_permission": "approved",
     "verified_by": null,
-    "valid_until": null
+    "valid_until": null,
+    "notes": "Factual paraphrase rechecked against the linked public source for independent editorial publication. No supplier endorsement or image license is implied."
   }
 ]

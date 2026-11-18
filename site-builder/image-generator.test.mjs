@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import { generateEditorialPng, makeEditorialPrompt, MediaGenerationError } from './image-generator.mjs';
 
-test('generated procurement art uses the real image endpoint only after explicit key', async () => {
+test('image adapter constructs the documented request and validates a mocked PNG response', async () => {
   const png = await sharp({ create: { width: 1024, height: 768, channels: 3, background: '#957b76' } }).png().toBuffer();
   const prompt = makeEditorialPrompt({ title: 'Cotton textile selection', pageType: 'product-editorial', direction: 'Atelier' });
   assert.match(prompt, /not a real product photo/i);
@@ -18,13 +18,25 @@ test('generated procurement art uses the real image endpoint only after explicit
       assert.equal(payload.model, 'gpt-image-2');
       assert.equal(payload.size, '1536x1024');
       assert.equal(payload.n, 1);
-      return { ok: true, json: async () => ({ data: [{ b64_json: png.toString('base64') }] }) };
+      assert.equal(payload.output_format, 'png');
+      return Response.json({ data: [{ b64_json: png.toString('base64') }] });
     },
   });
   assert.equal(requested, 1);
   assert.deepEqual(result.bytes, png);
   assert.match(result.sha256, /^[a-f0-9]{64}$/);
   assert.match(result.prompt_sha256, /^[a-f0-9]{64}$/);
+});
+
+test('provider payload limits are enforced before parsing JSON', async () => {
+  let canceled = false;
+  await assert.rejects(() => generateEditorialPng({
+    apiKey: 'synthetic-test', prompt: 'Editorial concept',
+    fetchImpl: async () => new Response(new ReadableStream({
+      cancel() { canceled = true; },
+    }), { headers: { 'content-length': '99999999' } }),
+  }), (error) => error.code === 'MEDIA_GENERATION_RESPONSE_INVALID');
+  assert.equal(canceled, true);
 });
 
 test('no key, invalid model, and provider failure cannot silently produce an approved image', async () => {

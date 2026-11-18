@@ -11,8 +11,9 @@ const evidence: { evidence_id: string; claim: string; value: string }[] = JSON.p
 const site = edition ? JSON.parse(readFileSync(join(edition, 'site.json'), 'utf8')) : null;
 const visualPlan = edition ? JSON.parse(readFileSync(join(edition, 'visual-plan.json'), 'utf8')) : null;
 const mediaReport = edition ? JSON.parse(readFileSync(join(edition, 'media-report.json'), 'utf8')) : null;
+const publication = JSON.parse(readFileSync('src/data/publication.json', 'utf8'));
 // Exercise every generated HTML route, including desk fronts and standing pages.
-const routes = readdirSync('dist', { recursive: true })
+const routes = readdirSync(edition ? 'dist' : 'dist/client', { recursive: true })
   .map(String)
   .filter((file) => file.endsWith('index.html'))
   .map((file) => '/' + file.replace(/index\.html$/, '').replaceAll('\\', '/'))
@@ -42,7 +43,9 @@ for (const route of routes)
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       'content',
-      'noindex, nofollow',
+      edition || publication.mode !== 'public' || ['/enquiry/', '/search/'].includes(route)
+        ? 'noindex, nofollow'
+        : 'index, follow, max-image-preview:large',
     );
     const contract = contracts.find((item) => item.path === route);
     if (contract) await expect(page.locator('h1')).toHaveText(contract.h1);
@@ -76,9 +79,12 @@ for (const route of routes)
     await opener.click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await expect(
-      page.getByRole('dialog').getByText('AI is not connected', { exact: false }),
+      page.getByRole('dialog').locator('#assistant-status'),
+    ).toContainText('Live AI sourcing is not connected');
+    await expect(
+      page.getByRole('dialog').locator('[data-assistant-mode="source-guide"]'),
     ).toBeVisible();
-    await expect(page.getByLabel('Your question')).toBeDisabled();
+    await expect(page.getByLabel('Your sourcing question', { exact: true })).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
     await expect(opener).toBeFocused();
@@ -104,10 +110,13 @@ for (const route of routes)
     expect(errors).toEqual([]);
   });
 
-test('download an unsent enquiry brief without a network submission', async ({ page }, info) => {
+test('download an unsent enquiry brief without submitting it', async ({ page }, info) => {
   const mutations: string[] = [];
   page.on('request', (request) => {
-    if (!['GET', 'HEAD'].includes(request.method()))
+    // Aggregate UI analytics may run; downloading must never create an enquiry
+    // or cause any other state-changing request.
+    if (!['GET', 'HEAD'].includes(request.method()) &&
+        !(request.method() === 'POST' && new URL(request.url()).pathname === '/api/events'))
       mutations.push(request.method() + ' ' + request.url());
   });
   await page.goto('/enquiry/');
@@ -122,16 +131,16 @@ test('download an unsent enquiry brief without a network submission', async ({ p
     .getByLabel('Destination and target delivery')
     .fill('United Kingdom; date to be confirmed.');
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Download enquiry brief' }).click();
+  await page.getByRole('button', { name: 'Download an unsent brief', exact: true }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('buyer-enquiry-unsent.txt');
-  const target = info.outputPath('buyer-enquiry-unsent.txt');
+  expect(download.suggestedFilename()).toBe('buyersite-enquiry-unsent.txt');
+  const target = info.outputPath('buyersite-enquiry-unsent.txt');
   await download.saveAs(target);
   const brief = readFileSync(target, 'utf8');
   expect(brief).toContain('UNSENT DRAFT');
   expect(brief).toContain('quantity: 20 pieces');
   if (site) expect(brief).toContain('Background source: ' + site.sourceWebsite);
-  await expect(page.getByRole('status')).toContainText('It has not been submitted.');
+  await expect(page.getByRole('status').filter({ hasText: 'Your unsent brief has been downloaded.' })).toBeVisible();
   expect(mutations).toEqual([]);
 });
 
@@ -151,9 +160,9 @@ test('navigate, go back and refresh a deep link', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(target.h1);
 });
 
-test('private enterprise editions use one curated profile and distinct article art', async ({ page }) => {
+test('private enterprise editions use the curated profile and bound article art', async ({ page }) => {
   test.skip(!visualPlan, 'Applies to enterprise-generated editions only');
-  const seen = new Set<string>();
+  const seen = new Map<string, string>();
   for (const artwork of visualPlan.images as { page_id: string; asset: string }[]) {
     const route = contracts.find((item: any) => item.page_id === artwork.page_id);
     expect(route, 'Every artwork must bind to a rendered route').toBeTruthy();
@@ -163,10 +172,11 @@ test('private enterprise editions use one curated profile and distinct article a
     await expect(hero).toHaveCount(1);
     const asset = await hero.getAttribute('src');
     expect(asset).toBeTruthy();
-    expect(seen.has(asset!)).toBe(false);
-    seen.add(asset!);
+    const media = mediaReport.images.find((item: { page_id: string }) => item.page_id === artwork.page_id);
+    expect(media).toBeTruthy();
+    if (seen.has(asset!)) expect(seen.get(asset!)).toBe(media.sha256);
+    else seen.set(asset!, media.sha256);
   }
-  expect(seen.size).toBe(visualPlan.images.length);
 });
 
 test('private article pages show the correct rights or AI-art provenance labels', async ({ page }) => {

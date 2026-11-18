@@ -1,14 +1,20 @@
-name: Buyer Site Builder private preview checks
+name: Buyersite publication and private builder checks
 
 on:
   push:
     branches:
+      - main
       - feat/company-to-buyer-site-v0-1
   pull_request:
     paths:
       - 'src/**'
       - 'site-builder/**'
       - 'scripts/**'
+      - 'runtime/**'
+      - 'drizzle/**'
+      - '.openai/hosting.json'
+      - 'docs/verification/launch-review.json'
+      - 'astro.config.mjs'
       - 'tests/browser/**'
       - 'playwright.config.ts'
       - 'package.json'
@@ -33,15 +39,21 @@ jobs:
       - name: Setup Node 24
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '24.22.1'
+          node-version: '24.22.3'
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '10.34.5'
+          version: '11.25.0'
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
       - name: Install Chromium for browser acceptance
         run: pnpm exec playwright install --with-deps chromium
+      - name: Verify conversion and aggregate feedback
+        run: pnpm test:runtime
+      - name: Verify the reviewed magazine release
+        run: pnpm check && pnpm build && pnpm verify:output && pnpm check:release
+      - name: Review magazine browser behavior
+        run: pnpm test:browser
       - name: Accept three independent synthetic editions
         run: pnpm accept:site-builder
       - name: Upload synthetic acceptance evidence

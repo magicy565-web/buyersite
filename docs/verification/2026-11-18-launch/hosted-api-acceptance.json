@@ -1,0 +1,207 @@
+{
+  "origin": "https://buyersite.magicy565.chatgpt.site",
+  "executed_at": "2026-11-18T13:40:22.719Z",
+  "scope": "Synthetic acceptance on hosted Worker and D1, not customer demand",
+  "capabilities": {
+    "status": 200,
+    "data": {
+      "site_slug": "material-notes",
+      "enquiries": true,
+      "assistant": false,
+      "assistant_mode": "source-guide",
+      "source_guide": true,
+      "consent_version": "buyer-enquiry-v1"
+    }
+  },
+  "source_guide": {
+    "status": 200,
+    "data": {
+      "mode": "source-guide",
+      "method": "keyword-search",
+      "results": [
+        {
+          "id": "silver-composition",
+          "title": "Silver wool fabric: establish the specification",
+          "claim": "Silver composition",
+          "value": "100% wool",
+          "page_path": "/materials/silver-wool-fabric",
+          "source_url": "https://burelfactory.com/en/products/prata",
+          "status": "supplier-stated",
+          "captured_at": "2026-11-18T13:14:10.681144+00:00"
+        },
+        {
+          "id": "silver-weight",
+          "title": "Silver wool fabric: establish the specification",
+          "claim": "Silver listed weight",
+          "value": "800 g/m (source notation; confirm linear metre basis)",
+          "page_path": "/materials/silver-wool-fabric",
+          "source_url": "https://burelfactory.com/en/products/prata",
+          "status": "supplier-stated",
+          "captured_at": "2026-11-18T13:14:10.681162+00:00"
+        },
+        {
+          "id": "silver-width",
+          "title": "Silver wool fabric: establish the specification",
+          "claim": "Silver width",
+          "value": "140 cm",
+          "page_path": "/materials/silver-wool-fabric",
+          "source_url": "https://burelfactory.com/en/products/prata",
+          "status": "supplier-stated",
+          "captured_at": "2026-11-18T13:14:10.681159+00:00"
+        }
+      ],
+      "inference_performed": false
+    }
+  },
+  "public_inbox_status": 401,
+  "receipt": {
+    "receipt_id": "ef484f50-160a-4bd0-8021-b05c460b95fd",
+    "created_at": "2026-11-18T13:40:39.674Z",
+    "status": "new",
+    "destination": "buyersite-editorial-inbox",
+    "supplier_sent": false,
+    "replay": false
+  },
+  "retry_returned_same_receipt": true,
+  "owner_read_verified": true,
+  "test_record_archived": true,
+  "feedback": {
+    "status": 200,
+    "data": {
+      "schema_version": "buyer-feedback-v1",
+      "site_slug": "material-notes",
+      "generated_at": "2026-11-18T13:40:53.054Z",
+      "period": {
+        "days": 30,
+        "start_date": "2026-10-20",
+        "end_date": "2026-11-18",
+        "time_zone": "UTC",
+        "start_at": "2026-10-20T00:00:00.000Z",
+        "end_before": "2026-11-19T00:00:00.000Z",
+        "includes_partial_day": true
+      },
+      "events": {
+        "totals": [
+          {
+            "event": "article_opened",
+            "count": 4
+          },
+          {
+            "event": "page_view",
+            "count": 19
+          }
+        ],
+        "by_day_and_page": [
+          {
+            "day": "2026-11-18",
+            "event": "article_opened",
+            "path": "/guides/burel-project-brief",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "article_opened",
+            "path": "/materials/silver-wool-fabric",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "article_opened",
+            "path": "/suppliers/burel-factory",
+            "count": 2
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/",
+            "count": 9
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/colophon",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/enquiry",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/guides/burel-project-brief",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/materials",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/materials/silver-wool-fabric",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/privacy",
+            "count": 2
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/search",
+            "count": 1
+          },
+          {
+            "day": "2026-11-18",
+            "event": "page_view",
+            "path": "/suppliers/burel-factory",
+            "count": 2
+          }
+        ],
+        "rows_truncated": false,
+        "row_limit": 20000
+      },
+      "enquiries": {
+        "counts": {
+          "total": 1,
+          "new": 0,
+          "qualified": 0,
+          "archived": 1
+        },
+        "by_day": [
+          {
+            "day": "2026-11-18",
+            "total": 1,
+            "new": 0,
+            "qualified": 0,
+            "archived": 1
+          }
+        ],
+        "by_page": [
+          {
+            "path": "/enquiry",
+            "total": 1,
+            "new": 0,
+            "qualified": 0,
+            "archived": 1
+          }
+        ],
+        "pages_truncated": false
+      },
+      "definitions": {
+        "events": "Browser-reported action counts, including repeated actions. They are not unique visitor counts and may include automated traffic.",
+        "enquiries": "Persisted enquiries created during this period, grouped by their current review status. Client-reported enquiry_submitted events do not determine these totals.",
+        "page": "The saved enquiry source path. It may be the enquiry page; this report does not infer an earlier article or acquisition campaign.",
+        "qualified": "Marked qualified by the owner. This is not proof of a supplier quote, message, order or sale.",
+        "scope": "Counts describe this site and date window only. Empty counts do not establish demand absence."
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
+import react from '@astrojs/react';
 import { site } from './src/config.ts';
 
 // https://astro.build/config
@@ -12,7 +13,8 @@ export default defineConfig({
   site: process.env.SITE_URL ?? site.url,
   integrations: [
     mdx(),
-    sitemap({ filter: (page) => !page.endsWith('/styleguide/') }),
+    react(),
+    sitemap({ filter: (page) => !/\/(styleguide|enquiry|search|404)(\/|$)/.test(new URL(page).pathname) }),
     icon(),
     {
       name: 'theme-styleguide',
@@ -63,6 +65,7 @@ export default defineConfig({
     },
   ],
   vite: {
+    server: { allowedHosts: ['terminal.local'] },
     plugins: [tailwindcss()],
     build: {
       // Keep light-dark() native. Vite's default target makes Lightning CSS lower it to
@@ -71,4 +74,5 @@ export default defineConfig({
       cssTarget: ['chrome123', 'edge123', 'firefox120', 'safari17.5'],
     },
   },
+  server: { host: '0.0.0.0' },
 });

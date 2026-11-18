@@ -110,7 +110,8 @@ test('durable local worker queues one site build and serves only tenant-bound pr
     assert.equal(await page.text(), '<!doctype html><h1>Private synthetic preview</h1>');
     assert.equal(page.headers.get('cache-control'), 'private, no-store, max-age=0');
     assert.equal(page.headers.get('x-robots-tag'), 'noindex, nofollow, noarchive');
-    assert.match(page.headers.get('content-security-policy'), /connect-src 'none'/);
+    assert.match(page.headers.get('content-security-policy'), /connect-src 'self';/);
+    assert.match(page.headers.get('content-security-policy'), /script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';/);
 
     const nested = await request(worker, '/site-jobs/' + input.body.job.id + '/preview/products/');
     assert.equal(nested.status, 200);

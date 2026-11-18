@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import defaultOgImage from './assets/editorial/cover.png';
+import publication from './data/publication.json';
 
 type BuilderSite = {
   slug: string;
@@ -28,7 +29,7 @@ export const site = {
   description:
     edition?.description ??
     'A sourcing review for interior material buyers. Read the specifications, evidence and open questions before preparing an enquiry.',
-  url: edition?.url ?? 'https://buyer-magazine.invalid',
+  url: edition?.url ?? publication.origin,
   locale: edition?.locale ?? 'en',
   author: edition?.author ?? 'Material Notes editorial desk',
   slug: edition?.slug ?? 'material-notes',
@@ -36,9 +37,12 @@ export const site = {
   supplierSlug: edition?.supplierSlug ?? 'burel-factory',
   productName: edition?.productName ?? 'Burel Factory Silver wool fabric',
   sourceWebsite: edition?.sourceWebsite ?? 'https://burelfactory.com/en/products/prata',
-  privatePreview: true,
+  privatePreview: Boolean(edition) || publication.mode !== 'public',
   builderMode: Boolean(edition),
-  designDirection: edition?.designDirection ?? 'halftone',
+  designDirection: edition?.designDirection ?? 'atelier',
+  enquiriesEnabled: !edition && publication.enquiriesEnabled,
+  analyticsEnabled: !edition && publication.analyticsEnabled,
+  googleSiteVerification: edition ? '' : publication.googleSiteVerification,
   defaultOgImage,
 } as const;
 
@@ -60,6 +64,8 @@ export const nav = {
       links: [
         { label: 'Sources & scope', href: '/colophon' },
         { label: 'Feed', href: '/rss.xml' },
+        { label: 'Search', href: '/search' },
+        { label: 'Privacy', href: '/privacy' },
       ],
     },
   ],

@@ -7,6 +7,7 @@ import Assistant from '../components/buyer/Assistant.astro';
 import SEO from '../components/common/SEO.astro';
 import Analytics from '../components/common/Analytics.astro';
 import ThemeToggle from '../components/common/ThemeToggle.astro';
+import JourneyAnalytics from '../components/buyer/JourneyAnalytics.astro';
 import { features, nav, site } from '../config';
 import { t } from '../i18n';
 
@@ -60,9 +61,9 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
       {ui.skip}
     </a>
 
-    <p class="max-w-wide mx-auto px-4 py-3 text-sm">
-      Private sourcing review · Image rights pending · <a href="/colophon">Sources and scope</a>
-    </p>
+    {site.privatePreview && <p class="max-w-wide mx-auto px-4 py-3 text-sm" data-pagefind-ignore>
+      Private editorial preview · <a href="/colophon">Sources and scope</a>
+    </p>}
 
     {/* One line, hairline rule under it. The desks are the navigation; there is nothing else
         in it, because everything else about this magazine is on the page below. */}
@@ -77,7 +78,7 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
           </a>
         )}
         <div class="flex w-full flex-wrap items-baseline gap-x-5 gap-y-1 sm:ms-auto sm:w-auto sm:justify-end">
-          <nav aria-label={ui.desks} class="font-ui flex items-baseline gap-x-5 gap-y-1 text-sm">
+          <nav aria-label={ui.desks} class="font-ui flex flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
             {nav.header.map((item) => (
               <a
                 /* The desk you are on is marked with a rule and the spot colour, not with a
@@ -91,6 +92,7 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
               </a>
             ))}
           </nav>
+          <a class="header-action" href="/search" aria-label="Search this edition">Search</a>
           <a class="header-action" href="/enquiry">
             {ui.prepareEnquiry}
           </a>
@@ -153,5 +155,6 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
         theme by ondelva.
       </p>
     </footer>
+    <JourneyAnalytics />
   </body>
 </html>

@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import type { Item } from '../../lib/content';
+import type { EvidenceItem } from '../../lib/evidence';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/editorial.css';
+
+interface Props {
+  item: Item;
+  notes?: EvidenceItem[];
+  heroAlreadyShown?: boolean;
+}
+const { item, notes = [], heroAlreadyShown = false } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const headingId = `product-story-${item.id}`;
+---
+
+<section class:list={['product-story', 'editorial-section', heroAlreadyShown && 'product-story-summary']}
+  data-editorial-block="product" aria-labelledby={headingId}>
+  <div class="product-story-intro">
+    <p class="editorial-section-label">{heroAlreadyShown ? ui.editorial.specificationHeading : item.desk.data.name}</p>
+    <h2 id={headingId}><a href={item.href}>{heroAlreadyShown ? ui.editorial.specificationTitle : item.data.title}</a></h2>
+    <p class="editorial-deck">{heroAlreadyShown ? ui.editorial.specificationScope : item.data.deck}</p>
+    <a class="editorial-text-link" href={item.href + '#source-notes'}>{ui.editorial.readSpecification}</a>
+  </div>
+  {!heroAlreadyShown && (
+    <figure class="product-story-media">
+      <Image src={item.data.hero} alt={item.data.heroAlt} widths={[480, 800, 1200]} format="avif"
+        sizes="(min-width: 900px) 52vw, 100vw" loading="lazy"
+        style={`object-position: ${item.data.heroFocus} center`} />
+      <figcaption class="editorial-caption">
+        {item.data.heroCaption && <span>{item.data.heroCaption} </span>}
+        <span>{item.data.heroCredit}</span>
+      </figcaption>
+    </figure>
+  )}
+  <div class="product-story-details">
+    {notes.length > 0 ? (
+      <dl class="editorial-facts">
+        {notes.slice(0, 4).map((note) => (
+          <div><dt>{note.claim}</dt><dd>{note.value}</dd></div>
+        ))}
+      </dl>
+    ) : <p>{ui.editorial.specificationMissing}</p>}
+    <p class="editorial-source-note">{ui.editorial.commercialScope}</p>
+  </div>
+</section>

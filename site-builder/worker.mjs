@@ -36,6 +36,7 @@ const MIME = new Map([
   ['.svg', 'image/svg+xml'],
   ['.txt', 'text/plain; charset=utf-8'],
   ['.webp', 'image/webp'],
+  ['.wasm', 'application/wasm'],
   ['.woff', 'font/woff'],
   ['.woff2', 'font/woff2'],
   ['.xml', 'application/xml; charset=utf-8'],
@@ -43,7 +44,7 @@ const MIME = new Map([
 const PRIVATE_HEADERS = {
   'cache-control': 'private, no-store, max-age=0',
   'content-security-policy':
-    "default-src 'self'; base-uri 'none'; connect-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
+    "default-src 'self'; base-uri 'none'; connect-src 'self'; font-src 'self'; form-action 'none'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'",
   'referrer-policy': 'no-referrer',
   'x-content-type-options': 'nosniff',
   'x-robots-tag': 'noindex, nofollow, noarchive',
@@ -414,7 +415,7 @@ export async function createBuyerSiteWorker({
         if (review.artifact_sha256 !== record.artifactHash) fail('VISUAL_REVIEW_STALE', 409);
         if (match[2] === 'visual-review') return json(response, 200, review);
         const filename = match[2].slice('visual-review/screenshot/'.length);
-        if (!/^[a-z0-9][a-z0-9-]{0,80}-(desktop|mobile)\.png$/.test(filename)) fail('VISUAL_REVIEW_SCREENSHOT_NOT_FOUND', 404);
+        if (!/^[a-z0-9][a-z0-9-]{0,80}-(desktop|mobile)(?:-(?:[2-9]|1[0-2]))?\.png$/.test(filename)) fail('VISUAL_REVIEW_SCREENSHOT_NOT_FOUND', 404);
         const entry = review.pages?.flatMap((page) => page.screenshots || []).find((shot) => shot.private_file === filename);
         if (!entry || !/^[a-f0-9]{64}$/.test(entry.sha256 || '')) fail('VISUAL_REVIEW_SCREENSHOT_NOT_FOUND', 404);
         const screenshot = await readFile(join(root, record.id, 'visual-review', 'screenshots', filename));

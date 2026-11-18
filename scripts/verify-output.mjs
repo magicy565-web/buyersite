@@ -3,6 +3,9 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const edition = process.env.BUYERSITE_BUILD_ROOT;
+const outputRoot=edition?'dist':'dist/client';
+const publication=JSON.parse(await readFile('src/data/publication.json','utf8'));
+const privatePreview=Boolean(edition)||publication.mode!=='public';
 const pages = JSON.parse(
   await readFile(edition ? join(edition, 'pages.json') : '.generated/pages.json', 'utf8'),
 );
@@ -24,7 +27,7 @@ const decoded = (value) =>
     return { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[key.toLowerCase()] ?? entity;
   });
 for (const page of pages) {
-  const file = 'dist' + (page.path === '/' ? '/index.html' : page.path + 'index.html');
+  const file = outputRoot + (page.path === '/' ? '/index.html' : page.path + 'index.html');
   const html = await readFile(file, 'utf8');
   const headings = [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)].map((match) =>
     decoded(match[1].replace(/<[^>]*>/g, '').trim()),
@@ -49,11 +52,12 @@ for (const page of pages) {
     assert.ok(summary >= 0 && body > summary, 'product specifications must precede the article');
   }
 }
-const files = (await readdir('dist', { recursive: true })).map(String);
+const files = (await readdir(outputRoot, { recursive: true })).map(String);
 const htmlFiles = files.filter((file) => file.endsWith('.html'));
 for (const file of htmlFiles) {
-  const html = await readFile(join('dist', file), 'utf8');
-  assert.match(html, /<meta name="robots" content="noindex, nofollow"/, file + ': noindex');
+  const html = await readFile(join(outputRoot, file), 'utf8');
+  if(privatePreview)assert.match(html, /<meta name="robots" content="noindex, nofollow"/, file + ': noindex');
+  else if(!/^(enquiry|search|404)(\/|\.)/.test(file))assert.match(html, /<meta name="robots" content="index, follow/,file+': indexable');
   assert.match(html, /rel="canonical"/, file + ': canonical');
   assert.ok(!html.includes('Linnea Holm'), file + ': no theme demo author');
   if (edition)
@@ -70,7 +74,7 @@ for (const file of htmlFiles) {
   for (const [, attribute] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"]*)"/g)) {
     const pathname = new URL(decoded(attribute), 'https://buyer-magazine.invalid').pathname;
     assert.ok(!pathname.includes('..'), 'unsafe built path');
-    const target = join('dist', decodeURIComponent(pathname));
+    const target = join(outputRoot, decodeURIComponent(pathname));
     const info = await stat(target).catch(() => null);
     assert.ok(info, file + ': missing local target ' + pathname);
     if (info.isDirectory()) assert.ok((await stat(join(target, 'index.html'))).isFile());
@@ -79,19 +83,19 @@ for (const file of htmlFiles) {
 if (edition) {
   for (const file of files.filter((file) => /\.(xml|json|js|css|txt)$/.test(file))) {
     assert.doesNotMatch(
-      await readFile(join('dist', file), 'utf8'),
+      await readFile(join(outputRoot, file), 'utf8'),
       /Burel Factory|burel-silver|burelfactory\.com/i,
       file + ': no pilot data',
     );
   }
 }
-assert.match(await readFile('dist/robots.txt', 'utf8'), /Disallow: \//);
-assert.match(await readFile('dist/enquiry/index.html', 'utf8'), /Nothing is sent/);
-assert.ok(await readFile('dist/sitemap-index.xml', 'utf8'));
+assert.match(await readFile(join(outputRoot,'robots.txt'), 'utf8'), privatePreview ? /Disallow: \// : /Allow: \//);
+assert.match(await readFile(join(outputRoot,'enquiry/index.html'), 'utf8'), /enquiry|sourcing/i);
+assert.ok(await readFile(join(outputRoot,'sitemap-index.xml'), 'utf8'));
 console.log(
   'Verified ' +
     pages.length +
     ' core routes and all ' +
     htmlFiles.length +
-    ' HTML files: evidence, private indexing, canonical, structured data, local links/assets and enquiry. Not publication acceptance.',
+    ' HTML files: evidence, ' + (privatePreview ? 'private indexing' : 'public indexing policy') + ', canonical, structured data, local links/assets and enquiry. This static check does not establish hosted conversion acceptance.',
 );

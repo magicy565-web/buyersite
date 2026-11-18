@@ -5,7 +5,7 @@ const { items } = Astro.props as { items: EvidenceItem[] };
 const ui = t(Astro.currentLocale);
 ---
 
-<section aria-label="Source notes" class="mt-12 border-t-2 pt-6">
+<section id="source-evidence" aria-label="Source notes" class="mt-12 border-t-2 pt-6">
   <h2>{ui.sourceNotes}</h2>
   <dl>
     {items.map((item) => (

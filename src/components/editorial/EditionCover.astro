@@ -1,0 +1,46 @@
+---
+import Plate from '../common/Plate.astro';
+import type { Item } from '../../lib/content';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/editorial.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lead: Item;
+  context?: string;
+}
+const { title, description, lead, context } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+---
+
+<section class="editorial-cover" data-editorial-block="cover" aria-labelledby="edition-title">
+  <Plate
+    class="buyer-cover editorial-cover-plate"
+    image={lead.data.hero}
+    alt={lead.data.heroAlt}
+    focus={lead.data.heroFocus}
+    priority
+  >
+    <div class="editorial-container editorial-cover-masthead">
+      <h1 id="edition-title" class="edition-wordmark">{title}</h1>
+      {description && <p class="edition-description">{description}</p>}
+    </div>
+    <div class="editorial-container editorial-cover-body">
+      <div class="editorial-cover-story">
+        {context && <p class="editorial-cover-context">{context}</p>}
+        <h2><a href={lead.href}>{lead.data.title}</a></h2>
+        <p>{lead.data.deck}</p>
+        <div class="cover-actions editorial-actions">
+          <a href={lead.href}>{ui.editorial.readStory}</a>
+          <a href="/enquiry">{ui.prepareEnquiry}</a>
+        </div>
+      </div>
+    </div>
+  </Plate>
+  <div class="editorial-container editorial-caption">
+    {lead.data.heroCaption && <span>{lead.data.heroCaption} </span>}
+    <span>{lead.data.heroCredit}</span>
+  </div>
+</section>

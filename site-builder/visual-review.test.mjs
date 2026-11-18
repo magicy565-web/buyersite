@@ -16,9 +16,10 @@ test('review is blocked until both consent and credentials are present', async (
   assert.equal(result.status, 'PENDING_CONFIGURATION');
   assert.equal(result.publication, 'BLOCKED');
   assert.equal(result.human_approval_required, true);
+  assert.equal((await reviewBuiltSite({ authorized: 'true', apiKey: 'test' })).status, 'PENDING_CONFIGURATION');
 });
 
-test('real screenshot review receives desktop and mobile images and binds artifact hash', async () => {
+test('injected captures cover every page and preserve full-height mobile readability', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'visual-review-'));
   try {
     const root = join(dir, 'source');
@@ -26,19 +27,35 @@ test('real screenshot review receives desktop and mobile images and binds artifa
     await writeFile(join(root, 'pages.json'), JSON.stringify([
       { page_id: 'home', path: '/', page_type: 'home', title: 'Magazine' },
       { page_id: 'sample', path: '/products/sample/', page_type: 'product-editorial', title: 'Sample' },
+      { page_id: 'second', path: '/products/second/', page_type: 'product-editorial', title: 'Second product' },
+      { page_id: 'guide', path: '/guides/guide/', page_type: 'buyer-guide', title: 'Buying guide' },
+      { page_id: 'supplier', path: '/suppliers/supplier/', page_type: 'supplier-profile', title: 'Supplier' },
     ]));
-    await writeFile(join(root, 'media-report.json'), JSON.stringify({ images: [{ page_id: 'sample', kind: 'ai-generated' }] }));
+    await writeFile(join(root, 'media-report.json'), JSON.stringify({ images:
+      ['sample', 'second', 'guide', 'supplier'].map((page_id) => ({ page_id, kind: 'ai-generated' })),
+    }));
     const bytes = await sharp({ create: { width: 1000, height: 800, channels: 3, background: '#b9b6ac' } }).png().toBuffer();
+    const mobile = await sharp({ create: { width: 390, height: 5200, channels: 3, background: '#b9b6ac' } }).png().toBuffer();
+    const reviewed = [];
     const result = await reviewBuiltSite({
       authorized: true, apiKey: 'synthetic-test', artifactDir: dir, jobDir: dir,
       sourceRoot: root, artifactSha256: 'c'.repeat(64),
-      captureFn: async () => [{ name: 'desktop', bytes }, { name: 'mobile', bytes }],
-      reviewFn: async () => verdict,
+      captureFn: async () => [{ name: 'desktop', bytes }, { name: 'mobile', bytes: mobile }],
+      reviewFn: async ({ screenshots, page }) => {
+        reviewed.push(page.page_id);
+        const mobileTiles = screenshots.filter((shot) => shot.viewport === 'mobile');
+        assert.equal(mobileTiles.length, 4);
+        assert.ok(mobileTiles.every((shot) => shot.width === 390));
+        assert.equal(mobileTiles.at(-1).y + mobileTiles.at(-1).height, 5200);
+        return verdict;
+      },
     });
     assert.equal(result.status, 'PASS_RECOMMENDED');
     assert.equal(result.publication, 'BLOCKED');
-    assert.equal(result.pages.length, 2);
-    assert.equal(result.pages[0].screenshots.length, 2);
+    assert.equal(result.pages.length, 5);
+    assert.equal(result.pages[0].screenshots.length, 5);
+    assert.deepEqual(reviewed, ['home', 'sample', 'second', 'guide', 'supplier']);
+    assert.deepEqual(result.coverage, { expected_pages: 5, reviewed_pages: 5, complete: true });
     const failed = await reviewBuiltSite({
       authorized: true, apiKey: 'synthetic-test', artifactDir: dir, jobDir: dir,
       sourceRoot: root, artifactSha256: 'c'.repeat(64),
@@ -58,7 +75,7 @@ test('vision provider request includes actual images and strict JSON schema', as
     assert.equal(payload.store, false);
     assert.equal(payload.text.format.type, 'json_schema');
     assert.equal(payload.input[0].content.filter((c) => c.type === 'input_image').length, 2);
-    return { ok: true, json: async () => ({ status: 'completed', output: [{ content: [{ type: 'output_text', text: JSON.stringify(verdict) }] }] }) };
+    return Response.json({ status: 'completed', output: [{ content: [{ type: 'output_text', text: JSON.stringify(verdict) }] }] });
   };
   const result = await reviewScreenshots({
     screenshots: [{ bytes: tiny }, { bytes: tiny }], apiKey: 'synthetic-test',
@@ -67,6 +84,32 @@ test('vision provider request includes actual images and strict JSON schema', as
   assert.equal(result.decision, 'pass');
   await assert.rejects(() => reviewScreenshots({
     screenshots: [{ bytes: tiny }, { bytes: tiny }], apiKey: 'synthetic-test',
-    fetchImpl: async () => ({ ok: true, json: async () => ({ status: 'completed', output: [{ content: [{ type: 'output_text', text: '{\"decision\":\"pass\"}' }] }] }) }),
+    fetchImpl: async () => Response.json({ status: 'completed', output: [{ content: [{ type: 'output_text', text: '{\"decision\":\"pass\"}' }] }] }),
   }), VisualReviewError);
+});
+
+test('empty or unsafe manifests and missing source files cannot produce a vacuous PASS', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'visual-empty-'));
+  try {
+    const options = { authorized: true, apiKey: 'synthetic-test', artifactDir: dir, jobDir: dir,
+      sourceRoot: dir, artifactSha256: 'c'.repeat(64),
+      captureFn: () => { throw Error('must not capture'); },
+    };
+    assert.equal((await reviewBuiltSite(options)).status, 'REVIEW_ERROR');
+    await writeFile(join(dir, 'pages.json'), '[]');
+    await writeFile(join(dir, 'media-report.json'), '{"images":[]}');
+    assert.equal((await reviewBuiltSite(options)).error_code, 'VISUAL_REVIEW_MANIFEST_INVALID');
+    await writeFile(join(dir, 'pages.json'), JSON.stringify([{ page_id: '../outside', path: '/', page_type: 'home' }]));
+    assert.equal((await reviewBuiltSite(options)).error_code, 'VISUAL_REVIEW_MANIFEST_INVALID');
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test('vision verdicts with null issues and unknown fields fail closed', async () => {
+  const png = await sharp({ create: { width: 390, height: 400, channels: 3, background: '#555555' } }).png().toBuffer();
+  for (const value of [{ ...verdict, issues: [null] }, { ...verdict, publication: 'approved' }]) {
+    await assert.rejects(() => reviewScreenshots({
+      screenshots: [{ bytes: png }, { bytes: png }], apiKey: 'synthetic-test',
+      fetchImpl: async () => Response.json({ status: 'completed', output: [{ content: [{ type: 'output_text', text: JSON.stringify(value) }] }] }),
+    }), (error) => error.code === 'VISUAL_REVIEW_INVALID');
+  }
 });

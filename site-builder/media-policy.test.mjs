@@ -38,4 +38,11 @@ test('invalid media identities and cross-page references fail closed', () => {
   assert.throws(() => planMedia(article, [{ ...photo(), page_id: '../evil' }], fixed), MediaPolicyError);
   assert.throws(() => planMedia(article, [{ ...photo(), page_id: 'not-on-site' }], fixed), MediaPolicyError);
   assert.throws(() => planMedia(article, [{ ...photo(), sha256: 'fake' }], fixed), MediaPolicyError);
+  assert.throws(() => planMedia(article, [{ ...photo(), alt: '  ' }], fixed), MediaPolicyError);
+});
+
+test('a licensed photo may be reused on another explicitly bound page', () => {
+  const plan = planMedia(article, [photo(), { ...photo(), asset_id: 'supplier-image', page_id: 'supplier' }], fixed);
+  assert.equal(plan.approved_count, 2);
+  assert.equal(plan.missing_count, 0);
 });

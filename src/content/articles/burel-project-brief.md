@@ -4,10 +4,11 @@ deck: "Prepare a useful enquiry around material, installation and commercial con
 desk: "guides"
 byline: ["editorial"]
 date: "2026-11-12"
-hero: "../../assets/review/silver.jpg"
-heroAlt: "Silver wool fabric shown on the supplier product page"
-heroCredit: "Burel Factory product photography \u2014 private review only"
-format: "report"
+hero: "../../assets/concepts/sample-study.png"
+heroAlt: "AI concept illustration of unbranded textile swatches for planning a sourcing brief"
+heroCredit: "AI-generated editorial concept · Buyersite"
+heroCaption: "AI-generated concept illustration. It does not depict this supplier's product or factory."
+format: "brief"
 featured: false
 evidenceRefs: ["sample-policy", "batch-policy"]
 pageType: "buyer-guide"

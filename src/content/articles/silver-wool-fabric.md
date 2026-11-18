@@ -4,9 +4,10 @@ deck: "A material review for interior buyers. Confirm the exact construction and
 desk: "materials"
 byline: ["editorial"]
 date: "2026-11-12"
-hero: "../../assets/review/silver.jpg"
-heroAlt: "Silver wool fabric shown on the supplier product page"
-heroCredit: "Burel Factory product photography \u2014 private review only"
+hero: "../../assets/concepts/wool-study.png"
+heroAlt: "AI concept study of grey wool-like fabric folds; not the supplier product"
+heroCredit: "AI-generated editorial concept · Buyersite"
+heroCaption: "AI-generated concept illustration. It does not depict this supplier's product or factory."
 format: "report"
 featured: true
 evidenceRefs: ["silver-composition", "silver-width", "silver-weight"]

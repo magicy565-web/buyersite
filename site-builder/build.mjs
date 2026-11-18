@@ -3,6 +3,7 @@ import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileEnterpriseSite } from './compile.mjs';
 import { materializeEditionMedia } from './media-render.mjs';
+import { createHash } from 'node:crypto';
 
 const json = (value) => JSON.stringify(value, null, 2) + '\n';
 const inline = (value) => JSON.stringify(value);
@@ -42,6 +43,13 @@ export function articleMarkdown(entry, dateString, media) {
 
 export async function writeSitePreview(input, baseDir = '.generated/company-sites', options = {}) {
   const result = compileEnterpriseSite(input);
+  const renderPolicy = {
+    aiGenerationAuthorized: options.aiGenerationAuthorized === true,
+    imageModel: options.imageModel || process.env.BUYERSITE_IMAGE_MODEL || 'gpt-image-2',
+    maxAiImages: options.maxAiImages ?? 4,
+    imageProviderConfigured: Boolean(Object.hasOwn(options,'apiKey') ? options.apiKey : process.env.OPENAI_API_KEY),
+  };
+  result.fingerprint = createHash('sha256').update(JSON.stringify({ content: result.fingerprint, renderPolicy })).digest('hex');
   const folder = result.site.slug + '-' + result.fingerprint.slice(0, 12);
   const root = resolve(baseDir, folder);
   const articlesDir = join(root, 'articles');
@@ -72,6 +80,7 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     'receipt.json': {
       version: '1.0.0',
       fingerprint: result.fingerprint,
+      render_policy: renderPolicy,
       enterprise_id: input.enterprise.id,
       enterprise_revision: input.enterprise.revision,
       exported_at: input.exported_at,
@@ -87,12 +96,12 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   // Media is resolved from server-owned, tenant-scoped approved files.
   // No supplier image URLs are fetched or assumed to have publication rights.
   const mediaReport = await materializeEditionMedia({
+    ...options,
     mediaPlan: result.mediaPlan,
     visualPlan: result.visualPlan,
     articles: result.articles,
     articlesDir,
     enterpriseId: input.enterprise.id,
-    ...options,
   });
   await writeFile(join(root, 'media-report.json'), json(mediaReport), { mode: 0o600 });
   const dateString = new Date(input.exported_at).toISOString().slice(0, 10);

@@ -1,0 +1,22 @@
+---
+import { site } from '../../config';
+---
+{site.analyticsEnabled && <span id="journey-config" data-site={site.slug} hidden></span>}
+<script>
+  const config=document.querySelector<HTMLElement>('#journey-config');
+  const optedOut=()=>navigator.doNotTrack==='1'||(navigator as Navigator & {globalPrivacyControl?:boolean}).globalPrivacyControl===true;
+  const names=new Set(['page_view','article_opened','enquiry_started','enquiry_submitted','assistant_opened','search_used','source_opened']);
+  function track(name:string){
+    if(!config||optedOut()||!names.has(name))return;
+    const path=location.pathname;
+    // No free text, search terms, email, IP, user ID or full referrer is sent.
+    const event={name,path};
+    void fetch('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event),keepalive:true}).catch(()=>{});
+    const umami=(window as Window & {umami?:{track:(name:string,props:Record<string,string>)=>void}}).umami;
+    umami?.track(name,{path});
+  }
+  track('page_view');
+  if(/^\/(materials|products|suppliers|guides)\/[^/]+\/?$/.test(location.pathname))track('article_opened');
+  window.addEventListener('buyersite:event',(e)=>{const name=(e as CustomEvent).detail?.name;if(typeof name==='string')track(name);});
+  document.addEventListener('click',(e)=>{const a=(e.target as Element)?.closest('a');if(a&&new URL(a.href,location.origin).origin!==location.origin&&a.closest('#source-evidence'))track('source_opened');});
+</script>

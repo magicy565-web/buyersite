@@ -1,10 +1,19 @@
 import { createHash } from 'node:crypto';
+import { readProviderJson } from './provider-response.mjs';
 
 export class MediaGenerationError extends Error {
   constructor(code, message) { super(message); this.name = 'MediaGenerationError'; this.code = code; }
 }
 const fail = (code, message) => { throw new MediaGenerationError(code, message); };
 const PNG_HEADER = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+// Explicit operator choice; do not silently upgrade a model or its cost profile.
+// Verified against the OpenAI Images API reference on 2026-11-18.
+export const IMAGE_MODELS = Object.freeze([
+  'gpt-image-1-mini', 'gpt-image-1.5', 'gpt-image-2', 'gpt-image-2-2026-04-21',
+  'gpt-image-2.5-sunburst', 'gpt-image-2.5-sunburst-2026-09-08',
+  'gpt-image-2.5-flare', 'gpt-image-2.5-flare-2026-09-08',
+  'gpt-image-2.6-sunburst', 'gpt-image-2.6-flare', 'chatgpt-image-latest',
+]);
 
 export function assertPng(bytes, limit = 12_000_000) {
   if (!Buffer.isBuffer(bytes) || bytes.length < 50 || bytes.length > limit ||
@@ -35,21 +44,22 @@ export async function generateEditorialPng({
 }) {
   if (typeof apiKey !== 'string' || !apiKey.trim()) fail('MEDIA_GENERATOR_NOT_CONFIGURED', 'AI image API key required');
   if (typeof prompt !== 'string' || !prompt || prompt.length > 1800) fail('MEDIA_GENERATION_PROMPT_INVALID', 'Bounded editorial prompt required');
-  if (!/^gpt-image-2(?:\.[0-9]+)?(?:-[a-z0-9-]+)?$/.test(model)) fail('MEDIA_GENERATION_MODEL_INVALID', 'Use an explicitly approved GPT Image 2 model');
+  if (!IMAGE_MODELS.includes(model)) fail('MEDIA_GENERATION_MODEL_INVALID', 'Use an explicitly supported image model');
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 180_000) fail('MEDIA_GENERATION_TIMEOUT_INVALID', 'Image provider timeout must be bounded');
   let response;
   try {
     response = await fetchImpl('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       signal: AbortSignal.timeout(timeoutMs),
       headers: { authorization: 'Bearer ' + apiKey, 'content-type': 'application/json' },
-      body: JSON.stringify({ model, prompt, size: '1536x1024', quality: 'medium', n: 1 }),
+      body: JSON.stringify({ model, prompt, size: '1536x1024', quality: 'medium', output_format: 'png', n: 1 }),
     });
   } catch {
     fail('MEDIA_GENERATION_REQUEST_FAILED', 'Image provider request failed or timed out');
   }
   if (!response.ok) fail('MEDIA_GENERATION_REQUEST_FAILED', 'Image provider returned HTTP ' + response.status);
   let data;
-  try { data = await response.json(); } catch { fail('MEDIA_GENERATION_RESPONSE_INVALID', 'Image provider returned invalid JSON'); }
+  try { data = await readProviderJson(response, 16_200_000); } catch { fail('MEDIA_GENERATION_RESPONSE_INVALID', 'Image provider returned invalid or oversized JSON'); }
   const encoded = data?.data?.[0]?.b64_json;
   if (typeof encoded !== 'string' || encoded.length > 16_100_000 || !/^[a-zA-Z0-9+/]+={0,2}$/.test(encoded)) {
     fail('MEDIA_GENERATION_RESPONSE_INVALID', 'Image provider response is missing bounded base64 bytes');

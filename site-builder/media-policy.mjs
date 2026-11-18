@@ -11,7 +11,7 @@ export class MediaPolicyError extends Error {
   constructor(code, message) { super(message); this.name = 'MediaPolicyError'; this.code = code; }
 }
 const reject = (code, message) => { throw new MediaPolicyError(code, message); };
-const safeText = (s, maximum) => typeof s === 'string' && s.length > 0 && s.length <= maximum && !/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(s);
+const safeText = (s, maximum) => typeof s === 'string' && s.trim().length > 0 && s.length <= maximum && !/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(s);
 const isDate = (v) => typeof v === 'string' && !Number.isNaN(Date.parse(v)) && /^\d{4}-\d{2}-\d{2}T/.test(v);
 
 export function normalizeMediaAssets(assets = [], asOf = new Date().toISOString()) {
@@ -58,11 +58,11 @@ export function planMedia(articles, assets = [], asOf = new Date().toISOString()
   const pages = new Set(articles.map((article) => article.slug));
   if (pages.size !== articles.length || articles.some((a) => !ID.test(a.slug || ''))) reject('MEDIA_ARTICLES_INVALID', 'Article paths must be unique and safe');
   if (normalized.some((asset) => !pages.has(asset.page_id))) reject('MEDIA_PAGE_UNKNOWN', 'Image must target an existing page');
-  const usedImageHashes = new Set();
   const selections = articles.map((article) => {
     const candidates = normalized.filter((asset) => asset.page_id === article.slug);
-    const licensed = candidates.find((asset) => asset.approved && !usedImageHashes.has(asset.sha256));
-    if (licensed) usedImageHashes.add(licensed.sha256);
+    // A grant can cover the same photograph on multiple pages. Repetition is an
+    // editorial finding, never a reason to discard a usable licensed image.
+    const licensed = candidates.find((asset) => asset.approved);
     return licensed ? {
       page_id: article.slug, media_kind: 'licensed-photo', asset_id: licensed.asset_id,
       source_sha256: licensed.sha256, grant_sha256: licensed.grant_sha256,
