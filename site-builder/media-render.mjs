@@ -51,6 +51,7 @@ export async function materializeEditionMedia({
   }
   const summary = [];
   let generatedCount = 0;
+  const uniqueVisuals = new Set();
   for (const article of articles) {
     const planned = mediaPlan.selections.find((s) => s.page_id === article.slug);
     const drawing = visualPlan.images.find((s) => s.page_id === article.slug);
@@ -87,12 +88,15 @@ export async function materializeEditionMedia({
     const normalized = kind === 'ai-generated'
       ? await sharp(bytes, { limitInputPixels: 40_000_000 }).resize(1600, 1067, { fit: 'cover' }).png().toBuffer()
       : bytes;
+    const outputHash = sha256(normalized);
+    if (uniqueVisuals.has(outputHash)) fail('MEDIA_DUPLICATE_HERO', 'The final artwork is identical to another article');
+    uniqueVisuals.add(outputHash);
     await writeFile(output, normalized, { mode: 0o600 });
     summary.push({
       page_id: article.slug,
       filename: drawing.asset,
       kind,
-      sha256: sha256(normalized),
+      sha256: outputHash,
       source_sha256: kind === 'licensed-photo' ? planned.source_sha256 : null,
       grant_sha256: kind === 'licensed-photo' ? planned.grant_sha256 : null,
       generation_model: model,
