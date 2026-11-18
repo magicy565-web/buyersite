@@ -1,9 +1,8 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
 import { compileEnterpriseSite } from './compile.mjs';
-import { renderEditorialArtwork } from './visual-director.mjs';
+import { materializeEditionMedia } from './media-render.mjs';
 
 const json = (value) => JSON.stringify(value, null, 2) + '\n';
 const inline = (value) => JSON.stringify(value);
@@ -14,7 +13,7 @@ const markdown = (value) =>
     .replace(/([\x60*_{}\[\]()#+.!|])/g, '\\$1');
 const heading = (value) => markdown(value).replace(/^\\/, '');
 
-export function articleMarkdown(entry, dateString) {
+export function articleMarkdown(entry, dateString, media) {
   const props = [
     ['title', entry.title],
     ['deck', entry.deck],
@@ -22,9 +21,9 @@ export function articleMarkdown(entry, dateString) {
     ['byline', ['editorial']],
     ['date', dateString],
     ['hero', './hero-' + entry.slug + '.png'],
-    ['heroAlt', 'Abstract editorial illustration for ' + entry.title + '; not supplier product photography'],
-    ['heroCaption', 'Illustration only; product and supplier claims require their own evidence.'],
-    ['heroCredit', 'Original abstract editorial artwork · not supplier photography'],
+    ['heroAlt', media.alt],
+    ['heroCaption', media.caption],
+    ['heroCredit', media.credit],
     ['format', entry.pageType === 'supplier-profile' ? 'photoessay' : entry.pageType === 'buyer-guide' ? 'brief' : 'report'],
     ['featured', Boolean(entry.featured)],
     ['evidenceRefs', entry.refs],
@@ -41,7 +40,7 @@ export function articleMarkdown(entry, dateString) {
   );
 }
 
-export async function writeSitePreview(input, baseDir = '.generated/company-sites') {
+export async function writeSitePreview(input, baseDir = '.generated/company-sites', options = {}) {
   const result = compileEnterpriseSite(input);
   const folder = result.site.slug + '-' + result.fingerprint.slice(0, 12);
   const root = resolve(baseDir, folder);
@@ -50,6 +49,7 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   const outputFiles = {
     'site.json': result.site,
     'visual-plan.json': result.visualPlan,
+    'media-plan.json': result.mediaPlan,
     'manifest.json': result.manifest,
     'pages.json': result.pages,
     'evidence.json': result.evidence,
@@ -84,20 +84,22 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   for (const [name, value] of Object.entries(outputFiles)) {
     await writeFile(join(root, name), json(value), { flag: 'w' });
   }
-  // Render one original abstract illustration per article. Do not pass untrusted
-  // supplier SVG/media to sharp or imply that abstract art depicts real products.
+  // Media is resolved from server-owned, tenant-scoped approved files.
+  // No supplier image URLs are fetched or assumed to have publication rights.
+  const mediaReport = await materializeEditionMedia({
+    mediaPlan: result.mediaPlan,
+    visualPlan: result.visualPlan,
+    articles: result.articles,
+    articlesDir,
+    enterpriseId: input.enterprise.id,
+    ...options,
+  });
+  await writeFile(join(root, 'media-report.json'), json(mediaReport), { mode: 0o600 });
   const dateString = new Date(input.exported_at).toISOString().slice(0, 10);
   for (const item of result.articles) {
-    const artwork = result.visualPlan.images.find((image) => image.page_id === item.slug);
-    if (!artwork) throw new Error('MISSING_VISUAL_PLAN: ' + item.slug);
-    const svg = renderEditorialArtwork({
-      direction: result.visualPlan.direction,
-      pageId: artwork.page_id,
-      sequence: artwork.sequence,
-      composition: artwork.composition,
-    });
-    await sharp(Buffer.from(svg)).png().toFile(join(articlesDir, artwork.asset));
-    await writeFile(join(articlesDir, item.slug + '.md'), articleMarkdown(item, dateString));
+    const media = mediaReport.images.find((image) => image.page_id === item.slug);
+    if (!media) throw new Error('MEDIA_BINDING_MISSING: ' + item.slug);
+    await writeFile(join(articlesDir, item.slug + '.md'), articleMarkdown(item, dateString, media));
   }
   return {
     root,
@@ -105,6 +107,7 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     fingerprint: result.fingerprint,
     pages: result.pages.length,
     articles: result.articles.length,
+    media: { rightsPhotos: mediaReport.rights_photo_count, aiGenerated: mediaReport.ai_generated_count, fallback: mediaReport.abstract_fallback_count },
     preview_only: true,
   };
 }
