@@ -105,8 +105,13 @@ test('writes isolated Astro content with escaped source text and immutable hash 
     );
     assert.ok(files.includes('&lt;script&gt;'));
     assert.ok(!files.includes('<script>'));
-    assert.ok(files.includes('hero: "./cover.png"'));
-    const cover = await readFile(join(generated.root, 'articles', 'cover.png'));
+    assert.ok(files.includes('hero: "./hero-example-textile-works.png"'));
+    const cover = await readFile(join(generated.root, 'articles', 'hero-example-textile-works.png'));
+    const otherHero = await readFile(join(generated.root, 'articles', 'hero-test-upholstery-textile.png'));
+    assert.notDeepEqual(cover, otherHero);
+    const plan = JSON.parse(await readFile(join(generated.root, 'visual-plan.json'), 'utf8'));
+    assert.equal(plan.direction, 'atelier');
+    assert.equal(plan.images.length, 3);
     assert.equal(cover.subarray(1, 4).toString(), 'PNG');
     const receipt = JSON.parse(await readFile(join(generated.root, 'receipt.json'), 'utf8'));
     assert.equal(receipt.preview_only, true);
