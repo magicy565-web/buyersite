@@ -14,7 +14,8 @@ const reject = (code, message) => { throw new MediaPolicyError(code, message); }
 const safeText = (s, maximum) => typeof s === 'string' && s.length > 0 && s.length <= maximum && !/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(s);
 const isDate = (v) => typeof v === 'string' && !Number.isNaN(Date.parse(v)) && /^\d{4}-\d{2}-\d{2}T/.test(v);
 
-export function normalizeMediaAssets(assets = []) {
+export function normalizeMediaAssets(assets = [], asOf = new Date().toISOString()) {
+  if (!isDate(asOf)) reject('MEDIA_SNAPSHOT_DATE_INVALID', 'Snapshot timestamp required');
   if (!Array.isArray(assets) || assets.length > MAX_ASSETS) reject('MEDIA_ASSET_LIST_INVALID', 'Expected a bounded list of private asset references');
   const ids = new Set();
   return assets.map((asset) => {
@@ -34,7 +35,7 @@ export function normalizeMediaAssets(assets = []) {
       isDate(rights.approved_at) &&
       rights.allow_resize === true &&
       rights.allow_crop === true &&
-      (!rights.expires_at || (isDate(rights.expires_at) && Date.parse(rights.expires_at) > Date.now()));
+      (!rights.expires_at || (isDate(rights.expires_at) && Date.parse(rights.expires_at) > Date.parse(asOf)));
     return {
       asset_id: asset.asset_id,
       page_id: asset.page_id,
@@ -50,9 +51,9 @@ export function normalizeMediaAssets(assets = []) {
   });
 }
 
-export function planMedia(articles, assets = []) {
+export function planMedia(articles, assets = [], asOf = new Date().toISOString()) {
   if (!Array.isArray(articles)) reject('MEDIA_ARTICLES_INVALID', 'Articles are required');
-  const normalized = normalizeMediaAssets(assets);
+  const normalized = normalizeMediaAssets(assets, asOf);
   const pages = new Set(articles.map((article) => article.slug));
   if (pages.size !== articles.length || articles.some((a) => !ID.test(a.slug || ''))) reject('MEDIA_ARTICLES_INVALID', 'Article paths must be unique and safe');
   if (normalized.some((asset) => !pages.has(asset.page_id))) reject('MEDIA_PAGE_UNKNOWN', 'Image must target an existing page');
