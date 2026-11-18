@@ -22,7 +22,7 @@ const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const themeCredit = 'https://ondelva.com/themes/halftone';
 ---
 
-<html lang={locale}>
+<html lang={locale} data-editorial-style={site.designDirection}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
