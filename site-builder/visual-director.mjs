@@ -37,7 +37,7 @@ export function planEditorialVisuals({ companyName = '', categories = [], articl
     schema_version: '1.0.0',
     direction,
     art_direction: direction === 'atelier' ? 'Warm material-led luxury editorial' : direction === 'industrial' ? 'Technical industrial field journal' : 'High-contrast contemporary editorial',
-    source_policy: 'Only original abstract illustrations until supplier photography has documented publication rights',
+    source_policy: 'Artwork descriptors are abstract fallbacks; media-plan.json and media-report.json own actual licensed/AI media provenance',
     images,
   };
 }
