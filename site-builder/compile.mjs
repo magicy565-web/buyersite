@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { planEditorialVisuals } from './visual-director.mjs';
 
 export class SiteInputError extends Error {
   constructor(code, message) {
@@ -177,6 +178,11 @@ export function compileEnterpriseSite(input) {
       ['Confirm the commercial terms', 'Ask the supplier to confirm MOQ, price and currency, payment terms, production lead time, quality controls and shipping terms in writing. No offer is implied by this review.'],
     ]));
 
+  const visualPlan = planEditorialVisuals({
+    companyName,
+    categories: validProducts.flatMap((product) => [product.category, product.name]),
+    articles,
+  });
   const pages = [
     { page_id: 'home', path: '/', page_type: 'home', locale: 'en',
       title: boundedTitle(publicationName + ': sourcing review'), description, h1: publicationName,
@@ -202,7 +208,7 @@ export function compileEnterpriseSite(input) {
       supplier_public_id: null, description },
     locale: 'en', base_url: 'https://buyer-magazine.invalid',
     routes: pages.map((page) => ({ path: page.path, page_id: page.page_id, page_type: page.page_type, indexable: false })),
-    design_system: { direction: 'halftone', tokens_ref: 'src/styles/theme.css', motion: 'reduced' },
+    design_system: { direction: visualPlan.direction, tokens_ref: 'src/styles/theme.css', category_profile: visualPlan.art_direction, motion: 'reduced' },
     assistant: { enabled: false, api_base_url: null, public_site_slug: siteSlug, features: [] },
   };
   const site = {
@@ -210,9 +216,10 @@ export function compileEnterpriseSite(input) {
     locale: 'en', author: 'Buyer Notes editorial desk',
     supplierSlug, guideSlug, productName: validProducts[0]?.name || '',
     sourceWebsite: website.href, privatePreview: true,
+    designDirection: visualPlan.direction,
   };
   const nonEnglishDraft = /[\u3400-\u9fff]/.test([companyName, companyDescription, ...validProducts.map((p) => p.name + ' ' + p.description)].join(' '));
-  const content = { site, manifest, pages, articles, evidence, sourceSnapshots: acceptedPages.map(({url, title, body, capturedAt, sha256}) => ({url, title, body_text: body, capturedAt, sha256})),
+  const content = { site, manifest, pages, articles, visualPlan, evidence, sourceSnapshots: acceptedPages.map(({url, title, body, capturedAt, sha256}) => ({url, title, body_text: body, capturedAt, sha256})),
     preview_only: true, publication_blockers: [
       'EDITORIAL_APPROVAL_REQUIRED', 'MEDIA_RIGHTS_REQUIRED', 'CONVERSION_BACKEND_UNVERIFIED', 'PUBLIC_DEPLOYMENT_UNVERIFIED',
       ...(nonEnglishDraft ? ['ENGLISH_TRANSLATION_REQUIRED'] : []),
