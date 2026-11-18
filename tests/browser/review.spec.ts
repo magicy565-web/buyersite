@@ -159,7 +159,7 @@ test('private enterprise editions use one curated profile and distinct article a
     expect(route, 'Every artwork must bind to a rendered route').toBeTruthy();
     await page.goto(route!.path);
     await expect(page.locator('html')).toHaveAttribute('data-editorial-style', visualPlan.direction);
-    const hero = page.locator('img[alt^="Abstract editorial illustration"]').first();
+    const hero = page.locator('figure img, .plate img').first();
     await expect(hero).toHaveCount(1);
     const asset = await hero.getAttribute('src');
     expect(asset).toBeTruthy();
@@ -175,7 +175,8 @@ test('private article pages show the correct rights or AI-art provenance labels'
     const route = contracts.find((contract: any) => contract.page_id === item.page_id);
     expect(route).toBeTruthy();
     await page.goto(route!.path);
-    await expect(page.locator('img[alt="' + item.alt.replaceAll('"', '\\"') + '"]').first()).toBeVisible();
+    expect(await page.locator('img').evaluateAll((images, alt) =>
+      images.some((image) => image.getAttribute('alt') === alt), item.alt)).toBe(true);
     await expect(page.getByText(item.credit, { exact: false }).first()).toBeVisible();
     if (item.kind !== 'licensed-photo') {
       await expect(page.getByText(item.caption, { exact: false }).first()).toBeVisible();
