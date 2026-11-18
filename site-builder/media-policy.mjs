@@ -32,7 +32,7 @@ export function normalizeMediaAssets(assets = [], asOf = new Date().toISOString(
       rights.scope === 'buyer-magazine-site' &&
       HEX.test(rights.grant_sha256 || '') &&
       safeText(rights.granted_by, 120) &&
-      isDate(rights.approved_at) &&
+      isDate(rights.approved_at) && Date.parse(rights.approved_at) <= Date.parse(asOf) &&
       rights.allow_resize === true &&
       rights.allow_crop === true &&
       (!rights.expires_at || (isDate(rights.expires_at) && Date.parse(rights.expires_at) > Date.parse(asOf)));
