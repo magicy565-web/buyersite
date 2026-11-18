@@ -1,0 +1,70 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import EditionCover from '../../components/editorial/EditionCover.astro';
+import SupplierFeature from '../../components/editorial/SupplierFeature.astro';
+import ProductStory from '../../components/editorial/ProductStory.astro';
+import Card from '../../components/article/Card.astro';
+import { blog, site } from '../../config';
+import { deskHref, deskSpan, getArticles, getDesks, presentAll } from '../../lib/content';
+import { loadEvidence, resolveEvidence } from '../../lib/evidence';
+import { t } from '../../i18n';
+import '../../styles/editorial.css';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  return (await Promise.all((await getDesks()).map(async (desk) => {
+    const items = await presentAll(await getArticles((article) => article.data.desk.id === desk.id));
+    return paginate(items, {
+      params: { desk: desk.id },
+      props: { desk, span: deskSpan(items) },
+      pageSize: blog.postsPerPage,
+    });
+  }))).flat();
+}) satisfies GetStaticPaths;
+
+const { page, desk, span } = Astro.props;
+const first = page.currentPage === 1;
+const [lead] = page.data;
+const entries = first ? page.data.slice(1) : page.data;
+const evidence = loadEvidence();
+const ui = t(Astro.currentLocale ?? site.locale);
+const folio = `${span} · ${ui.pageOf(page.currentPage, page.lastPage)}`;
+---
+
+<Base title={desk.data.name} description={desk.data.blurb} image={lead?.data.hero}>
+  {first && lead ? (
+    <EditionCover title={desk.data.name} description={desk.data.blurb} lead={lead} />
+  ) : (
+    <div class="editorial-container">
+      <header class="editorial-archive-heading">
+        <h1 class="font-ui text-3xl font-bold"><a href={deskHref(desk.id)}>{desk.data.name}</a></h1>
+      </header>
+    </div>
+  )}
+  <div class="editorial-container">
+    <p class="editorial-archive-folio">{folio}</p>
+    {first && lead?.data.pageType === 'product-editorial' && (
+      <ProductStory item={lead} notes={resolveEvidence(lead.data.evidenceRefs, evidence)} heroAlreadyShown />
+    )}
+    {entries.map((item) => item.data.pageType === 'supplier-profile' ? (
+      <SupplierFeature item={item} notes={resolveEvidence(item.data.evidenceRefs, evidence)} />
+    ) : item.data.pageType === 'product-editorial' ? (
+      <ProductStory item={item} notes={resolveEvidence(item.data.evidenceRefs, evidence)} />
+    ) : (
+      <section class="editorial-section">
+        <Card item={item} layout="row" kicker={item.kicker !== desk.data.name} />
+        <p class="editorial-caption">
+          {item.data.heroCaption && <span>{item.data.heroCaption} </span>}
+          <span>{item.data.heroCredit}</span>
+        </p>
+      </section>
+    ))}
+    {page.lastPage > 1 && (
+      <nav class="mt-10 flex flex-wrap items-baseline justify-between gap-4 text-sm" aria-label={ui.pagination}>
+        <span>{page.url.prev && <a href={page.url.prev}>{ui.newer}</a>}</span>
+        <span>{ui.pageOf(page.currentPage, page.lastPage)}</span>
+        <span>{page.url.next && <a href={page.url.next}>{ui.older}</a>}</span>
+      </nav>
+    )}
+  </div>
+</Base>

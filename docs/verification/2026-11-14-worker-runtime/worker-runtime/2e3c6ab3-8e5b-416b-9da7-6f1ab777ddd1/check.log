@@ -1,0 +1,23 @@
+
+> buyer-magazine-site@0.1.0 check /workspace/scratch/5a20146a788d/buyersite
+> astro check
+
+09:09:11 [content] Syncing content
+09:09:11 [content] Synced content
+09:09:11 [types] Generated 1.52s
+09:09:11 [check] Getting diagnostics for Astro files in /workspace/scratch/5a20146a788d/buyersite...
+site-builder/capture.mjs:61:14 - warning ts(6133): 'host' is declared but its value is never read.
+
+61       lookup(host, opts, done) {
+                ~~~~
+
+site-builder/compile.mjs:46:21 - warning ts(6133): 'page' is declared but its value is never read.
+
+46 const websiteRef = (page, index) => 'website-' + (index + 1);
+                       ~~~~
+
+Result (55 files): 
+- 0 errors
+- 0 warnings
+- 2 hints
+

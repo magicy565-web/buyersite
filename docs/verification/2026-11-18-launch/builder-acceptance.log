@@ -1,0 +1,16 @@
+test:site-builder: PASS (1550ms)
+accept:site-worker: PASS (39945ms)
+check: PASS (8618ms)
+build: PASS (16209ms)
+verify:output: PASS (508ms)
+synthetic-cotton-textiles: artifact inventory SHA256 45799f9e12ecca6b7ccb6f59147fd5da724f36ebd064b56e02f779d27aa21d4e
+check: PASS (8522ms)
+build: PASS (15360ms)
+verify:output: PASS (578ms)
+synthetic-industrial-testing: artifact inventory SHA256 f156224ac5a427870f9fe43363efbd4bfd997155e6735c1af00c938e46c8fca4
+check: PASS (8187ms)
+build: PASS (11399ms)
+verify:output: PASS (819ms)
+synthetic-empty-catalog: artifact inventory SHA256 b510ea8eded437579658277f9ce35e49d31553519cda106fa57c81bb8febbdcd
+Acceptance: STATIC_PASS_BROWSER_NOT_TESTED
+Report: /workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/report.json

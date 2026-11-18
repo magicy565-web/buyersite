@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import type { Item } from '../../lib/content';
+import type { EvidenceItem } from '../../lib/evidence';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/editorial.css';
+
+interface Props { item: Item; notes?: EvidenceItem[]; }
+const { item, notes = [] } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const headingId = `supplier-feature-${item.id}`;
+---
+
+<section class="supplier-feature editorial-section" data-editorial-block="supplier" aria-labelledby={headingId}>
+  <figure class="supplier-feature-media">
+    <Image src={item.data.hero} alt={item.data.heroAlt} widths={[480, 800, 1200]} format="avif"
+      sizes="(min-width: 900px) 42vw, 100vw" loading="lazy"
+      style={`object-position: ${item.data.heroFocus} center`} />
+    <figcaption class="editorial-caption">
+      {item.data.heroCaption && <span>{item.data.heroCaption} </span>}
+      <span>{item.data.heroCredit}</span>
+    </figcaption>
+  </figure>
+  <div class="supplier-feature-copy">
+    <p class="editorial-section-label">{ui.editorial.supplierFeature}</p>
+    <h2 id={headingId}><a href={item.href}>{item.data.title}</a></h2>
+    <p class="editorial-deck">{item.data.deck}</p>
+    {notes.length > 0 && (
+      <dl class="editorial-facts">
+        {notes.slice(0, 2).map((note) => (
+          <div><dt>{note.claim}</dt><dd>{note.value}</dd></div>
+        ))}
+      </dl>
+    )}
+    <p class="editorial-source-note">{ui.editorial.supplierScope}</p>
+    <a class="editorial-text-link" href={item.href + '#source-notes'}>{ui.editorial.reviewSupplierSources}</a>
+  </div>
+</section>

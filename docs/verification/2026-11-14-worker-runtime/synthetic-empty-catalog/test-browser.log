@@ -1,0 +1,46 @@
+
+> buyer-magazine-site@0.1.0 test:browser /workspace/scratch/5a20146a788d/buyersite
+> playwright test
+
+[WebServer] (node:2846) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 27 tests using 1 worker
+
+(node:2898) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect / (2.2s)
+  ✓   2 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.1s)
+  ✓   3 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (975ms)
+  ✓   4 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.4s)
+  ✓   5 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.2s)
+  ✓   6 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (1.3s)
+  ✓   7 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/synthetic-empty-catalog/ (1.3s)
+  ✓   8 [desktop] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (618ms)
+  ✓   9 [desktop] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.1s)
+(node:3093) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect / (1.8s)
+  ✓  11 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.1s)
+  ✓  12 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (1.1s)
+  ✓  13 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.2s)
+  ✓  14 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.6s)
+  ✓  15 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (1.3s)
+  ✓  16 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/synthetic-empty-catalog/ (1.8s)
+  ✓  17 [mobile-390] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (541ms)
+  ✓  18 [mobile-390] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.0s)
+(node:3295) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect / (1.4s)
+  ✓  20 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (882ms)
+  ✓  21 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (903ms)
+  ✓  22 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.0s)
+  ✓  23 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.0s)
+  ✓  24 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (873ms)
+  ✓  25 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/synthetic-empty-catalog/ (1.1s)
+  ✓  26 [mobile-360] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (557ms)
+  ✓  27 [mobile-360] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (991ms)
+
+  27 passed (36.9s)

@@ -1,0 +1,285 @@
+/*
+  theme.css -- your overrides. This is the file to edit to retheme the site.
+
+  Every token lives in src/styles/tokens.css with its default value. Declarations
+  here are unlayered, so they win without specificity tricks.
+
+  Colors are defined with light-dark(). Overriding with a plain color changes
+  light and dark mode at once; use light-dark(<light>, <dark>) to keep them apart.
+  Webfonts are loaded in astro.config.mjs; use overrides here for system fonts.
+
+  Every pair you change is checked by `pnpm check:contrast`, light and dark.
+
+  Example:
+
+  :root {
+    --primary: light-dark(#8c1f2f, #e08792);
+    --font-body: Charter, 'Iowan Old Style', Georgia, serif;
+    --radius: 0;
+  }
+*/
+
+:root {
+}
+
+/* Preserve theme type and palette; keep navigation usable at narrow widths. */
+header nav {
+  flex-wrap: wrap;
+}
+header nav a {
+  padding-block: 0.5rem;
+}
+/* Enterprise names and product codes can be longer than the pilot's labels. */
+header > div > a[href='/'] {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+:where(h1, h2, h3, dt, dd),
+.article-body,
+footer {
+  overflow-wrap: anywhere;
+}
+.article-body :where(a) {
+  overflow-wrap: anywhere;
+}
+.buyer-dialog {
+  width: min(38rem, calc(100% - 2rem));
+  max-height: 85dvh;
+  padding: 1.5rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+.buyer-dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+.buyer-dialog input,
+.buyer-dialog textarea,
+.enquiry-field {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid currentColor;
+  background: var(--background);
+  color: var(--foreground);
+}
+.buyer-dialog button,
+.buyer-action {
+  padding: 0.75rem 1rem;
+  border: 1px solid currentColor;
+  cursor: pointer;
+}
+
+.header-action {
+  padding: 0.625rem 0.75rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.cover-actions a {
+  color: var(--on-plate);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  padding-block: 0.5rem;
+}
+.spec-summary-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+  padding-block: 0.5rem;
+}
+.spec-summary-row dt {
+  font-weight: 600;
+}
+.spec-summary-row dd {
+  overflow-wrap: anywhere;
+}
+#source-notes {
+  scroll-margin-top: 12rem;
+}
+.buyer-dialog {
+  overflow-y: auto;
+}
+.buyer-dialog[open] {
+  margin: auto;
+  border: 2px solid var(--foreground);
+}
+.buyer-dialog :disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+@media (max-width: 480px) {
+  .buyer-cover {
+    min-height: 30rem;
+  }
+  .spec-summary-row {
+    grid-template-columns: 1fr;
+    gap: 0.125rem;
+  }
+}
+
+
+/* Curated visual directions for private enterprise editions.
+   These are not arbitrary LLM-generated CSS. All design decisions map to
+   approved, inspectable selectors and preserve the existing evidence UI. */
+html[data-editorial-style='atelier'] {
+  --background: light-dark(#f4efe6, #151b19);
+  --surface: light-dark(#e7dfd0, #272b29);
+  --foreground: light-dark(#202b26, #f3eee5);
+  --muted: light-dark(#42524b, #c8c6bc);
+  --border: light-dark(#c9c1b1, #4c5750);
+  --primary: light-dark(#5b3c2e, #e9b68a);
+  --primary-hover: light-dark(#35221c, #ffd3a9);
+  --on-primary: light-dark(#ffffff, #151b19);
+  --plate: #1e2926;
+  --on-plate: #ffffff;
+  --on-plate-muted: #e5e1d9;
+  --primary-on-plate: #f2c89e;
+  --wide-width: 78rem;
+  --content-width: 45rem;
+}
+
+html[data-editorial-style='industrial'] {
+  --background: light-dark(#f1f5f5, #13232b);
+  --surface: light-dark(#e0e8e9, #253740);
+  --foreground: light-dark(#142b38, #f4f7f6);
+  --muted: light-dark(#395363, #c4d4d9);
+  --border: light-dark(#a8bdc5, #60747d);
+  --primary: light-dark(#214b61, #a2dcea);
+  --primary-hover: light-dark(#102d43, #d2f1f7);
+  --on-primary: light-dark(#ffffff, #12232a);
+  --plate: #122634;
+  --on-plate: #ffffff;
+  --on-plate-muted: #dce5e9;
+  --primary-on-plate: #f4c89a;
+  --wide-width: 82rem;
+  --content-width: 44rem;
+}
+
+html[data-editorial-style='editorial'] {
+  --background: light-dark(#f5f4f0, #131317);
+  --surface: light-dark(#e6e4e0, #25252a);
+  --foreground: light-dark(#171719, #f7f6f3);
+  --muted: light-dark(#4d4f54, #cccad0);
+  --border: light-dark(#bfbec0, #53535b);
+  --primary: light-dark(#921d34, #ff98a5);
+  --primary-hover: light-dark(#6e1022, #ffc1ca);
+  --on-primary: light-dark(#ffffff, #171719);
+  --plate: #16171c;
+  --on-plate: #ffffff;
+  --on-plate-muted: #ddd8da;
+  --primary-on-plate: #ffb0bd;
+  --wide-width: 78rem;
+}
+
+/* More visual rhythm than a same-size three-column grid: every section gets
+   a lead, alternate card crops, a strong editorial rule and restrained hover. */
+html[data-editorial-style] .buyer-cover h1 {
+  overflow-wrap: anywhere;
+  max-inline-size: 100%;
+}
+html[data-editorial-style='atelier'] .buyer-cover h1,
+html[data-editorial-style='atelier'] .buyer-cover h2 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.075em;
+  text-transform: none;
+}
+html[data-editorial-style='atelier'] .buyer-cover h1 {
+  font-size: clamp(2.65rem, 7.5vw, 7rem);
+  line-height: .9;
+}
+html[data-editorial-style='atelier'] .buyer-cover {
+  border-block-end: 8px solid var(--primary);
+}
+html[data-editorial-style='atelier'] main > div > section h2 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -.035em;
+  text-transform: none;
+  font-size: 1.45rem;
+}
+html[data-editorial-style='atelier'] section .grid article:nth-child(even) img {
+  aspect-ratio: 4 / 5;
+}
+html[data-editorial-style='atelier'] .article-body > h2 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(1.55rem, 3vw, 2rem);
+}
+html[data-editorial-style='atelier'] .kicker {
+  letter-spacing: .12em;
+}
+
+html[data-editorial-style='industrial'] .buyer-cover h1 {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 6vw, 5rem);
+  line-height: 1;
+  letter-spacing: -.055em;
+  text-transform: uppercase;
+}
+html[data-editorial-style='industrial'] .buyer-cover {
+  border-block: 6px solid var(--primary-on-plate);
+}
+html[data-editorial-style='industrial'] .buyer-cover h2 {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 3.5vw, 2.45rem);
+  letter-spacing: -.05em;
+}
+html[data-editorial-style='industrial'] section .grid article {
+  border-block-start: 2px solid var(--border);
+  padding-block-start: .75rem;
+}
+html[data-editorial-style='industrial'] section .grid article:nth-child(3n) img {
+  aspect-ratio: 1 / 1;
+}
+html[data-editorial-style='industrial'] .kicker {
+  border-inline-start: 4px solid var(--primary);
+  letter-spacing: .09em;
+}
+
+html[data-editorial-style='editorial'] .buyer-cover h1 {
+  font-size: clamp(2.5rem, 10vw, 8rem);
+  letter-spacing: -.075em;
+}
+html[data-editorial-style='editorial'] .buyer-cover {
+  border-block-end: 12px solid var(--primary);
+}
+html[data-editorial-style='editorial'] section .grid article:nth-child(3n) img {
+  aspect-ratio: 1 / 1;
+}
+html[data-editorial-style='editorial'] section .grid article h3 {
+  letter-spacing: -.04em;
+}
+html[data-editorial-style] .cover-actions a {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--on-plate);
+  padding: .65rem 1rem;
+  min-height: 44px;
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+html[data-editorial-style] section .grid article img {
+  transition: transform 250ms ease-out;
+}
+html[data-editorial-style] section .grid article a:hover img {
+  transform: scale(1.018);
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-editorial-style] section .grid article img {
+    transition: none;
+  }
+}
+@media (max-width: 640px) {
+  html[data-editorial-style] .buyer-cover {
+    min-height: 36rem;
+  }
+  html[data-editorial-style] .buyer-cover h1 {
+    font-size: clamp(2.2rem, 10vw, 3.8rem);
+  }
+  html[data-editorial-style] .cover-actions a {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

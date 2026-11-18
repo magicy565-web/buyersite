@@ -1,0 +1,155 @@
+{
+  "version": "1.0.0",
+  "started_at": "2026-11-18T13:33:58.637Z",
+  "finished_at": "2026-11-18T13:35:51.523Z",
+  "source_commit": "3778a0c02d3764b11c73b8707e20ef6ce43d39a7",
+  "source_dirty": true,
+  "environment": {
+    "node": "v24.22.3",
+    "platform": "linux",
+    "arch": "x64",
+    "pnpm": "11.25.0",
+    "chromium_executable": "Playwright managed Chromium"
+  },
+  "scope": "Builder acceptance only. Default inputs are synthetic fixtures, never live enterprise acceptance.",
+  "production_deployed": false,
+  "live_enterprise_ingestion": "NOT_TESTED",
+  "status": "STATIC_PASS_BROWSER_NOT_TESTED",
+  "unit_tests": {
+    "status": "PASS",
+    "exit_code": 0,
+    "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/test-site-builder.log",
+    "duration_ms": 1550
+  },
+  "worker_runtime": {
+    "status": "PASS",
+    "exit_code": 0,
+    "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/accept-site-worker.log",
+    "duration_ms": 39946
+  },
+  "editions": [
+    {
+      "input": "site-builder/fixtures/enterprise.synthetic.json",
+      "input_sha256": "dca9533b31ef2e8bd952c6387d9b3cbc6b09587a684e22c9e3f533e49395d6cf",
+      "pack": {
+        "root": "/workspace/scratch/f80fc133438a/buyersite/.generated/company-sites/synthetic-cotton-textiles-5c4a0a0bc730",
+        "site_slug": "synthetic-cotton-textiles",
+        "fingerprint": "5c4a0a0bc7308771f5d73d826f64ed333db00189bb8f5c49cbe47f34001de4b7",
+        "pages": 5,
+        "articles": 4,
+        "media": {
+          "rightsPhotos": 0,
+          "aiGenerated": 0,
+          "fallback": 4
+        },
+        "preview_only": true
+      },
+      "check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-cotton-textiles/check.log",
+        "duration_ms": 8619
+      },
+      "build": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-cotton-textiles/build.log",
+        "duration_ms": 16209
+      },
+      "output": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-cotton-textiles/verify-output.log",
+        "duration_ms": 508
+      },
+      "browser": "NOT_TESTED",
+      "artifact": {
+        "directory": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-cotton-textiles/dist",
+        "inventory_sha256": "45799f9e12ecca6b7ccb6f59147fd5da724f36ebd064b56e02f779d27aa21d4e",
+        "files": 84
+      }
+    },
+    {
+      "input": "site-builder/fixtures/enterprise.edge-cases.json",
+      "input_sha256": "b8fc1a2c0800f198ef61aa92c5883ea1766cbabffdc21eab6df7ad0dc8b173c8",
+      "pack": {
+        "root": "/workspace/scratch/f80fc133438a/buyersite/.generated/company-sites/synthetic-industrial-testing-6db635795ca9",
+        "site_slug": "synthetic-industrial-testing",
+        "fingerprint": "6db635795ca9b527925d835d816936a02f3265a870cb9f2f955fab0b1f51bcd0",
+        "pages": 4,
+        "articles": 3,
+        "media": {
+          "rightsPhotos": 0,
+          "aiGenerated": 0,
+          "fallback": 3
+        },
+        "preview_only": true
+      },
+      "check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-industrial-testing/check.log",
+        "duration_ms": 8522
+      },
+      "build": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-industrial-testing/build.log",
+        "duration_ms": 15361
+      },
+      "output": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-industrial-testing/verify-output.log",
+        "duration_ms": 578
+      },
+      "browser": "NOT_TESTED",
+      "artifact": {
+        "directory": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-industrial-testing/dist",
+        "inventory_sha256": "f156224ac5a427870f9fe43363efbd4bfd997155e6735c1af00c938e46c8fca4",
+        "files": 74
+      }
+    },
+    {
+      "input": "site-builder/fixtures/enterprise.empty.json",
+      "input_sha256": "fa86f19ef3dfd8a2da0a31e683f5114b464e5fb74bbc2d4837f7cd2b841af44d",
+      "pack": {
+        "root": "/workspace/scratch/f80fc133438a/buyersite/.generated/company-sites/synthetic-empty-catalog-1c9dfc23dbd2",
+        "site_slug": "synthetic-empty-catalog",
+        "fingerprint": "1c9dfc23dbd2a9457b5157aa07aef9b2d3fc54dd021a418064ad5410d05c253e",
+        "pages": 3,
+        "articles": 2,
+        "media": {
+          "rightsPhotos": 0,
+          "aiGenerated": 0,
+          "fallback": 2
+        },
+        "preview_only": true
+      },
+      "check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-empty-catalog/check.log",
+        "duration_ms": 8187
+      },
+      "build": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-empty-catalog/build.log",
+        "duration_ms": 11399
+      },
+      "output": {
+        "status": "PASS",
+        "exit_code": 0,
+        "log": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-empty-catalog/verify-output.log",
+        "duration_ms": 819
+      },
+      "browser": "NOT_TESTED",
+      "artifact": {
+        "directory": "/workspace/scratch/f80fc133438a/buyersite/.generated/acceptance/2026-11-18T13-33-58-637Z/synthetic-empty-catalog/dist",
+        "inventory_sha256": "b510ea8eded437579658277f9ce35e49d31553519cda106fa57c81bb8febbdcd",
+        "files": 63
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+---
+import { t } from '../../i18n';
+import { conversion } from '../../i18n/conversion';
+import { site } from '../../config';
+import SourcingAssistant from './SourcingAssistant';
+import '../../styles/conversion.css';
+const ui = t(Astro.currentLocale);
+---
+<button type="button" data-assistant-open class="buyer-action">{ui.askSourcing}</button>
+<dialog id="buyer-assistant" class="buyer-dialog sourcing-dialog" aria-labelledby="assistant-title" data-site-slug={site.slug}>
+  <div class="sourcing-dialog-heading">
+    <h2 id="assistant-title">{conversion.assistantTitle}</h2>
+    <form method="dialog">
+      <button type="submit" class="sourcing-close" aria-label={conversion.close}><span aria-hidden="true">×</span></button>
+    </form>
+  </div>
+  <SourcingAssistant client:visible siteSlug={site.slug} guideHref={'/guides/' + site.guideSlug} enabled={site.enquiriesEnabled} />
+</dialog>
+<script>
+  const panel = document.querySelector<HTMLDialogElement>('#buyer-assistant');
+  let returnFocus: HTMLElement | null = null;
+  document.querySelectorAll<HTMLElement>('[data-assistant-open]').forEach((opener) => {
+    opener.addEventListener('click', () => {
+      if (!panel || panel.open) return;
+      returnFocus = opener;
+      panel.showModal();
+      window.dispatchEvent(new CustomEvent('buyersite:event', {
+        detail: { name: 'assistant_opened', pagePath: location.pathname },
+      }));
+    });
+  });
+  panel?.addEventListener('close', () => returnFocus?.focus());
+</script>

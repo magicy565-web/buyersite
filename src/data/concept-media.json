@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-11-18T13:13:51.381Z",
+  "generation_provider": "ChatGPT image_gen",
+  "model": "not exposed by built-in tool",
+  "scope": "Original editorial concept illustrations, not supplier product or factory photographs.",
+  "assets": [
+    {
+      "page_id": "silver-wool-fabric",
+      "file": "src/assets/concepts/wool-study.png",
+      "kind": "ai-generated",
+      "prompt": "Use case: stylized-concept. Asset type: wide 3:2 editorial textile magazine cover. Primary request: a richly tactile charcoal-grey wool fabric draped into broad sculptural folds, with a quiet silver-grey studio background and cool soft side light. Macro fibre detail and gentle shadows, sophisticated textile still-life, believable woven texture but clearly a conceptual studio composition. Composition: the folds occupy the right two-thirds, the left third subdued deep grey for white editorial type. Palette charcoal, silver, soft pale blue. Constraints: no words, letters, logos, labels, people, factory claims or recognizable branded product. This is an original illustrative material study, NOT a photograph of a real supplier's fabric. No border, no graphic icons, no triptych.",
+      "caption": "AI-generated concept illustration. It does not depict this supplier's product or factory.",
+      "credit": "AI-generated editorial concept · Buyersite",
+      "sha256": "12dfecbbf033210eaad6eeac9d9dd6fc4f39d3b3e4e849e61d5af59d2b71502a",
+      "prompt_sha256": "c2c7cca543ced4e107360c3cdfd66c22bd4191c976727aa64d86785ce8e9076e",
+      "review": {
+        "status": "accepted-concept-image",
+        "reviewer": "ChatGPT",
+        "method": "direct visual inspection of generated image",
+        "notes": "No text, logo, watermark or supplier identity; concept label required wherever used."
+      }
+    },
+    {
+      "page_id": "burel-factory",
+      "file": "src/assets/concepts/weaving-study.png",
+      "kind": "ai-generated",
+      "prompt": "Use case: stylized-concept. Asset type: wide 3:2 magazine supplier feature concept artwork. Primary request: a close, beautifully lit study of parallel grey wool warp threads crossing a plain unmarked wooden shuttle, individual fibres visible, a quiet dark muted-blue background. Render like a refined sculptural illustration with natural tactile materials, directional daylight and shallow depth, close-up material/process study. The picture should communicate weaving craft without depicting a particular mill, building, machine, person or company. Constraints: no text, logos, certificates, product labels, watermark, claims or recognizable branded products. No border. Clearly original concept artwork.",
+      "caption": "AI-generated concept illustration. It does not depict this supplier's product or factory.",
+      "credit": "AI-generated editorial concept · Buyersite",
+      "sha256": "27aca4a44a029ab2b00da7517669e03b739575a3d354352a53c021409cdc32c4",
+      "prompt_sha256": "81ea1dc4a827b50ab108766a643c61e543df32cb78a37c00175b6c4e7766235f",
+      "review": {
+        "status": "accepted-concept-image",
+        "reviewer": "ChatGPT",
+        "method": "direct visual inspection of generated image",
+        "notes": "No text, logo, watermark or supplier identity; concept label required wherever used."
+      }
+    },
+    {
+      "page_id": "burel-project-brief",
+      "file": "src/assets/concepts/sample-study.png",
+      "kind": "ai-generated",
+      "prompt": "Use case: stylized-concept. Asset type: wide 3:2 editorial buying guide image. Primary request: a beautifully arranged flat lay of three unbranded wool sample swatches in charcoal, silver-grey and muted slate-blue on a pale cool-grey work surface, an unmarked metal straightedge and a blank white paper sheet nearby. Angled natural side light, soft crisp shadows, precise rich woven and felt textures, refined original conceptual still-life. Leave generous breathing room. Constraints: no text, letters, numerals, logos, certifications, commercial specifications or branded products. Do not imitate a supplier's product photograph. Not a chart or diagram. No border.",
+      "caption": "AI-generated concept illustration. It does not depict this supplier's product or factory.",
+      "credit": "AI-generated editorial concept · Buyersite",
+      "sha256": "f194cb082762fa1beee7d7d67a16c68bc52163cb272aa27ac12bedf2f59df796",
+      "prompt_sha256": "99ed3f78a02a13610c048d8dfb18f378dd83e93291fd4b23cfe89a9a65993c9d",
+      "review": {
+        "status": "accepted-concept-image",
+        "reviewer": "ChatGPT",
+        "method": "direct visual inspection of generated image",
+        "notes": "No text, logo, watermark or supplier identity; concept label required wherever used."
+      }
+    }
+  ]
+}

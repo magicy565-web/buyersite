@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/common/PageHead.astro';
+import { site } from '../config';
+import { loadEvidence } from '../lib/evidence';
+const publicSources = loadEvidence().filter((item) => item.source_url);
+---
+<Base title="Sources, images and editorial scope">
+  <article class="max-w-content mx-auto px-4 py-12">
+    <PageHead title="Sources and editorial scope" lede="A buyer's reading of supplier statements, with the questions still to ask." />
+    {site.builderMode ? <p class="mt-8">This private edition uses enterprise records and supplied website snapshots. Statements have not been independently audited. Commercial terms remain unconfirmed until the supplier confirms them.</p> : <p class="mt-8">Material Notes is an independent Buyersite editorial edition for interior material buyers. It summarizes selected public Burel Factory product and supplier information. No supplier partnership, factory audit, product testing or endorsement is implied.</p>}
+    <h2 class="mt-8">How to read the images</h2>
+    <p class="mt-4">Each visual carries its source or generation label. The current Material Notes illustrations are original AI-generated concepts of fabric, weaving and sample planning. They do not show the listed supplier's actual product, mill or samples. Follow the source links to examine the supplier's own imagery and request physical samples before a buying decision.</p>
+    <h2 class="mt-8">What an enquiry does</h2>
+    <p class="mt-4">You can prepare a brief and, when intake is available, submit it to the Buyersite editorial sourcing inbox. You receive a record number after it is saved. It is not automatically forwarded to a supplier, and it does not reserve stock, confirm prices or place an order.</p>
+    <h2 class="mt-8">Source pages</h2>
+    <ul class="mt-4 space-y-3">{publicSources.map((item) => <li><a href={item.source_url!} rel="nofollow noopener">{item.claim}</a> — supplier-stated, checked {item.captured_at?.slice(0,10) ?? 'on file'}</li>)}</ul>
+    <p class="mt-8">Trade prices, minimum order quantity, stock, lead time, project performance and applicable terms need a current supplier response. Source facts and AI image generation are reviewed separately.</p>
+  </article>
+</Base>

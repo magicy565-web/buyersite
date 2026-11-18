@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/common/PageHead.astro';
+import EnquiryForm from '../components/buyer/EnquiryForm';
+import { site } from '../config';
+import '../styles/conversion.css';
+---
+<Base title="Prepare a sourcing enquiry" noindex>
+  <div class="max-w-content mx-auto px-4 py-12 enquiry-page">
+    <PageHead kicker="Buying brief" title="Prepare your enquiry" lede="Put your specification, quantity and delivery requirements in one brief for the sourcing desk." />
+    <EnquiryForm client:load productName={site.productName} sourceUrl={site.sourceWebsite} siteSlug={site.slug} enabled={site.enquiriesEnabled} />
+    <noscript><p>The enquiry form needs JavaScript. Read the <a href={'/guides/' + site.guideSlug}>buying guide</a> to prepare your requirements.</p></noscript>
+  </div>
+</Base>

@@ -1,0 +1,55 @@
+
+> buyer-magazine-site@0.1.0 test:browser /workspace/scratch/5a20146a788d/buyersite
+> playwright test
+
+[WebServer] (node:380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:393) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 36 tests using 1 worker
+
+(node:432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect / (2.6s)
+  ✓   2 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.0s)
+  ✓   3 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (925ms)
+  ✓   4 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.4s)
+  ✓   5 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.2s)
+  ✓   6 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /products/ (1.4s)
+  ✓   7 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /products/cotton-canvas/ (1.6s)
+  ✓   8 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /products/soft-knit-fabric/ (1.3s)
+  ✓   9 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (1.3s)
+  ✓  10 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/synthetic-cotton-textiles/ (1.4s)
+  ✓  11 [desktop] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (664ms)
+  ✓  12 [desktop] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.3s)
+(node:681) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect / (2.2s)
+  ✓  14 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.5s)
+  ✓  15 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (1.2s)
+  ✓  16 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.6s)
+  ✓  17 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.7s)
+  ✓  18 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /products/ (1.4s)
+  ✓  19 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /products/cotton-canvas/ (2.1s)
+  ✓  20 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /products/soft-knit-fabric/ (2.0s)
+  ✓  21 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (1.2s)
+  ✓  22 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/synthetic-cotton-textiles/ (2.2s)
+  ✓  23 [mobile-390] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (801ms)
+  ✓  24 [mobile-390] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.1s)
+(node:941) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect / (1.8s)
+  ✓  26 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (773ms)
+  ✓  27 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (1.0s)
+  ✓  28 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (943ms)
+  ✓  29 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (984ms)
+  ✓  30 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /products/ (944ms)
+  ✓  31 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /products/cotton-canvas/ (1.1s)
+  ✓  32 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /products/soft-knit-fabric/ (1.1s)
+  ✓  33 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (999ms)
+  ✓  34 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/synthetic-cotton-textiles/ (1.1s)
+  ✓  35 [mobile-360] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (576ms)
+  ✓  36 [mobile-360] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.1s)
+
+  36 passed (55.6s)

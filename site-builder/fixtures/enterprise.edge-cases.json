@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "site_slug": "synthetic-industrial-testing",
+  "exported_at": "2026-11-13T00:00:00Z",
+  "enterprise": {
+    "id": "synthetic-industrial-only",
+    "revision": 2,
+    "company": {
+      "displayName": "UltraPrecisionManufacturingInternational & Components",
+      "description": "Synthetic industrial fixture for independent builds & safe source rendering. Literal text <script>alert(\"test\")</script> must never execute. No real company is represented.",
+      "website": "https://example.org"
+    },
+    "products": [
+      {
+        "id": "edge-01",
+        "name": "Precision Pump & Valve <A>",
+        "category": "Industrial components",
+        "description": "Synthetic pump record with A & B variants, \"quoted\" values and <untrusted> markup. No specification or availability is implied."
+      }
+    ]
+  },
+  "website_pages": [
+    {
+      "url": "https://example.org/catalog?category=pumps&region=en",
+      "title": "Synthetic source & catalog",
+      "captured_at": "2026-11-13T00:00:00Z",
+      "body_text": "Synthetic industrial source: Precision Pump & Valve <A>. This is only a software acceptance fixture, not a real website capture or verified supplier information."
+    }
+  ]
+}

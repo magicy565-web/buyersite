@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import EditionCover from '../components/editorial/EditionCover.astro';
+import SupplierFeature from '../components/editorial/SupplierFeature.astro';
+import ProductStory from '../components/editorial/ProductStory.astro';
+import BuyingChecklist from '../components/editorial/BuyingChecklist.astro';
+import Rundown from '../components/article/Rundown.astro';
+import { site } from '../config';
+import { getArticles, presentAll } from '../lib/content';
+import { loadEvidence, resolveEvidence } from '../lib/evidence';
+import { t } from '../i18n';
+
+const items = await presentAll(await getArticles());
+const lead = items.find((item) => item.data.featured) ?? items[0];
+const supplier = items.find((item) => item.data.pageType === 'supplier-profile' && item.id !== lead?.id);
+const guide = items.find((item) => item.data.pageType === 'buyer-guide');
+const products = items.filter((item) => item.data.pageType === 'product-editorial');
+const featuredProducts = products.filter((item) => item.id !== lead?.id).slice(0, 3);
+const displayed = new Set([lead?.id, supplier?.id, guide?.id, ...featuredProducts.map((item) => item.id)]);
+const furtherReading = items.filter((item) => !displayed.has(item.id));
+const evidence = loadEvidence();
+const notesFor = (item: (typeof items)[number]) => resolveEvidence(item.data.evidenceRefs, evidence);
+const ui = t(Astro.currentLocale ?? site.locale);
+---
+
+<Base nameplate={false} description={site.description} image={lead?.data.hero}>
+  {lead && <EditionCover title={site.name} lead={lead} context={lead.desk.data.name} />}
+  <div class="editorial-container">
+    {lead?.data.pageType === 'product-editorial' && (
+      <ProductStory item={lead} notes={notesFor(lead)} heroAlreadyShown />
+    )}
+    {supplier && <SupplierFeature item={supplier} notes={notesFor(supplier)} />}
+    {featuredProducts.length > 0 && (
+      <div class="editorial-archive-heading">
+        <h2>{ui.editorial.moreProducts}</h2>
+        <a href={'/' + featuredProducts[0].desk.id}>{ui.editorial.browseDesk}</a>
+      </div>
+    )}
+    {featuredProducts.map((item) => <ProductStory item={item} notes={notesFor(item)} />)}
+    <BuyingChecklist guide={guide} />
+    {furtherReading.length > 0 && (
+      <section class="editorial-section" aria-labelledby="more-reading">
+        <div class="editorial-archive-heading"><h2 id="more-reading">{ui.editorial.moreReading}</h2></div>
+        <Rundown items={furtherReading} />
+      </section>
+    )}
+  </div>
+</Base>

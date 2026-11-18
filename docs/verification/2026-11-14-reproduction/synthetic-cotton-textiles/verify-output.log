@@ -1,0 +1,5 @@
+
+> buyer-magazine-site@0.1.0 verify:output /workspace/scratch/5a20146a788d/buyersite
+> node scripts/verify-output.mjs
+
+Verified 5 core routes and all 11 HTML files: evidence, private indexing, canonical, structured data, local links/assets and enquiry. Not publication acceptance.

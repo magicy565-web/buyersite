@@ -1,0 +1,51 @@
+.conversion-note { max-width: 66ch; margin-block: 1rem; color: var(--muted); line-height: 1.6; }
+.conversion-form { margin-block-start: 2rem; }
+.conversion-form fieldset { display: grid; gap: 1.25rem; margin-block: 0 2rem; min-width: 0; border-block-start: 2px solid var(--foreground); padding-block-start: 1.4rem; }
+.conversion-form legend { padding-inline-end: .8rem; font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; }
+.conversion-form label, .sourcing-composer > label { display: block; font-family: var(--font-heading); font-size: .95rem; line-height: 1.5; }
+.conversion-input, .buyer-dialog .conversion-input { display: block; width: 100%; min-width: 0; margin-block-start: .4rem; padding: .8rem; border: 1px solid var(--border); background: var(--background); color: var(--foreground); font-family: var(--font-heading); font-size: 1rem; font-weight: 400; line-height: 1.5; }
+.conversion-input:focus-visible, .conversion-form button:focus-visible, .sourcing-dialog button:focus-visible { outline: 2px solid var(--foreground); outline-offset: 3px; }
+.conversion-input::placeholder { color: var(--muted); opacity: 1; }
+textarea.conversion-input { resize: vertical; }
+.conversion-field-pair { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1rem; }
+.conversion-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-block-start: 1rem; }
+.conversion-submit, .conversion-secondary, .buyer-dialog .conversion-submit, .buyer-dialog .conversion-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: .75rem 1rem; border: 1px solid var(--foreground); font-family: var(--font-heading); font-size: .95rem; font-weight: 600; line-height: 1.3; cursor: pointer; }
+.conversion-submit, .buyer-dialog .conversion-submit { background: var(--foreground); color: var(--background); }
+.conversion-secondary, .buyer-dialog .conversion-secondary { background: var(--background); color: var(--foreground); }
+.conversion-submit:disabled, .conversion-secondary:disabled { opacity: .6; cursor: progress; }
+.conversion-form .conversion-consent { display: flex; align-items: start; gap: .7rem; font-weight: 400; }
+.conversion-consent input { flex: 0 0 auto; width: 1.2rem; height: 1.2rem; margin-block-start: .13rem; accent-color: var(--foreground); }
+.conversion-error { margin-block: .9rem; border-inline-start: 3px solid var(--foreground); padding-inline-start: .9rem; font-weight: 600; line-height: 1.5; }
+.enquiry-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.enquiry-receipt { margin-block: 1.5rem; padding-block: 1.5rem; border-block: 2px solid var(--foreground); }
+.enquiry-receipt h2 { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; }
+.enquiry-receipt p { margin-block: .75rem; }
+.enquiry-receipt dl { margin-block: 1.25rem; display: grid; gap: .75rem; }
+.enquiry-receipt dt { font-weight: 600; }
+.enquiry-receipt dd { overflow-wrap: anywhere; }
+.enquiry-receipt code { font-size: .9rem; }
+.sourcing-dialog { width: min(44rem, calc(100% - 1.5rem)); padding: 1.5rem; }
+.sourcing-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-block-end: 2px solid var(--foreground); padding-block-end: .8rem; }
+.sourcing-dialog-heading h2 { font-family: var(--font-heading); font-size: 1.65rem; font-weight: 700; }
+.buyer-dialog .sourcing-close { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; font-size: 2rem; }
+.sourcing-transcript { max-height: 35dvh; overflow-y: auto; overscroll-behavior: contain; }
+.sourcing-empty { margin-block: 1rem 1.5rem; font-size: 1.25rem; }
+.sourcing-message { margin-block: .8rem 1.4rem; padding-block-end: .8rem; border-block-end: 1px solid var(--border); overflow-wrap: anywhere; }
+.sourcing-message-label { margin-block-end: .35rem; font-family: var(--font-heading); font-size: .8rem; font-weight: 700; }
+.sourcing-message-user { padding-inline-start: 1rem; border-inline-start: 2px solid var(--foreground); }
+.sourcing-message > p:not(.sourcing-message-label) { line-height: 1.6; }
+.sourcing-composer { margin-block-start: 1rem; }
+.sourcing-next { display: flex; flex-wrap: wrap; gap: .6rem 1.25rem; margin-block-start: 1.25rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); font-family: var(--font-heading); font-size: .9rem; }
+.source-guide h3 { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; margin-block-start: 1.5rem; }
+.source-guide-results { margin-block-start: 1.5rem; max-height: 40dvh; overflow-y: auto; overscroll-behavior: contain; }
+.source-guide-results h4 { font-family: var(--font-heading); font-weight: 700; }
+.source-guide-results li { margin-block-start: 1rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); line-height: 1.6; }
+.source-guide-claim { font-family: var(--font-heading); font-weight: 600; }
+.source-guide-meta { margin-block-start: .4rem; font-family: var(--font-heading); font-size: .8rem; color: var(--muted); }
+.source-guide-links { display: flex; flex-wrap: wrap; gap: .6rem 1rem; margin-block-start: .5rem; font-family: var(--font-heading); font-size: .85rem; }
+@media (max-width: 480px) {
+  .conversion-field-pair { grid-template-columns: minmax(0,1fr); }
+  .conversion-actions > * { flex: 1 1 auto; }
+  .sourcing-dialog { padding: 1rem; }
+  .sourcing-dialog-heading h2 { font-size: 1.4rem; }
+}

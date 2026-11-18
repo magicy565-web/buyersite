@@ -1,0 +1,34 @@
+---
+import type { Item } from '../../lib/content';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/editorial.css';
+
+interface Props { guide?: Item; compact?: boolean; id?: string; }
+const { guide, compact = false, id = 'buying-checklist' } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const questions = [
+  [ui.editorial.checkUseTitle, ui.editorial.checkUseDetail],
+  [ui.editorial.checkQuantityTitle, ui.editorial.checkQuantityDetail],
+  [ui.editorial.checkEvidenceTitle, ui.editorial.checkEvidenceDetail],
+  [ui.editorial.checkTermsTitle, ui.editorial.checkTermsDetail],
+];
+---
+
+<section class:list={['buying-checklist', 'editorial-section', compact && 'buying-checklist-compact']}
+  data-editorial-block="checklist" aria-labelledby={id}>
+  <div class="buying-checklist-intro">
+    <p class="editorial-section-label">{ui.editorial.buyingGuide}</p>
+    <h2 id={id}>{guide?.data.title ?? ui.editorial.checklistTitle}</h2>
+    <p class="editorial-deck">{guide?.data.deck ?? ui.editorial.checklistIntro}</p>
+    {guide && <a class="editorial-text-link" href={guide.href}>{ui.editorial.readBuyingGuide}</a>}
+  </div>
+  <div class="buying-checklist-questions">
+    <dl>
+      {questions.map(([title, detail]) => (
+        <div><dt>{title}</dt><dd>{detail}</dd></div>
+      ))}
+    </dl>
+    <a class="buyer-action editorial-enquiry-link" href="/enquiry">{ui.prepareEnquiry}</a>
+  </div>
+</section>

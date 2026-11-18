@@ -1,0 +1,40 @@
+{
+  "verified_at": "2026-11-18T13:52:06.392Z",
+  "source_commit": "ba1c3761f0fc4e4cf899ca1291703202bc649d5e",
+  "deployment_id": "appgdep_6afdac313b488191bbce94ee3151bbd0",
+  "url": "https://buyersite.magicy565.chatgpt.site/",
+  "access": "public",
+  "artifact_sha256": "5d6d0509287e99e4819b2255b42cdd910bf9417f9d2289ea693b2d20c6c73281",
+  "homepage_status": 200,
+  "canonical": "https://buyersite.magicy565.chatgpt.site/",
+  "homepage_robots": "index, follow, max-image-preview:large",
+  "robots_and_sitemap_status": 200,
+  "public_inbox_status": 401,
+  "search_result_count": 2,
+  "search_test_query": "wool",
+  "browser_receipt_id": "309a7625-b82f-4108-b869-e52c6aefcde1",
+  "receipt_verified_by_owner_api": true,
+  "test_archived": true,
+  "feedback_counts": {
+    "total": 2,
+    "new": 0,
+    "qualified": 0,
+    "archived": 2
+  },
+  "event_collection": "Actual hosted aggregates observed; contains QA and automated traffic, not validated customer acquisition.",
+  "screenshots": [
+    {
+      "path": "docs/verification/2026-11-18-launch/screenshots/public-home.jpg",
+      "sha256": "7bb22ecab20f07ca9fc1ec5594c6aa168676f442e912e36766835e60ce992f35"
+    },
+    {
+      "path": "docs/verification/2026-11-18-launch/screenshots/public-search.jpg",
+      "sha256": "6deb453865a0cf6aebd12d8303e51be94bfbef92e6ade6c2d0a2e0f66e84c3da"
+    },
+    {
+      "path": "docs/verification/2026-11-18-launch/screenshots/public-enquiry-receipt.jpg",
+      "sha256": "ddee4d250179b3b1e6412d18a7260657f60c1560e4efe7c3f7409443a62607fa"
+    }
+  ],
+  "evidence": "docs/verification/2026-11-18-launch/public-feedback-acceptance.json"
+}

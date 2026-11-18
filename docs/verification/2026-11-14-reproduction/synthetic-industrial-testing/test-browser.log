@@ -1,0 +1,52 @@
+
+> buyer-magazine-site@0.1.0 test:browser /workspace/scratch/5a20146a788d/buyersite
+> playwright test
+
+[WebServer] (node:1421) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:1434) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 33 tests using 1 worker
+
+(node:1473) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect / (2.5s)
+  ✓   2 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.0s)
+  ✓   3 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (993ms)
+  ✓   4 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.4s)
+  ✓   5 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.3s)
+  ✓   6 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /products/ (1.6s)
+  ✓   7 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /products/precision-pump-valve-a/ (1.5s)
+  ✓   8 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (1.7s)
+  ✓   9 [desktop] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ultraprecisionmanufacturinginternational-component/ (1.4s)
+  ✓  10 [desktop] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (715ms)
+  ✓  11 [desktop] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.5s)
+(node:1698) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  12 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect / (2.6s)
+  ✓  13 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.2s)
+  ✓  14 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (1.2s)
+  ✓  15 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.4s)
+  ✓  16 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (1.9s)
+  ✓  17 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /products/ (1.6s)
+  ✓  18 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /products/precision-pump-valve-a/ (2.3s)
+  ✓  19 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (1.6s)
+  ✓  20 [mobile-390] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ultraprecisionmanufacturinginternational-component/ (2.1s)
+  ✓  21 [mobile-390] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (653ms)
+  ✓  22 [mobile-390] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.2s)
+(node:1934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  23 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect / (1.8s)
+  ✓  24 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /colophon/ (1.0s)
+  ✓  25 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /enquiry/ (804ms)
+  ✓  26 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/ (1.1s)
+  ✓  27 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /guides/buyer-enquiry-guide/ (983ms)
+  ✓  28 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /products/ (1.0s)
+  ✓  29 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /products/precision-pump-valve-a/ (1.2s)
+  ✓  30 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ (967ms)
+  ✓  31 [mobile-360] › tests/browser/review.spec.ts:30:3 › read and inspect /suppliers/ultraprecisionmanufacturinginternational-component/ (992ms)
+  ✓  32 [mobile-360] › tests/browser/review.spec.ts:105:1 › download an unsent enquiry brief without a network submission (590ms)
+  ✓  33 [mobile-360] › tests/browser/review.spec.ts:136:1 › navigate, go back and refresh a deep link (1.1s)
+
+  33 passed (50.8s)

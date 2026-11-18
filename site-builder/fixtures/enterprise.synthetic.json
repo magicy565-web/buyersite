@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "site_slug": "synthetic-cotton-textiles",
+  "exported_at": "2026-11-13T00:00:00Z",
+  "enterprise": {
+    "id": "synthetic-testing-only",
+    "revision": 1,
+    "company": {
+      "displayName": "Synthetic Cotton Textiles",
+      "description": "This is synthetic test material used to verify that a website template loads correct enterprise product metadata. No real supplier is represented.",
+      "website": "https://example.com"
+    },
+    "products": [
+      {
+        "id": "synthetic-product-01",
+        "name": "Cotton Canvas",
+        "category": "Textile Materials",
+        "description": "This synthetic catalog sample describes a cotton textile. Specification, MOQ, price, certification and delivery time are not supplied."
+      },
+      {
+        "id": "synthetic-product-02",
+        "name": "Soft Knit Fabric",
+        "category": "Textile Materials",
+        "description": "Synthetic sample of knitted material for a software build validation only, with no guaranteed commercial specifications."
+      }
+    ]
+  },
+  "website_pages": [
+    {
+      "url": "https://example.com/catalog",
+      "title": "Synthetic company catalog",
+      "captured_at": "2026-11-13T00:00:00Z",
+      "body_text": "Synthetic Cotton Textiles describes cotton canvas and soft knit fabric in an illustrative catalog. This source exists only inside the automated site builder test fixture. It is not a real supplier website capture or a production permission to publish."
+    }
+  ]
+}

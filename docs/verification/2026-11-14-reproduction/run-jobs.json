@@ -1,0 +1,34 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 131723811219,
+      "run_id": 43376406689,
+      "workflow_name": "Buyer Site Builder private preview checks",
+      "head_branch": "feat/company-to-buyer-site-v0-1",
+      "run_url": "https://api.github.com/repos/magicy565-web/buyersite/actions/runs/43376406689",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVlAryc8AAAAeq1nZkw",
+      "head_sha": "e60909ce5aca7e349ef7a1a93afc958fa31f17bf",
+      "url": "https://api.github.com/repos/magicy565-web/buyersite/actions/jobs/131723811219",
+      "html_url": "https://github.com/magicy565-web/buyersite/actions/runs/43376406689/job/131723811219",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-13T06:06:37Z",
+      "started_at": "2026-11-13T06:06:37Z",
+      "completed_at": "2026-11-13T06:06:40Z",
+      "name": "verify",
+      "steps": [
+
+      ],
+      "check_run_url": "https://api.github.com/repos/magicy565-web/buyersite/check-runs/131723811219",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    }
+  ]
+}

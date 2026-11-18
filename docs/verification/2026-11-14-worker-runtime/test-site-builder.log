@@ -1,0 +1,25 @@
+
+> buyer-magazine-site@0.1.0 test:site-builder /workspace/scratch/5a20146a788d/buyersite
+> node --test site-builder/*.test.mjs
+
+✔ captures bounded HTML text from a pinned public HTTPS host only (16.214119ms)
+✔ honours robots exclusion and rejects rebinding to a private host (3.921767ms)
+✔ authenticated export plus collector snapshot writes a private supplier edition (161.026586ms)
+✔ generates source-backed private publication contracts, not claims of deployment (4.993821ms)
+✔ rejects missing capture, unrelated domains and falsified snapshot hashes (1.724671ms)
+✔ protects against unsafe source URLs and unsupported versions (0.347363ms)
+✔ empty product library still yields honest supplier profile and enquiry guidance (1.182567ms)
+✔ writes isolated Astro content with escaped source text and immutable hash directory (266.690323ms)
+✔ native Studio job binds the actual source bytes and allowlists public-facing fields (137.687939ms)
+✔ rejects cross-enterprise input, altered bytes and missing capture permission before calling the collector (3.845076ms)
+✔ durable local worker queues one site build and serves only tenant-bound private routes (172.736159ms)
+✔ worker rejects a browser-chosen enterprise, wrong output kind and unsafe binding (16.595761ms)
+✔ a failed durable job can be replayed without replacing its frozen source (37.114519ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 718.176299

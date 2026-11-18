@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "result": "PASS",
+  "synthetic_only": true,
+  "production_deployed": false,
+  "first_job": {
+    "id": "2e3c6ab3-8e5b-416b-9da7-6f1ab777ddd1",
+    "state": "READY",
+    "revision": "site_204eff471f8027ea5f4abc36",
+    "artifact_sha256": "204eff471f8027ea5f4abc3664f0572abaa516749979cbc52a6c663aeff4c7f4"
+  },
+  "second_job": {
+    "id": "006feb05-c071-49f1-a57c-c819353849af",
+    "state": "READY",
+    "revision": "site_c2b88932e8830e7605be8be7",
+    "artifact_sha256": "c2b88932e8830e7605be8be76a749d5bac1105a3c0f8e3a3276e767e0311441d"
+  },
+  "builds": 2,
+  "private_preview_status": 200,
+  "previous_content_leaked": false,
+  "duplicate_slug_warnings": false,
+  "ready_job_rebuilt_after_restart": false
+}
