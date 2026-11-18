@@ -10,6 +10,7 @@ const evidence: { evidence_id: string; claim: string; value: string }[] = JSON.p
 );
 const site = edition ? JSON.parse(readFileSync(join(edition, 'site.json'), 'utf8')) : null;
 const visualPlan = edition ? JSON.parse(readFileSync(join(edition, 'visual-plan.json'), 'utf8')) : null;
+const mediaReport = edition ? JSON.parse(readFileSync(join(edition, 'media-report.json'), 'utf8')) : null;
 // Exercise every generated HTML route, including desk fronts and standing pages.
 const routes = readdirSync('dist', { recursive: true })
   .map(String)
@@ -166,4 +167,18 @@ test('private enterprise editions use one curated profile and distinct article a
     seen.add(asset!);
   }
   expect(seen.size).toBe(visualPlan.images.length);
+});
+
+test('private article pages show the correct rights or AI-art provenance labels', async ({ page }) => {
+  test.skip(!mediaReport, 'Applies to generated enterprise editions');
+  for (const item of mediaReport.images as { page_id: string; kind: string; alt: string; credit: string; caption: string }[]) {
+    const route = contracts.find((contract: any) => contract.page_id === item.page_id);
+    expect(route).toBeTruthy();
+    await page.goto(route!.path);
+    await expect(page.locator('img[alt="' + item.alt.replaceAll('"', '\\"') + '"]').first()).toBeVisible();
+    await expect(page.getByText(item.credit, { exact: false }).first()).toBeVisible();
+    if (item.kind !== 'licensed-photo') {
+      await expect(page.getByText(item.caption, { exact: false }).first()).toBeVisible();
+    }
+  }
 });
