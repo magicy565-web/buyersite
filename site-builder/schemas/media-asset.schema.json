@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://buyer-magazine.local/schemas/media-asset/v1",
+  "title": "Frozen rights-attested Buyer Magazine Media Asset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["asset_id", "page_id", "sha256", "alt", "credit", "rights"],
+  "properties": {
+    "asset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$" },
+    "page_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "alt": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "credit": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "scope", "grant_sha256", "granted_by", "approved_at", "allow_resize", "allow_crop"],
+      "properties": {
+        "status": { "type": "string", "enum": ["approved-public", "review-only", "unknown", "denied"] },
+        "scope": { "type": "string", "const": "buyer-magazine-site" },
+        "grant_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "granted_by": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "approved_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": ["string", "null"], "format": "date-time" },
+        "allow_resize": { "type": "boolean" },
+        "allow_crop": { "type": "boolean" }
+      }
+    }
+  }
+}
