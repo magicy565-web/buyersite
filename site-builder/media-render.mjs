@@ -12,6 +12,7 @@ const fail = (code, message) => { throw new MediaRenderError(code, message); };
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 async function licensedBytes({ asset, enterpriseId, mediaRoot }) {
+  if (asset.expires_at && Date.parse(asset.expires_at) <= Date.now()) fail('APPROVED_MEDIA_RIGHTS_EXPIRED', 'Publication rights expired before rendering');
   if (typeof mediaRoot !== 'string' || !isAbsolute(mediaRoot)) fail('APPROVED_MEDIA_ROOT_REQUIRED', 'Configured private absolute media root required for licensed photography');
   if (typeof enterpriseId !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$/.test(enterpriseId)) fail('APPROVED_MEDIA_TENANT_INVALID', 'Unsafe tenant identifier');
   const root = await realpath(mediaRoot);
