@@ -1,6 +1,6 @@
 # Buyersite decision-flow delivery and acceptance
 
-**Status:** three-stage implementation and local acceptance complete; public-mode build/output/release gates passed. **Current-version deployment and D1 acceptance remain pending evidence below.** The reviewed edition is Material Notes, the source-based Burel Factory pilot. This record does not promote synthetic checks into customer or hosted acceptance.
+**Status:** three-stage implementation and local acceptance complete; public-mode build/output/release gates passed. **Hosted deployment, browser receipt recovery and native D1 context read-back passed; their evidence and limits are recorded below.** The reviewed edition is Material Notes, the source-based Burel Factory pilot. Synthetic checks are not customer-demand evidence.
 
 [Source-bound interactive AI review](2026-11-19-review.json): `76fdf7b32ede89a993d33e28c57b2e3c759d6d8fbf8289646035ac2a51c97272`. Raw execution timestamps are retained in the evidence; the filename is the delivery label.
 
@@ -39,7 +39,7 @@ A synthetic browser enquiry reached the **real local Worker and SQLite**: receip
 
 Minimal successful receipts use session storage; contacts and raw conversations are not retained there. Restored downloads contain the receipt only, and “Prepare another enquiry” clears it. This does not recover unacknowledged requests after refresh or provide cross-device access. DNT/GPC suppresses attribution; successful submission clears journey state. Same-key retries, legacy hashes and reordered-question replay passed real-SQLite tests. Snapshots retain their submission-time revision; public/private visibility changes can produce another knowledge revision.
 
-[Migration 0002](../../drizzle/0002_enquiry_context.sql) adds four nullable columns and an index without inventing historical attribution. **Apply it after 0000/0001 before switching the new Worker**, whose enquiry/feedback queries require these columns. Local compatibility is proven; production execution is separate.
+[Migration 0002](../../drizzle/0002_enquiry_context.sql) adds four nullable columns and an index without inventing historical attribution. **Apply it after 0000/0001 before switching the new Worker**, whose enquiry/feedback queries require these columns. Local compatibility and production migration were verified; native D1 read-back confirmed all four columns and preservation of both legacy rows.
 
 ## Enterprise scope and external limits
 
