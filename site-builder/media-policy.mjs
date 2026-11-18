@@ -57,9 +57,11 @@ export function planMedia(articles, assets = [], asOf = new Date().toISOString()
   const pages = new Set(articles.map((article) => article.slug));
   if (pages.size !== articles.length || articles.some((a) => !ID.test(a.slug || ''))) reject('MEDIA_ARTICLES_INVALID', 'Article paths must be unique and safe');
   if (normalized.some((asset) => !pages.has(asset.page_id))) reject('MEDIA_PAGE_UNKNOWN', 'Image must target an existing page');
+  const usedImageHashes = new Set();
   const selections = articles.map((article) => {
     const candidates = normalized.filter((asset) => asset.page_id === article.slug);
-    const licensed = candidates.find((asset) => asset.approved);
+    const licensed = candidates.find((asset) => asset.approved && !usedImageHashes.has(asset.sha256));
+    if (licensed) usedImageHashes.add(licensed.sha256);
     return licensed ? {
       page_id: article.slug, media_kind: 'licensed-photo', asset_id: licensed.asset_id,
       source_sha256: licensed.sha256, grant_sha256: licensed.grant_sha256,
