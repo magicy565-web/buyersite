@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import pilot from '../src/data/pilot.json' with { type: 'json' };
 if (process.env.BUYERSITE_BUILD_ROOT) {
-  console.log('Enterprise edition: only original generated artwork is used; no pilot supplier photos fetched.');
+  console.log('Enterprise edition: licensed images use private SHA storage; AI concepts require explicit consent; no public website photos are fetched.');
   process.exit(0);
 }
 await mkdir('src/assets/review', { recursive: true });
