@@ -34,7 +34,13 @@ for (const route of routes)
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('requestfailed', (request) => errors.push('Request failed: ' + request.url()));
     page.on('response', (response) => {
-      if (response.status() >= 400) errors.push(response.status() + ': ' + response.url());
+      // Aggregate analytics are best-effort and rate limited per client (60/min). A full
+      // regression run from one loopback address exceeds that by design; a dropped event is
+      // not a page failure. Every other 4xx/5xx still fails the page.
+      const throttledEvent =
+        response.status() === 429 && new URL(response.url()).pathname === '/api/events';
+      if (response.status() >= 400 && !throttledEvent)
+        errors.push(response.status() + ': ' + response.url());
     });
     const response = await page.goto(route);
     expect(response?.status()).toBe(200);
