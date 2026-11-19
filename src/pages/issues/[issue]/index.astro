@@ -1,0 +1,13 @@
+---
+import MagazineConceptLayout from '../../../layouts/MagazineConceptLayout.astro';
+import Issue from '../../../components/magazine/Issue.astro';
+import chongker from '../../../data/magazine-issues/chongker-concept.json';
+import { assertMagazineIssue } from '../../../magazine/issue-contract.mjs';
+export function getStaticPaths(){
+  return process.env.BUYERSITE_MAGAZINE_CONCEPT_PREVIEW === '1'
+    ? [{params:{issue:'chongker-concept'}}]
+    : [];
+}
+const issue=assertMagazineIssue(chongker);
+---
+<MagazineConceptLayout title={issue.brand+' — '+issue.title+' (concept)'} description={issue.deck}><Issue issue={issue}/></MagazineConceptLayout>

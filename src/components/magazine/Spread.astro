@@ -1,0 +1,38 @@
+---
+import Media from './Media.astro';
+interface Props { spread: any; assets: Record<string,any>; brand: string; }
+const {spread,assets,brand}=Astro.props;
+const media=spread.assetIds.map((id:string)=>assets[id]);
+---
+<section id={spread.id} class:list={['mi-spread','mi-'+spread.kind]} data-layout={spread.kind}>
+  {spread.kind==='cover' && <>
+    <div class="mi-cover-copy"><p class="mi-kicker">{spread.kicker}</p><strong class="mi-brand-large">{brand}</strong><h1>{spread.title}</h1><p class="mi-deck">{spread.deck}</p><a class="mi-link" href="#contents">Open the issue ↗</a></div>
+    <Media asset={media[0]} className="mi-cover-image" />
+  </>}
+  {spread.kind==='contents' && <>
+    <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p></div>
+    <Media asset={media[0]} className="mi-tall"/>
+    <nav class="mi-toc" aria-label="Issue contents">{spread.chapters.map((chapter:any)=><a href={'#'+chapter.target}><span>{chapter.number}</span>{chapter.title}<span>↗</span></a>)}</nav>
+  </>}
+  {spread.kind==='story' && <>
+    <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p><div class="mi-prose">{spread.paragraphs?.map((paragraph:string)=><p>{paragraph}</p>)}</div></div>
+    <Media asset={media[0]} className="mi-tall"/>
+  </>}
+  {spread.kind==='craft' && <>
+    <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p><div class="mi-prose">{spread.paragraphs?.map((paragraph:string)=><p>{paragraph}</p>)}</div></div>
+    <div class="mi-craft-images">{media.map((asset:any)=><Media asset={asset}/>)}</div>
+  </>}
+  {spread.kind==='gallery' && <>
+    <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p></div>
+    <div class="mi-gallery-images">{media.map((asset:any)=><Media asset={asset}/>)}</div>
+  </>}
+  {spread.kind==='notes' && <>
+    <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p><Media asset={media[0]}/></div>
+    <div class="mi-note-ledger"><p class="mi-kicker">OPEN QUESTIONS / NOT VERIFIED FACTS</p>{spread.questions.map((item:any,i:number)=><article><span>{String(i+1).padStart(2,'0')}</span><div><h3>{item.title}</h3><p>{item.body}</p></div><small>TO VERIFY</small></article>)}</div>
+  </>}
+  {spread.kind==='sourcing' && <>
+    <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p><label for="mi-brief">What would you like to source?</label><textarea id="mi-brief" rows="4" maxlength="500" placeholder="Describe your product idea or sourcing question"></textarea><button id="mi-prepare" type="button">Prepare a local brief ↗</button><output id="mi-result" hidden></output><p class="mi-disclaimer">Private prototype: this drafts text locally and does not contact a supplier or submit an enquiry.</p></div>
+    <Media asset={media[0]} className="mi-tall"/>
+  </>}
+  {spread.kind!=='cover' && <div class="mi-folio"><span>{brand} / CONCEPT ISSUE</span><span>{spread.folio}</span></div>}
+</section>

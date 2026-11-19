@@ -1,0 +1,8 @@
+---
+interface Props { asset: { src: string; alt: string; credit: string }; className?: string; }
+const { asset, className = '' } = Astro.props;
+---
+<figure class:list={['mi-media',className]}>
+  <img src={asset.src} alt={asset.alt} loading="lazy" decoding="async" width="900" height="1000" />
+  <figcaption>{asset.credit}</figcaption>
+</figure>
