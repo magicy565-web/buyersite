@@ -1,0 +1,254 @@
+/*
+  pageturn.css -- paper, print furniture and the page turn.
+
+  Paper: a fine grain over the page colour, drawn from an inline SVG noise filter (no image
+  request), multiplied so it darkens the paper and never the ink's contrast below AA. On wide
+  screens the right edge shows the block of pages still to come, thinning as the reader nears
+  the last folio.
+
+  The turn: a cross-document view transition. Forward, the outgoing page lifts from its outer
+  edge and turns about the spine (left) while the next page lies beneath it. Back, the previous
+  page turns in over the current one. The header bar is the binding: it does not turn.
+*/
+
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- Paper */
+body {
+  position: relative;
+  isolation: isolate;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .28 0 0 0 0 .22 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) body::before {
+    opacity: 0.1;
+    mix-blend-mode: screen;
+  }
+}
+:root[data-theme='dark'] body::before {
+  opacity: 0.1;
+  mix-blend-mode: screen;
+}
+/* The fore-edge: the pages still to turn, seen from the side. */
+@media (min-width: 80rem) {
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 7px;
+    z-index: 30;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to right,
+      var(--border) 0 1px,
+      transparent 1px 2px
+    );
+    opacity: 0.9;
+  }
+}
+
+/* ---------------------------------------------------------------- Running head and foot */
+.running-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  width: 100%;
+  max-width: var(--wide-width);
+  margin: 0 auto;
+  padding: 0.55rem clamp(1rem, 3vw, 2rem) 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.running-head span:nth-child(2) {
+  margin-inline-end: auto;
+}
+.running-folio {
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 47.99rem) {
+  .running-head span:first-child {
+    display: none;
+  }
+}
+.page-foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+  width: 100%;
+  max-width: var(--wide-width);
+  margin: clamp(3rem, 7vw, 6rem) auto 0;
+  padding: 1rem clamp(1rem, 3vw, 2rem) 0;
+  border-top: 1px solid var(--foreground);
+}
+.page-foot-link {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 44px;
+  padding-block: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+}
+.page-foot-link--next {
+  text-align: end;
+}
+.page-foot-dir {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+.page-foot-title {
+  font-family: var(--mag-display, var(--font-body));
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.3;
+}
+.page-foot-link:hover .page-foot-title {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.page-foot-folio {
+  padding-top: 0.2rem;
+  font-family: var(--mag-display, var(--font-body));
+  font-size: 1.6rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- Turn tabs (page corners) */
+.turn-tab {
+  display: none;
+}
+@media (min-width: 80rem) and (hover: hover) {
+  .turn-tab {
+    position: fixed;
+    top: 50%;
+    z-index: 35;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 7rem;
+    margin-top: -3.5rem;
+    border: 1px solid var(--foreground);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-decoration: none;
+    writing-mode: vertical-rl;
+    opacity: 0.55;
+    transition: opacity 160ms ease-out, transform 160ms ease-out;
+  }
+  .turn-tab--prev {
+    left: 0;
+    border-left: 0;
+    transform: rotate(180deg);
+  }
+  .turn-tab--next {
+    right: 7px;
+    border-right: 0;
+  }
+  .turn-tab:hover {
+    opacity: 1;
+  }
+  .turn-tab--next:hover {
+    transform: translateX(-3px);
+  }
+  .turn-tab--prev:hover {
+    transform: rotate(180deg) translateX(-3px);
+  }
+}
+
+/* ---------------------------------------------------------------- The turn */
+.bar {
+  view-transition-name: binding;
+}
+::view-transition-group(root) {
+  animation-duration: 560ms;
+}
+html:active-view-transition-type(forward)::view-transition-old(root) {
+  z-index: 2;
+  transform-origin: left center;
+  animation: page-turn-away 560ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+html:active-view-transition-type(forward)::view-transition-new(root) {
+  z-index: 1;
+  animation: page-beneath 560ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+html:active-view-transition-type(back)::view-transition-new(root) {
+  z-index: 2;
+  transform-origin: left center;
+  animation: page-turn-in 560ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+html:active-view-transition-type(back)::view-transition-old(root) {
+  z-index: 1;
+  animation: page-covered 560ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+@keyframes page-turn-away {
+  0% {
+    transform: perspective(2400px) rotateY(0deg);
+    filter: brightness(1);
+  }
+  60% {
+    filter: brightness(0.82);
+  }
+  100% {
+    transform: perspective(2400px) rotateY(-92deg);
+    filter: brightness(0.6);
+  }
+}
+@keyframes page-beneath {
+  from {
+    transform: scale(0.985);
+    filter: brightness(0.88);
+  }
+  to {
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes page-turn-in {
+  from {
+    transform: perspective(2400px) rotateY(-92deg);
+    filter: brightness(0.6);
+  }
+  to {
+    transform: perspective(2400px) rotateY(0deg);
+    filter: brightness(1);
+  }
+}
+@keyframes page-covered {
+  to {
+    transform: scale(0.985);
+    filter: brightness(0.85);
+  }
+}
+@media print {
+  body::before,
+  body::after,
+  .turn-tab {
+    display: none;
+  }
+}

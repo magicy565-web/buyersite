@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://buyersite.invalid/schemas/layout-plan.v2.json",
+  "title": "Buyersite layout plan",
+  "description": "Structural shape only. validateLayoutPlan() additionally checks plan_sha256 and page coverage; validate-content re-plans the pack and rejects drift.",
+  "type": "object",
+  "required": ["schema_version", "design_family", "signals", "rationale", "home", "pages", "plan_sha256"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "2.0.0" },
+    "design_family": { "enum": ["editorial-prestige", "editorial-journal", "technical-dossier", "catalog-index", "sparse-brief"] },
+    "signals": {
+      "type": "object",
+      "required": ["product_count", "article_count", "evidence_count", "facts_per_product", "numeric_fact_ratio", "media_strength_max", "media_strength_min", "name_length", "category_direction"],
+      "properties": {
+        "product_count": { "type": "integer", "minimum": 0 },
+        "article_count": { "type": "integer", "minimum": 0 },
+        "evidence_count": { "type": "integer", "minimum": 0 },
+        "facts_per_product": { "type": "number", "minimum": 0 },
+        "numeric_fact_ratio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "media_strength_max": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "media_strength_min": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "name_length": { "type": "integer", "minimum": 0 },
+        "category_direction": { "enum": ["atelier", "industrial", "editorial"] }
+      }
+    },
+    "rationale": { "type": "array", "items": { "type": "string", "maxLength": 240 } },
+    "home": {
+      "type": "object",
+      "required": ["cover", "blocks", "show_media"],
+      "additionalProperties": false,
+      "properties": {
+        "cover": { "enum": ["split", "immersive", "typographic"] },
+        "blocks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["index", "lead-ledger", "supplier", "products", "catalog", "questions", "reading", "trust"] }
+        },
+        "show_media": { "type": "boolean" }
+      }
+    },
+    "pages": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["hero", "ledger", "show_media"],
+        "additionalProperties": false,
+        "properties": {
+          "hero": { "enum": ["split", "split-reverse", "text-led", "marginal"] },
+          "ledger": { "enum": ["figures", "table"] },
+          "show_media": { "type": "boolean" }
+        }
+      }
+    },
+    "plan_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

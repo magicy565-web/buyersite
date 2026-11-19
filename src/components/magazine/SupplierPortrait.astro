@@ -38,7 +38,7 @@ const headingId = `supplier-${item.id}`;
         {notes.slice(0, 3).map((note) => (
           <div>
             <dt>{note.claim}</dt>
-            <dd class="portrait-fact-value">{note.value}</dd>
+            <dd class:list={['portrait-fact-value', note.value.length > 48 && 'portrait-fact-value--text']}>{note.value}</dd>
             <dd class="portrait-fact-source">
               <a href={'/sources/#' + note.evidence_id}>
                 {note.status === 'supplier-stated' ? ui.editorial.supplierStatement : note.status}

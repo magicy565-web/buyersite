@@ -1,0 +1,2 @@
+$ node scripts/check-release.mjs
+Publication gate checked; source SHA256 84120be088af79e7c3fd04c842c96c51ae61f73ac9038c6eb7fc9b8e5bb9ee5c

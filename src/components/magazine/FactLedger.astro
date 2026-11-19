@@ -63,7 +63,7 @@ const sourceHref = (item: EvidenceItem) => (localSources ? '#source-' + item.evi
             return (
               <div class="ledger-fact" data-evidence-id={item.evidence_id}>
                 <dt>{item.claim}</dt>
-                <dd class:list={['ledger-value', variant === 'figures' && figure.numeric && 'ledger-value--figure']}>
+                <dd class:list={['ledger-value', variant === 'figures' && figure.numeric && 'ledger-value--figure', item.value.length > 48 && 'ledger-value--text']}>
                   {variant === 'figures' && figure.numeric ? (
                     <><span class="ledger-figure">{figure.head}</span><span class="ledger-tail">{figure.tail}</span></>
                   ) : item.value}

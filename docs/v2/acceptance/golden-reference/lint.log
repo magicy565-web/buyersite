@@ -1,0 +1,13 @@
+$ eslint .
+
+Y:\buyersite-main\scripts\release-gate.mjs
+  19:9   error  'mode' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  19:14  error  'reviewReport' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+Y:\buyersite-main\tests\browser\review.spec.ts
+  172:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  190:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 4 problems (4 errors, 0 warnings)
+
+[ELIFECYCLE] Command failed with exit code 1.

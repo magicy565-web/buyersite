@@ -1,0 +1,386 @@
+[
+  {
+    "route": "/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4380,
+    "h1": "Synthetic Housewares Trading | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-housewares-trading/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4431,
+    "h1": "Synthetic Housewares Trading: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/stoneware-serving-bowl/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4908,
+    "h1": "Stoneware Serving Bowl: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/enamel-storage-canister/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4908,
+    "h1": "Enamel Storage Canister: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/oak-cutting-board/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4854,
+    "h1": "Oak Cutting Board: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/linen-tea-towel/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4634,
+    "h1": "Linen Tea Towel: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/glass-carafe/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4854,
+    "h1": "Glass Carafe: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-table-runner/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4634,
+    "h1": "Cotton Table Runner: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/ceramic-mug-set/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4634,
+    "h1": "Ceramic Mug Set: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4046,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1707,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1233,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4238,
+    "h1": "Synthetic Housewares Trading | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-housewares-trading/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4798,
+    "h1": "Synthetic Housewares Trading: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/stoneware-serving-bowl/",
+    "width": 768,
+    "overflowX": false,
+    "height": 5433,
+    "h1": "Stoneware Serving Bowl: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/enamel-storage-canister/",
+    "width": 768,
+    "overflowX": false,
+    "height": 5433,
+    "h1": "Enamel Storage Canister: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/oak-cutting-board/",
+    "width": 768,
+    "overflowX": false,
+    "height": 5375,
+    "h1": "Oak Cutting Board: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/linen-tea-towel/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4972,
+    "h1": "Linen Tea Towel: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/glass-carafe/",
+    "width": 768,
+    "overflowX": false,
+    "height": 5355,
+    "h1": "Glass Carafe: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-table-runner/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4972,
+    "h1": "Cotton Table Runner: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/ceramic-mug-set/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4972,
+    "h1": "Ceramic Mug Set: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4070,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1791,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1157,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5383,
+    "h1": "Synthetic Housewares Trading | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-housewares-trading/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5610,
+    "h1": "Synthetic Housewares Trading: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/stoneware-serving-bowl/",
+    "width": 390,
+    "overflowX": false,
+    "height": 6116,
+    "h1": "Stoneware Serving Bowl: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/enamel-storage-canister/",
+    "width": 390,
+    "overflowX": false,
+    "height": 6156,
+    "h1": "Enamel Storage Canister: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/oak-cutting-board/",
+    "width": 390,
+    "overflowX": false,
+    "height": 6151,
+    "h1": "Oak Cutting Board: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/linen-tea-towel/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5572,
+    "h1": "Linen Tea Towel: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/glass-carafe/",
+    "width": 390,
+    "overflowX": false,
+    "height": 6102,
+    "h1": "Glass Carafe: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-table-runner/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5568,
+    "h1": "Cotton Table Runner: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/ceramic-mug-set/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5593,
+    "h1": "Ceramic Mug Set: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 390,
+    "overflowX": false,
+    "height": 4724,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1994,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1498,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5619,
+    "h1": "Synthetic Housewares Trading | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-housewares-trading/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6010,
+    "h1": "Synthetic Housewares Trading: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/stoneware-serving-bowl/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6550,
+    "h1": "Stoneware Serving Bowl: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/enamel-storage-canister/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6653,
+    "h1": "Enamel Storage Canister: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/oak-cutting-board/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6519,
+    "h1": "Oak Cutting Board: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/linen-tea-towel/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5887,
+    "h1": "Linen Tea Towel: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/glass-carafe/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6492,
+    "h1": "Glass Carafe: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-table-runner/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5921,
+    "h1": "Cotton Table Runner: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/ceramic-mug-set/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5887,
+    "h1": "Ceramic Mug Set: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5028,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 360,
+    "overflowX": false,
+    "height": 2061,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 360,
+    "overflowX": false,
+    "height": 1531,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  }
+]

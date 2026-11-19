@@ -1,0 +1,44 @@
+{
+  "schema_version": "2.0.0",
+  "design_family": "sparse-brief",
+  "signals": {
+    "product_count": 0,
+    "article_count": 2,
+    "evidence_count": 2,
+    "facts_per_product": 0,
+    "numeric_fact_ratio": 0,
+    "media_strength_max": 0,
+    "media_strength_min": 0,
+    "name_length": 37,
+    "category_direction": "editorial"
+  },
+  "rationale": [
+    "No product records: lead with what the company states and what a buyer must establish.",
+    "Only abstract fallback artwork is available: no picture leads a cover or a page.",
+    "Long publication name: the masthead steps down a size."
+  ],
+  "home": {
+    "cover": "typographic",
+    "blocks": [
+      "lead-ledger",
+      "questions",
+      "index",
+      "reading",
+      "trust"
+    ],
+    "show_media": false
+  },
+  "pages": {
+    "synthetic-empty-catalog": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "buyer-enquiry-guide": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    }
+  },
+  "plan_sha256": "e0b61d28da88d4c242a92bc7f3b0761dcf0e9c7069228e6a5e0f43dcadebf798"
+}

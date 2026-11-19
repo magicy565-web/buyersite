@@ -1,0 +1,73 @@
+$ pnpm prepare:media && pnpm validate:content && pnpm check:editorial
+$ node scripts/prepare-media.mjs
+Enterprise media is resolved by the tenant-bound media pipeline.
+$ node scripts/validate-content.mjs
+Validated private edition: 4 page contracts, 3 evidence, 1 captured sources.
+$ node scripts/check-editorial-profiles.mjs
+atelier: contrast pairs PASS
+industrial: contrast pairs PASS
+editorial: contrast pairs PASS
+$ astro build && node scripts/finalize-site.mjs
+[2m12:11:31[22m [34m[content][39m Syncing content
+[2m12:11:31[22m [34m[content][39m Synced content
+[2m12:11:31[22m [34m[types][39m Generated [2m259ms[22m
+[2m12:11:31[22m [34m[build][39m output: [34m"static"[39m
+[2m12:11:31[22m [34m[build][39m mode: [34m"static"[39m
+[2m12:11:31[22m [34m[build][39m directory: [34mY:\buyersite-main\dist\[39m
+[2m12:11:31[22m [34m[build][39m Collecting build info...
+[2m12:11:31[22m [34m[build][39m [32m✓ Completed in 304ms.[39m
+[2m12:11:31[22m [34m[build][39m Building static entrypoints...
+[2m12:11:32[22m [34m[astro-icon][39m Loaded icons from src/icons, lucide
+[2m12:11:32[22m [34m[assets][39m Copying fonts (11 files)...
+[2m12:11:32[22m [34m[vite][39m [32m✓ built in 640ms[39m
+[33m[1m12:11:32[22m [WARN] [vite][39m [33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[2m12:11:32[22m [34m[vite][39m [32m✓ built in 199ms[39m
+[2m12:11:32[22m [34m[build][39m Rearranging server assets...
+
+[42m[30m generating static routes [39m[49m
+[2m12:11:33[22m   [34m├─[39m [2m/404.html[22m [2m(+17ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/buyer-data.json[22m [2m(+3ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/colophon/index.html[22m [2m(+9ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/enquiry/index.html[22m [2m(+56ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/privacy/index.html[22m [2m(+6ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/robots.txt[22m [2m(+2ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/rss.xml[22m [2m(+40ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/search/index.html[22m [2m(+5ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/sources/index.html[22m [2m(+6ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/guides/buyer-enquiry-guide/index.html[22m [2m(+7ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/products/precision-pump-valve-a/index.html[22m [2m(+5ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/suppliers/ultraprecisionmanufacturinginternational-component/index.html[22m [2m(+5ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/products/index.html[22m [2m(+3ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/suppliers/index.html[22m [2m(+3ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/guides/index.html[22m [2m(+2ms)[22m 
+[2m12:11:33[22m   [34m├─[39m [2m/index.html[22m [2m(+8ms)[22m 
+[2m12:11:33[22m [32m✓ Completed in 1.37s.
+[39m
+[42m[30m generating optimized images [39m[49m
+[2m12:11:33[22m   [32m▶[39m /_astro/cover.-e0Crzpr_Z19VeQq.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(1/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-precision-pump-valve-a.Kv6-d2Ht_1O2plp.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(2/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-ultraprecisionmanufacturinginternational-component.KqJqQrT9_Z1GzdsE.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(3/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_AGeIM.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(4/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-precision-pump-valve-a.Kv6-d2Ht_1rtQ6l.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(5/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_Z23A3hV.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(6/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-ultraprecisionmanufacturinginternational-component.KqJqQrT9_vE5Hg.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(7/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-precision-pump-valve-a.Kv6-d2Ht_Z12DLSx.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(8/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-ultraprecisionmanufacturinginternational-component.KqJqQrT9_1yLOkr.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(9/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_1WnmaS.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(10/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-precision-pump-valve-a.Kv6-d2Ht_1bdvC6.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(11/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-ultraprecisionmanufacturinginternational-component.KqJqQrT9_xUn94.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(12/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_eYMAm.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(13/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-precision-pump-valve-a.Kv6-d2Ht_Z2nEmnS.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(14/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-ultraprecisionmanufacturinginternational-component.KqJqQrT9_ZuGp02.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(15/16)[22m
+[2m12:11:33[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_ZGuH2T.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(16/16)[22m
+[2m12:11:33[22m [32m✓ Completed in 26ms.
+[39m
+[2m12:11:33[22m [34m[build][39m [32m✓ Completed in 2.27s.[39m
+[2m12:11:33[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m12:11:33[22m [34m[build][39m 13 page(s) built in [1m2.59s[22m
+[2m12:11:33[22m [34m[build][39m [1mComplete![22m
+Finalized private edition with isolated local search.

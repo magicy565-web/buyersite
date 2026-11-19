@@ -1,0 +1,76 @@
+$ pnpm prepare:media && pnpm validate:content && pnpm check:editorial
+$ node scripts/prepare-media.mjs
+Verified 3 media assets: exact bytes, provenance, page disclosures and observed AI reviews.
+$ node scripts/validate-content.mjs
+Validated 1 manifest, 4 page contracts and 6 evidence records. Public indexing: false.
+$ node scripts/check-editorial-profiles.mjs
+atelier: contrast pairs PASS
+industrial: contrast pairs PASS
+editorial: contrast pairs PASS
+$ astro build && node scripts/finalize-site.mjs
+[2m12:07:02[22m [34m[content][39m Syncing content
+[2m12:07:02[22m [34m[content][39m Synced content
+[2m12:07:02[22m [34m[types][39m Generated [2m285ms[22m
+[2m12:07:02[22m [34m[build][39m output: [34m"static"[39m
+[2m12:07:02[22m [34m[build][39m mode: [34m"static"[39m
+[2m12:07:02[22m [34m[build][39m directory: [34mY:\buyersite-main\dist\[39m
+[2m12:07:02[22m [34m[build][39m Collecting build info...
+[2m12:07:02[22m [34m[build][39m [32m✓ Completed in 331ms.[39m
+[2m12:07:02[22m [34m[build][39m Building static entrypoints...
+[2m12:07:03[22m [34m[astro-icon][39m Loaded icons from src/icons, lucide
+[2m12:07:03[22m [34m[assets][39m Copying fonts (11 files)...
+[2m12:07:03[22m [34m[vite][39m [32m✓ built in 705ms[39m
+[33m[1m12:07:03[22m [WARN] [vite][39m [33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[2m12:07:03[22m [34m[vite][39m [32m✓ built in 271ms[39m
+[2m12:07:03[22m [34m[build][39m Rearranging server assets...
+
+[42m[30m generating static routes [39m[49m
+[2m12:07:04[22m   [34m├─[39m [2m/404.html[22m [2m(+72ms)[22m 
+[2m12:07:04[22m   [34m├─[39m [2m/buyer-data.json[22m [2m(+3ms)[22m 
+[2m12:07:04[22m   [34m├─[39m [2m/colophon/index.html[22m [2m(+6ms)[22m 
+[2m12:07:04[22m   [34m├─[39m [2m/enquiry/index.html[22m [2m(+8ms)[22m 
+[2m12:07:04[22m   [34m├─[39m [2m/privacy/index.html[22m [2m(+5ms)[22m 
+[2m12:07:04[22m   [34m├─[39m [2m/robots.txt[22m [2m(+2ms)[22m 
+[2m12:07:04[22m   [34m├─[39m [2m/rss.xml[22m [2m(+47ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/search/index.html[22m [2m(+5ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/sources/index.html[22m [2m(+6ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/suppliers/burel-factory/index.html[22m [2m(+7ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/guides/burel-project-brief/index.html[22m [2m(+4ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/materials/silver-wool-fabric/index.html[22m [2m(+4ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/materials/index.html[22m [2m(+3ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/suppliers/index.html[22m [2m(+3ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/guides/index.html[22m [2m(+3ms)[22m 
+[2m12:07:05[22m   [34m├─[39m [2m/index.html[22m [2m(+8ms)[22m 
+[2m12:07:05[22m [32m✓ Completed in 1.48s.
+[39m
+[42m[30m generating optimized images [39m[49m
+[2m12:07:05[22m   [32m▶[39m /_astro/cover.-e0Crzpr_Z19VeQq.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(1/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_ZgpUK8.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(2/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/wool-study.Bsr3c2t8_Z14xPrW.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(3/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/sample-study.CA87pirR_Z1bmVqt.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(4/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/wool-study.Bsr3c2t8_1lwGJ3.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(5/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/sample-study.CA87pirR_Z23XWLH.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(6/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_KDPty.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(7/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/sample-study.CA87pirR_ZmVjGy.avif [2m(reused cache entry)[22m [2m(+4ms)[22m [2m(8/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_2hO2go.avif [2m(reused cache entry)[22m [2m(+4ms)[22m [2m(9/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/wool-study.Bsr3c2t8_h5uDf.avif [2m(reused cache entry)[22m [2m(+4ms)[22m [2m(10/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/sample-study.CA87pirR_ZUzLip.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(11/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/wool-study.Bsr3c2t8_2ufUym.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(12/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_DiGNQ.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(13/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/wool-study.Bsr3c2t8_ZhXt0g.avif [2m(reused cache entry)[22m [2m(+9ms)[22m [2m(14/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/sample-study.CA87pirR_Z1W8lEB.avif [2m(reused cache entry)[22m [2m(+9ms)[22m [2m(15/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_bKsNO.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(16/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_1o4V7A.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(17/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_Z2fjYA7.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(18/19)[22m
+[2m12:07:05[22m   [32m▶[39m /_astro/weaving-study.-_ex609t_ZpjUyt.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(19/19)[22m
+[2m12:07:05[22m [32m✓ Completed in 20ms.
+[39m
+[2m12:07:05[22m [34m[build][39m [32m✓ Completed in 2.51s.[39m
+[2m12:07:05[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m12:07:05[22m [34m[build][39m 13 page(s) built in [1m2.86s[22m
+[2m12:07:05[22m [34m[build][39m [1mComplete![22m
+Finalized 79 static files, Pagefind, same-origin conversion and aggregate analytics Worker.

@@ -1,0 +1,79 @@
+{
+  "schema_version": "2.0.0",
+  "design_family": "catalog-index",
+  "signals": {
+    "product_count": 7,
+    "article_count": 9,
+    "evidence_count": 9,
+    "facts_per_product": 1.57,
+    "numeric_fact_ratio": 0,
+    "media_strength_max": 0,
+    "media_strength_min": 0,
+    "name_length": 42,
+    "category_direction": "atelier"
+  },
+  "rationale": [
+    "7 products: a scannable catalogue index replaces single feature stories.",
+    "Only abstract fallback artwork is available: no picture leads a cover or a page.",
+    "Long publication name: the masthead steps down a size."
+  ],
+  "home": {
+    "cover": "typographic",
+    "blocks": [
+      "catalog",
+      "supplier",
+      "questions",
+      "reading",
+      "trust"
+    ],
+    "show_media": false
+  },
+  "pages": {
+    "synthetic-housewares-trading": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "stoneware-serving-bowl": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "enamel-storage-canister": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "oak-cutting-board": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "linen-tea-towel": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "glass-carafe": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "cotton-table-runner": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "ceramic-mug-set": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "buyer-enquiry-guide": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    }
+  },
+  "plan_sha256": "a34b8dde688f50bb56f9d1b63a2221f46eca5bc7be68023ceb82840fb1b66651"
+}

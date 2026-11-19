@@ -1,0 +1,48 @@
+---
+// The catalogue index, for editions with many products. One row per product: what it is, how
+// many details a source states for it and how many are still open, and the way in. A buyer
+// scanning ten products compares evidence depth before reading any one review. Rows, not cards.
+import type { Item } from '../../lib/content';
+import type { BuyerBrief } from '../../lib/buyer-brief';
+import { buyerEnquiryHref } from '../../lib/buyer-brief';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/magazine.css';
+
+interface Row { item: Item; facts: number; brief: BuyerBrief | null }
+interface Props { rows: Row[]; title?: string; intro?: string }
+const { rows, title, intro } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+---
+
+<section class="mag-container catalog" aria-labelledby="catalog-title" data-editorial-block="catalog">
+  <header class="catalog-head">
+    <h2 id="catalog-title" class="catalog-title">{title ?? ui.magazine.catalogTitle}</h2>
+    <p class="catalog-intro">{intro ?? ui.magazine.catalogIntro(rows.length)}</p>
+  </header>
+  <table class="catalog-table">
+    <thead>
+      <tr>
+        <th scope="col">{ui.magazine.catalogProduct}</th>
+        <th scope="col" class="catalog-num">{ui.magazine.catalogStated}</th>
+        <th scope="col" class="catalog-num">{ui.magazine.catalogOpen}</th>
+        <th scope="col"><span class="sr-only">{ui.magazine.catalogActions}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row, index) => (
+        <tr>
+          <th scope="row">
+            <span class="catalog-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <a href={row.item.href}>{row.item.data.title}</a>
+          </th>
+          <td class="catalog-num" data-label={ui.magazine.catalogStated}>{row.facts}</td>
+          <td class="catalog-num" data-label={ui.magazine.catalogOpen}>{row.brief?.unconfirmed.length ?? '—'}</td>
+          <td class="catalog-action">
+            {row.brief && <a href={buyerEnquiryHref(row.brief)} data-buyer-context={row.brief.page_path}>{ui.magazine.catalogEnquire}</a>}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>

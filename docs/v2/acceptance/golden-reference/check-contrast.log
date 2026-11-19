@@ -1,0 +1,21 @@
+$ node scripts/check-contrast.mjs
+light  --foreground     on --background   16.27
+light  --foreground     on --surface      14.10
+light  --muted          on --background   7.45
+light  --muted          on --surface      6.46
+light  --primary        on --background   7.80
+light  --primary        on --surface      6.76
+light  --on-primary     on --primary      8.58
+light  --on-plate       on --plate        18.40
+light  --on-plate-muted on --plate        11.09
+light  --primary-on-plate on --plate        5.09
+dark   --foreground     on --background   17.15
+dark   --foreground     on --surface      14.11
+dark   --muted          on --background   11.41
+dark   --muted          on --surface      9.39
+dark   --primary        on --background   9.08
+dark   --primary        on --surface      7.47
+dark   --on-primary     on --primary      8.77
+dark   --on-plate       on --plate        18.40
+dark   --on-plate-muted on --plate        11.09
+dark   --primary-on-plate on --plate        5.09

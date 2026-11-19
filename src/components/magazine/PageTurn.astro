@@ -1,0 +1,76 @@
+---
+// Print furniture and the page turn. Every page of the edition gets a running head (publication,
+// section, folio) and a foot with the previous and next page, as in a bound issue. On wide
+// screens the same two links sit at the page edges as turn tabs. Arrow keys turn the page.
+//
+// The turn itself is a cross-document view transition (styles/pageturn.css): the browser keeps
+// a snapshot of the outgoing page and turns it about the spine as the next page loads. Without
+// support, without JavaScript or with reduced motion, these are plain links and nothing else
+// changes -- no content is hidden behind the interaction.
+import { site } from '../../config';
+import { t } from '../../i18n';
+import { pageInSequence } from '../../lib/sequence';
+import '../../styles/pageturn.css';
+
+const { part = 'foot' } = Astro.props as { part?: 'head' | 'foot' };
+const ui = t(Astro.currentLocale ?? site.locale);
+const { pages, current, previous, next } = await pageInSequence(Astro.url.pathname);
+const total = pages.length;
+const folio = (n: number) => String(n).padStart(2, '0');
+---
+
+{current && part === 'head' && (
+    <p class="running-head" aria-hidden="true">
+      <span>{site.name}</span>
+      <span>{current.section}</span>
+      <span class="running-folio">{ui.magazine.folio(folio(current.folio), folio(total))}</span>
+    </p>
+)}
+{current && part === 'foot' && (
+  <>
+    <nav class="page-foot" aria-label={ui.magazine.turnLabel}>
+      {previous ? (
+        <a class="page-foot-link page-foot-link--prev" href={previous.path} rel="prev" data-turn="back">
+          <span class="page-foot-dir">← {ui.magazine.folio(folio(previous.folio), folio(total))}</span>
+          <span class="page-foot-title">{previous.title}</span>
+        </a>
+      ) : <span />}
+      <span class="page-foot-folio" aria-hidden="true">{folio(current.folio)}</span>
+      {next ? (
+        <a class="page-foot-link page-foot-link--next" href={next.path} rel="next" data-turn="forward">
+          <span class="page-foot-dir">{ui.magazine.folio(folio(next.folio), folio(total))} →</span>
+          <span class="page-foot-title">{next.title}</span>
+        </a>
+      ) : <span />}
+    </nav>
+    {previous && (
+      <a class="turn-tab turn-tab--prev" href={previous.path} data-turn="back" tabindex="-1" aria-hidden="true">
+        <span>{folio(previous.folio)}</span>
+      </a>
+    )}
+    {next && (
+      <a class="turn-tab turn-tab--next" href={next.path} data-turn="forward" tabindex="-1" aria-hidden="true">
+        <span>{folio(next.folio)}</span>
+      </a>
+    )}
+  </>
+)}
+
+{part === 'foot' && <script>
+  // The direction listener lives in an inline script in Base.astro's <head>: `pagereveal` can
+  // fire before a deferred module like this one runs.
+  const KEY = 'buyersite-turn';
+  // Arrow keys turn the page, unless the reader is typing, has a dialog open or holds a modifier.
+  document.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('input, textarea, select, [contenteditable], dialog[open]')) return;
+    if (document.querySelector('dialog[open]')) return;
+    const link = document.querySelector<HTMLAnchorElement>(event.key === 'ArrowRight' ? '.page-foot a[rel="next"]' : '.page-foot a[rel="prev"]');
+    if (!link) return;
+    event.preventDefault();
+    sessionStorage.setItem(KEY, event.key === 'ArrowRight' ? 'forward' : 'back');
+    location.assign(link.href);
+  });
+</script>}

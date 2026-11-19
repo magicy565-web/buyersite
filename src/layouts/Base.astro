@@ -8,10 +8,12 @@ import Assistant from '../components/buyer/Assistant.astro';
 import SEO from '../components/common/SEO.astro';
 import Analytics from '../components/common/Analytics.astro';
 import ThemeToggle from '../components/common/ThemeToggle.astro';
+import PageTurn from '../components/magazine/PageTurn.astro';
 import JourneyAnalytics from '../components/buyer/JourneyAnalytics.astro';
 import { features, nav, site } from '../config';
 import { t } from '../i18n';
 import { getBuyerBrief } from '../lib/buyer-brief';
+import { loadLayoutPlan } from '../lib/layout-plan';
 
 // `nameplate` prints the wordmark in the sticky bar. The home page sets it false: there the
 // wordmark is the cover, set across the photograph, and a second small one above it reads as
@@ -24,10 +26,11 @@ const year = new Date().getFullYear();
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const pageBrief = getBuyerBrief(path);
 const enquiryHref = pageBrief ? '/enquiry?from=' + encodeURIComponent(pageBrief.page_path) : '/enquiry';
+const designFamily = loadLayoutPlan().design_family;
 const themeCredit = 'https://ondelva.com/themes/halftone';
 ---
 
-<html lang={locale} data-editorial-style={site.designDirection}>
+<html lang={locale} data-editorial-style={site.designDirection} data-design-family={designFamily}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,6 +58,35 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
         if (saved === 'light' || saved === 'dark')
           document.documentElement.setAttribute('data-theme', saved);
       } catch {}
+    </script>
+    {/* The page-turn opt-in is inline so it is parsed before the first frame of the incoming
+        page; in a bundled stylesheet Chromium sometimes reached reveal without it. */}
+    <style is:inline>@view-transition { navigation: auto; } @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }</style>
+    <script is:inline>
+      // The page turn's direction (see components/magazine/PageTurn.astro). This must run before
+      // the first frame: `pagereveal` fires then, and a deferred script would miss it.
+      (function () {
+        const KEY = 'buyersite-turn';
+        document.addEventListener('click', function (event) {
+          const link = event.target && event.target.closest && event.target.closest('a[data-turn]');
+          if (link) {
+            try { sessionStorage.setItem(KEY, link.dataset.turn || 'forward'); } catch { /* storage unavailable: default direction */ }
+          }
+        });
+        window.addEventListener('pagereveal', function (event) {
+          const transition = event.viewTransition;
+          if (!transition) {
+            document.documentElement.dataset.turn = 'none';
+            return;
+          }
+          let stored = null;
+          try { stored = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch { /* default direction */ }
+          const nav = window.navigation && window.navigation.activation;
+          const type = nav && nav.navigationType === 'traverse' ? 'back' : stored || 'forward';
+          if (transition.types) transition.types.add(type);
+          document.documentElement.dataset.turn = type;
+        });
+      })();
     </script>
   </head>
   <body class="bg-background text-foreground flex min-h-screen flex-col">
@@ -93,7 +125,9 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
     </header>
 
     <main id="main" tabindex="-1" class="flex-1 outline-none">
+      <PageTurn part="head" />
       <slot />
+      <PageTurn part="foot" />
       <Assistant />
     </main>
 

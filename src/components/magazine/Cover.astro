@@ -29,11 +29,14 @@ const ui = t(Astro.currentLocale ?? site.locale);
 const enquiryHref = brief ? buyerEnquiryHref(brief) : '/enquiry?from=' + encodeURIComponent(lead.href);
 const checked = formatDay(facts.latest, site.locale);
 const long = title.length > 28;
+// A single very long word cannot wrap at masthead size without breaking mid-word.
+const longest = Math.max(...title.split(/s+/).map((word) => word.length));
+const longWord = longest > 14;
 ---
 
-<section class:list={['cover', 'cover--' + layout, long && 'cover--long-name']} data-editorial-block="cover" data-layout={layout} aria-labelledby="edition-title">
+<section class:list={['cover', 'cover--' + layout, long && 'cover--long-name', longWord && 'cover--long-word']} data-editorial-block="cover" data-layout={layout} aria-labelledby="edition-title">
   <div class="mag-container cover-masthead">
-    <h1 id="edition-title" class="cover-wordmark">{title}</h1>
+    <h1 id="edition-title" class="cover-wordmark" style={longWord ? `--longest-word: ${longest}` : undefined}>{title}</h1>
     <div class="cover-meta">
       {description && <p class="cover-description">{description}</p>}
       <p class="cover-dateline">

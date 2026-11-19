@@ -9,6 +9,7 @@ import Base from '../../layouts/Base.astro';
 import FactLedger from '../../components/magazine/FactLedger.astro';
 import '../../styles/magazine.css';
 import { buyerEnquiryHref } from '../../lib/buyer-brief';
+import { pagePlan } from '../../lib/layout-plan';
 import BuyingChecklist from '../../components/editorial/BuyingChecklist.astro';
 
 import { loadEvidence, resolveEvidence } from '../../lib/evidence';
@@ -51,13 +52,10 @@ const buyerBrief = getBuyerBrief(item.href);
 // Buyer pages (anything with a reviewed brief) use the v2 hero. Its composition follows the
 // page's job: a product leads with its picture beside the headline, a supplier profile puts the
 // picture first like a portrait, a guide leads with the question and sets the picture wide.
-const heroLayout = !buyerBrief
-  ? null
-  : item.data.pageType === 'supplier-profile'
-    ? 'split-reverse'
-    : item.data.pageType === 'buyer-guide'
-      ? 'text-led'
-      : 'split';
+// The composition comes from the layout plan, which weighs the page type against the media
+// the page may actually show (site-builder/layout-planner.mjs).
+const plannedPage = pagePlan(article.id);
+const heroLayout = buyerBrief ? (plannedPage?.hero ?? 'text-led') : null;
 const essay = !heroLayout && item.data.format === 'photoessay';
 // With no rail beside the body, a buyer page carries the enquiry hand-off there instead.
 const blocks = item.data.rail ?? [];
@@ -133,7 +131,7 @@ const jsonLd = [
           alt={item.data.heroAlt}
           widths={[640, 960, 1400, 1800]}
           format="avif"
-          sizes={heroLayout === 'text-led' ? '(min-width: 80rem) 78rem, 100vw' : '(min-width: 64rem) 50vw, 100vw'}
+          sizes={heroLayout === 'text-led' ? '(min-width: 80rem) 78rem, 100vw' : heroLayout === 'marginal' ? '(min-width: 64rem) 18rem, 60vw' : '(min-width: 64rem) 50vw, 100vw'}
           loading="eager"
           fetchpriority="high"
           style={`object-position: ${item.data.heroFocus} center`}
@@ -211,7 +209,7 @@ const jsonLd = [
       <FactLedger
         items={sourceNotes}
         brief={buyerBrief}
-        variant={item.data.pageType === 'product-editorial' ? 'figures' : 'table'}
+        variant={plannedPage?.ledger ?? 'table'}
       />
     </div>
   )}
