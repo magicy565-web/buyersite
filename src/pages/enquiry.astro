@@ -1,17 +1,34 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHead from '../components/common/PageHead.astro';
 import EnquiryForm from '../components/buyer/EnquiryForm';
 import { site } from '../config';
 import { loadBuyerBriefs } from '../lib/buyer-brief';
 import { buyerNavigationPaths } from '../lib/buyer-journey.mjs';
+import { t } from '../i18n';
 import '../styles/conversion.css';
+import '../styles/magazine.css';
 const publishedContexts = loadBuyerBriefs();
+const ui = t(Astro.currentLocale ?? site.locale);
 ---
 <Base title="Prepare a sourcing enquiry" noindex>
-  <div class="max-w-content mx-auto px-4 py-12 enquiry-page">
-    <PageHead kicker="Buying brief" title="Prepare your enquiry" lede="Put your specification, quantity and delivery requirements in one brief for the sourcing desk." />
-    <EnquiryForm client:load publishedContexts={publishedContexts} allowedPaths={buyerNavigationPaths(publishedContexts)} siteSlug={site.slug} enabled={site.enquiriesEnabled} />
-    <noscript><p>The enquiry form needs JavaScript. Read the <a href={'/guides/' + site.guideSlug}>buying guide</a> to prepare your requirements.</p></noscript>
+  <div class="mag-container enquiry-page enquiry-layout">
+    <header class="enquiry-head">
+      <span class="kicker">Buying brief</span>
+      <h1 class="article-hero-title">Prepare your enquiry</h1>
+      <p class="article-hero-standfirst">Put your specification, quantity and delivery requirements in one brief for the sourcing desk.</p>
+    </header>
+    <div class="enquiry-main">
+      <EnquiryForm client:load publishedContexts={publishedContexts} allowedPaths={buyerNavigationPaths(publishedContexts)} siteSlug={site.slug} enabled={site.enquiriesEnabled} />
+      <noscript><p>The enquiry form needs JavaScript. Read the <a href={'/guides/' + site.guideSlug}>buying guide</a> to prepare your requirements.</p></noscript>
+    </div>
+    <aside class="enquiry-next" aria-labelledby="enquiry-next-title">
+      <h2 id="enquiry-next-title" class="mag-section-label">{ui.magazine.nextTitle}</h2>
+      {site.enquiriesEnabled ? <ol>
+        <li><strong>{ui.magazine.nextSaved}</strong> {ui.magazine.nextSavedDetail}</li>
+        <li><strong>{ui.magazine.nextReview}</strong> {ui.magazine.nextReviewDetail}</li>
+        <li><strong>{ui.magazine.nextNotSent}</strong> {ui.magazine.nextNotSentDetail}</li>
+      </ol> : <p class="enquiry-offline">{ui.magazine.nextOffline}</p>}
+      <p class="ledger-promise"><a href="/privacy/">{ui.magazine.privacy}</a> · <a href="/sources/">{ui.magazine.sourceNotebook}</a></p>
+    </aside>
   </div>
 </Base>

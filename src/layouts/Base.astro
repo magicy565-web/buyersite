@@ -3,6 +3,7 @@ import type { ComponentProps } from 'astro/types';
 import { Font } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import '../styles/global.css';
+import '../styles/magazine.css';
 import Assistant from '../components/buyer/Assistant.astro';
 import SEO from '../components/common/SEO.astro';
 import Analytics from '../components/common/Analytics.astro';
@@ -64,54 +65,36 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
       {ui.skip}
     </a>
 
-    {site.privatePreview && <p class="max-w-wide mx-auto px-4 py-3 text-sm" data-pagefind-ignore>
-      Private editorial preview · <a href="/colophon">Sources and scope</a>
+    {site.privatePreview && <p class="preview-bar" data-pagefind-ignore>
+      <span>{ui.magazine.privatePreview}</span> <a href="/colophon">{ui.magazine.sourcesAndScope}</a>
     </p>}
 
-    {/* One line, hairline rule under it. The desks are the navigation; there is nothing else
-        in it, because everything else about this magazine is on the page below. */}
-    <header class="buyer-header bg-background border-border sticky top-0 z-40 border-b">
-      <div class="buyer-header-inner max-w-wide mx-auto flex flex-wrap items-baseline gap-x-5 gap-y-1 px-4 py-2.5">
-        {nameplate && (
-          <a
-            class="font-ui text-primary shrink-0 text-lg leading-none font-black tracking-[-0.035em] no-underline"
-            href="/"
-          >
-            {site.name}
-          </a>
-        )}
-        <div class="buyer-header-menu flex w-full flex-wrap items-baseline gap-x-5 gap-y-1 sm:ms-auto sm:w-auto sm:justify-end">
-          <nav aria-label={ui.desks} class="font-ui flex flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
-            {nav.header.map((item) => (
-              <a
-                /* The desk you are on is marked with a rule and the spot colour, not with a
-                   heavier weight: a weight change reflows the row, and at 360px this row has
-                   nothing to give. design-tells-ignore */
-                class="hover:text-primary aria-[current=page]:text-primary aria-[current=page]:border-current border-b-2 border-transparent no-underline"
-                href={item.href}
-                aria-current={path === item.href ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <a class="header-action" href="/search" aria-label="Search this edition">Search</a>
-          <a class="header-action" href={enquiryHref} aria-label={ui.prepareEnquiry}>
+    {/* One bar. Desktop: wordmark, desks, actions on a single line. Narrow: wordmark and the two
+        buyer actions on the first line, the desks on a second line that scrolls sideways rather
+        than wrapping into a block that pushes the cover off the first screen. */}
+    <header class="bar">
+      <div class="bar-inner">
+        <a class:list={['bar-wordmark', !nameplate && 'bar-wordmark--quiet']} href="/" aria-label={nameplate ? undefined : site.name + ' — home'}>{site.name}</a>
+        <nav aria-label={ui.desks} class="bar-desks">
+          {nav.header.map((item) => (
+            <a href={item.href} aria-current={path === item.href || path.startsWith(item.href + '/') ? 'page' : undefined}>{item.label}</a>
+          ))}
+          <a href="/search" aria-current={path === '/search' ? 'page' : undefined}>{ui.magazine.search}</a>
+        </nav>
+        <div class="bar-actions">
+          <button class="bar-action" type="button" data-assistant-open aria-label={ui.askSourcing}>
+            <span class="header-label-full">{ui.askSourcing}</span><span class="header-label-short" aria-hidden="true">{ui.magazine.askShort}</span>
+          </button>
+          <a class="bar-action bar-action--primary" href={enquiryHref} aria-label={ui.prepareEnquiry}>
             <span class="header-label-full">{ui.prepareEnquiry}</span><span class="header-label-short" aria-hidden="true">{ui.enquiryNav}</span>
           </a>
-          <button class="header-action" type="button" data-assistant-open aria-label={ui.askSourcing}>
-            <span class="header-label-full">{ui.askSourcing}</span><span class="header-label-short" aria-hidden="true">{ui.sourcingNav}</span>
-          </button>
-          {features.darkMode && <ThemeToggle />}
         </div>
       </div>
     </header>
 
     <main id="main" tabindex="-1" class="flex-1 outline-none">
       <slot />
-      <div class="max-w-wide mx-auto px-4 py-8">
-        <Assistant />
-      </div>
+      <Assistant />
     </main>
 
     <footer class="border-foreground mt-16 border-t-[3px] sm:mt-24">
@@ -136,6 +119,12 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
             </ul>
           </nav>
         ))}
+        {features.darkMode && (
+          <div class="footer-theme">
+            <p class="font-mono text-xs font-semibold uppercase">{ui.magazine.theme}</p>
+            <div class="mt-3"><ThemeToggle /></div>
+          </div>
+        )}
         {nav.social.length > 0 && (
           <ul class="flex items-start gap-4">
             {nav.social.map((link) => (

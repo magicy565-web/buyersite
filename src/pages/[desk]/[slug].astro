@@ -6,7 +6,9 @@
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import SpecSummary from '../../components/buyer/SpecSummary.astro';
+import FactLedger from '../../components/magazine/FactLedger.astro';
+import '../../styles/magazine.css';
+import { buyerEnquiryHref } from '../../lib/buyer-brief';
 import BuyingChecklist from '../../components/editorial/BuyingChecklist.astro';
 
 import { loadEvidence, resolveEvidence } from '../../lib/evidence';
@@ -46,7 +48,18 @@ const authors = await getAuthors(article);
 const sourceNotes = resolveEvidence(item.data.evidenceRefs, loadEvidence());
 const buyerBrief = getBuyerBrief(item.href);
 
-const essay = item.data.format === 'photoessay';
+// Buyer pages (anything with a reviewed brief) use the v2 hero. Its composition follows the
+// page's job: a product leads with its picture beside the headline, a supplier profile puts the
+// picture first like a portrait, a guide leads with the question and sets the picture wide.
+const heroLayout = !buyerBrief
+  ? null
+  : item.data.pageType === 'supplier-profile'
+    ? 'split-reverse'
+    : item.data.pageType === 'buyer-guide'
+      ? 'text-led'
+      : 'split';
+const essay = !heroLayout && item.data.format === 'photoessay';
+// With no rail beside the body, a buyer page carries the enquiry hand-off there instead.
 const blocks = item.data.rail ?? [];
 const pool = await presentAll(await getArticles((other) => other.id !== article.id));
 const more = pool.filter((other) => other.desk.id === item.desk.id).slice(0, 3);
@@ -64,6 +77,7 @@ const reading = related(
 
 // The page is set to whatever the widest thing on it needs: body plus rail, or just the body.
 const shell = beside ? 'max-w-article' : 'max-w-content';
+const aside = Boolean(heroLayout && buyerBrief && !beside);
 const standfirst = item.data.standfirst ?? item.data.deck;
 const href = deskHref(item.desk.id);
 const url = (path: string) => new URL(path, Astro.site).href;
@@ -97,6 +111,41 @@ const jsonLd = [
   type="article"
   jsonLd={jsonLd}
 >
+  {heroLayout ? (
+    <header class:list={['mag-container', 'article-hero', 'article-hero--' + heroLayout]} data-layout={heroLayout}>
+      <div class="article-hero-copy">
+        <span class="kicker">{item.kicker}</span>
+        <h1 class="article-hero-title">{item.data.title}</h1>
+        <p class="article-hero-standfirst">{standfirst}</p>
+        <p class="article-hero-meta">
+          {ui.by} {item.byline} · {item.date}
+          {blog.showReadingTime && ` · ${ui.minutes(item.minutes)}`}
+        </p>
+        <nav class="article-hero-jump" aria-label={ui.editorial.onThisPage}>
+          <a href="#buyer-summary">{ui.editorial.jumpDetails}</a>
+          <a href="#buyer-questions">{ui.editorial.jumpQuestions}</a>
+          <a href="#source-notes">{ui.editorial.jumpSources}</a>
+        </nav>
+      </div>
+      <figure class="article-hero-media">
+        <Image
+          src={item.data.hero}
+          alt={item.data.heroAlt}
+          widths={[640, 960, 1400, 1800]}
+          format="avif"
+          sizes={heroLayout === 'text-led' ? '(min-width: 80rem) 78rem, 100vw' : '(min-width: 64rem) 50vw, 100vw'}
+          loading="eager"
+          fetchpriority="high"
+          style={`object-position: ${item.data.heroFocus} center`}
+        />
+        <figcaption class="mag-caption">
+          {item.data.heroCaption && <span>{item.data.heroCaption} </span>}
+          <span>{item.data.heroCredit}</span>
+        </figcaption>
+      </figure>
+    </header>
+  ) : (
+    <>
   {essay ? (
     <Plate
       class="plate--bottom flex min-h-[30rem] items-end px-4 py-8 sm:min-h-[80vh] sm:py-12"
@@ -130,20 +179,8 @@ const jsonLd = [
         {ui.by} {item.byline} · {item.date}
         {blog.showReadingTime && ` · ${ui.minutes(item.minutes)}`}
       </p>
-      {buyerBrief && (
-        <nav class="buyer-inpage-nav" aria-label={ui.editorial.onThisPage}>
-          <a href="#buyer-summary">{ui.editorial.jumpDetails}</a>
-          <a href="#buyer-questions">{ui.editorial.jumpQuestions}</a>
-          <a href="#source-notes">{ui.editorial.jumpSources}</a>
-        </nav>
-      )}
     </div>
   </div>
-  {buyerBrief && (
-    <div class:list={[shell, 'mx-auto px-4']}>
-      <SpecSummary items={sourceNotes} brief={buyerBrief} />
-    </div>
-  )}
   {
     /* The essay's picture is already the head of the page; the others set theirs under the
        headline, at the full width of the body and its rail where there is a rail to match. */
@@ -167,17 +204,28 @@ const jsonLd = [
       </figure>
     )
   }
+    </>
+  )}
+  {buyerBrief && (
+    <div class="mag-container article-ledger">
+      <FactLedger
+        items={sourceNotes}
+        brief={buyerBrief}
+        variant={item.data.pageType === 'product-editorial' ? 'figures' : 'table'}
+      />
+    </div>
+  )}
   {essay && item.data.heroCaption && (
     <p class:list={[shell, 'text-muted mx-auto px-4 pt-6 font-mono text-[0.6875rem]']}>
       {item.data.heroCaption}
     </p>
   )}
   <div
-    class:list={[
-      shell,
-      'mx-auto grid gap-x-10 px-4 pt-10',
-      beside && 'lg:grid-cols-[minmax(0,var(--content-width))_var(--rail-width)]',
-    ]}
+    class:list={
+      heroLayout
+        ? ['mag-container', 'article-layout', (beside || aside) && 'article-layout--rail']
+        : [shell, 'mx-auto grid gap-x-10 px-4 pt-10', beside && 'lg:grid-cols-[minmax(0,var(--content-width))_var(--rail-width)]']
+    }
   >
     {/* min-w-0: a grid item's automatic minimum is its min-content, so one unbreakable line
         -- a code block, a wide table -- would otherwise widen the whole page instead of
@@ -189,6 +237,21 @@ const jsonLd = [
         <Evidence items={sourceNotes} brief={buyerBrief} />
       </div>
     </div>
+    {aside && buyerBrief && (
+      <aside class="enquiry-aside" aria-labelledby="enquiry-aside-title">
+        <div class="enquiry-aside-inner">
+          <h2 id="enquiry-aside-title" class="mag-section-label">{ui.magazine.asideTitle}</h2>
+          <ul class="enquiry-aside-list">
+            <li><span>{ui.magazine.asideReview}</span> {item.data.title}</li>
+            <li><span>{sourceNotes.length}</span> {ui.magazine.asideFacts}</li>
+            <li><span>{buyerBrief.unconfirmed.length}</span> {ui.magazine.asideOpen}</li>
+            <li><span>{buyerBrief.questions.length}</span> {ui.magazine.asideQuestions}</li>
+          </ul>
+          <a class="mag-button" href={buyerEnquiryHref(buyerBrief)} data-buyer-context={buyerBrief.page_path}>{ui.prepareEnquiry}</a>
+          <p class="ledger-promise">{ui.magazine.savedNotSent}</p>
+        </div>
+      </aside>
+    )}
     {rail && (
       <Rail
         blocks={blocks}
@@ -199,7 +262,7 @@ const jsonLd = [
       />
     )}
   </div>
-  <div class:list={[shell, 'mx-auto px-4']}>
+  <div class:list={heroLayout ? ['mag-container'] : [shell, 'mx-auto px-4']}>
     <div class="max-w-content">
       <p class="border-foreground text-muted mt-12 border-t-2 pt-3 font-mono text-[0.6875rem] uppercase">
         {ui.filedTo} <a href={href}>{item.desk.data.name}</a>
@@ -212,7 +275,7 @@ const jsonLd = [
     </div>
   </div>
   {reading.length > 0 && (
-    <section class="max-w-content mx-auto mt-16 px-4 sm:mt-20" aria-labelledby="reading">
+    <section class:list={heroLayout ? ['mag-container', 'article-related'] : ['max-w-content mx-auto mt-16 px-4 sm:mt-20']} aria-labelledby="reading">
       <h2
         id="reading"
         class="font-ui border-b-2 border-current pb-2 text-base font-extrabold uppercase"
