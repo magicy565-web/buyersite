@@ -1,5 +1,5 @@
 import { readFile, writeFile, mkdir, readdir, rename, cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 import { createHash } from 'node:crypto';
 import { createIndex, close } from 'pagefind';
 import { build } from 'esbuild';
@@ -40,7 +40,7 @@ await writeFile('dist/client/media-provenance.json',JSON.stringify({version:medi
 const inventory=[];
 for(const item of (await readdir('dist/client',{recursive:true,withFileTypes:true})).filter(x=>x.isFile())){
   const file=join(item.parentPath,item.name),bytes=await readFile(file);
-  inventory.push({path:file.replace(/^dist\/client\//,''),bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
+  inventory.push({path:file.split(sep).join("/").replace(/^dist\/client\//,''),bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
 }
 inventory.sort((a,b)=>a.path.localeCompare(b.path));
 await writeFile('.generated/launch-artifact.json',JSON.stringify({files:inventory,artifact_sha256:createHash('sha256').update(JSON.stringify(inventory)).digest('hex')},null,2));

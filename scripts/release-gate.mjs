@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 import { verifyPublicationMedia } from './prepare-media.mjs';
 export async function releaseFingerprint(){
   const files=[];
   for(const root of ['src','runtime','scripts','site-builder']){
     for(const name of (await readdir(root,{recursive:true,withFileTypes:true})).filter(x=>x.isFile())){
-      const file=join(name.parentPath,name.name);
+      // POSIX separators keep the fingerprint identical on Windows and Linux checkouts.
+      const file=join(name.parentPath,name.name).split(sep).join("/");
       if(file.endsWith('.test.mjs')||file==='src/data/publication.json'||file.startsWith('src/assets/review/'))continue;
       files.push(file);
     }
