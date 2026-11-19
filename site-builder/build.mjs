@@ -2,6 +2,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileEnterpriseSite } from './compile.mjs';
+import { planMagazineOutline } from './magazine-outline.mjs';
 import { materializeEditionMedia } from './media-render.mjs';
 import { createHash } from 'node:crypto';
 
@@ -54,7 +55,9 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   const root = resolve(baseDir, folder);
   const articlesDir = join(root, 'articles');
   await mkdir(articlesDir, { recursive: true });
+  const magazineOutline = planMagazineOutline(result);
   const outputFiles = {
+    'magazine-outline.json': magazineOutline,
     'site.json': result.site,
     'visual-plan.json': result.visualPlan,
     'media-plan.json': result.mediaPlan,
