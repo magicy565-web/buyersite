@@ -32,7 +32,7 @@ function taskInstructions(task){
     'verify-output':['buyersite_verify_output'],
     'skip-product-gallery':['buyersite_task_complete'],
   };
-  return tools[task.id]||[];
+  return ['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail',...(tools[task.id]||[])];
 }
 
 export function buildSeatTaskPrompt({missionId,task,context}={}){
@@ -49,7 +49,7 @@ export function buildSeatTaskPrompt({missionId,task,context}={}){
     expectedOutput:task.output,
     availableTools:taskInstructions(task),
   };
-  return [
+  const prompt=[
     'You have been assigned one durable BuyerSite Editorial Mission task.',
     'Follow your installed editorial-department, buyersite-production and seat-specific Skills.',
     'Do not claim completion in chat. Claim the task through the BuyerSite MCP tool, perform only this task, and submit the exact typed artifact through the MCP tool. The runtime will validate evidence IDs, hashes and task ownership.',
