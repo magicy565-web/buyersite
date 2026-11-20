@@ -36,7 +36,7 @@ async function database(t) {
   let sqlite = new DatabaseSync(file);
   sqlite.exec(await readFile(new URL('../drizzle/0000_buyer_enquiries.sql', import.meta.url), 'utf8'));
   sqlite.exec(await readFile(new URL('../drizzle/0002_enquiry_context.sql', import.meta.url), 'utf8'));
-  sqlite.exec(await readFile(new URL('../drizzle/0003_marketing_outbox.sql', import.meta.url), 'utf8').then(sql => sql.replaceAll('--> statement-breakpoint', '')));
+  sqlite.exec(await readFile(new URL('../drizzle/0003_marketing_outbox.sql', import.meta.url), 'utf8').then(sql => sql.toString().replaceAll('--> statement-breakpoint', '')));
   t.after(async () => { sqlite.close(); await rm(directory, { recursive: true, force: true }); });
   return {
     get sqlite() { return sqlite; },
