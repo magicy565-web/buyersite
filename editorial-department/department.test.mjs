@@ -17,8 +17,9 @@ const input = (overrides = {}) => ({
 test('department manifest declares seven on-demand seats and a bounded capability catalog', () => {
   const value = assertDepartmentManifest();
   assert.equal(value.seats.length, 7);
-  assert.equal(value.runtime.bindingStatus, 'unbound');
-  assert.equal(value.runtime.executionMode, 'plan-only');
+  assert.equal(value.runtime.bindingStatus, 'adapter-available');
+  assert.equal(value.runtime.executionMode, 'runtime-gated');
+  assert.equal(value.runtime.dispatchMode, 'durable-mission-dispatch');
   assert.equal(value.workspace.sectionName, 'BuyerSite Editorial Department');
   assert.equal(value.workspace.chiefSeatId, 'editor-in-chief');
   assert.equal(value.workspace.teamMapBinding.importFormat, 'openmaus.package/v2');
