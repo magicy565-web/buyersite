@@ -18,6 +18,9 @@ test('department manifest declares seven on-demand seats and a bounded capabilit
   assert.equal(value.seats.length, 7);
   assert.equal(value.runtime.bindingStatus, 'unbound');
   assert.equal(value.runtime.executionMode, 'plan-only');
+  assert.equal(value.workspace.sectionName, 'BuyerSite Editorial Department');
+  assert.equal(value.workspace.chiefSeatId, 'editor-in-chief');
+  assert.equal(value.workspace.teamMapBinding.importFormat, 'openmaus.team/v2');
   assert.ok(value.seats.every((seat) => seat.activation === 'on-demand' && seat.runtimeBinding === null));
   assert.equal(new Set(value.capabilities.map((capability) => capability.id)).size, value.capabilities.length);
   assert.equal(getSeat('art-director').title, 'Art & Photo Director');
