@@ -57,6 +57,10 @@ for(const seat of department.seats) {
   for(const name of agent.skills) {
     const skill=packageSkills.get(name);
     if(!skill) throw new Error('EDITORIAL_DEPARTMENT: package is missing skill '+name);
+    const frontmatter=skill.instructions.match(/^---\\r?\\nname:\\s*([a-z0-9-]+)\\r?\\ndescription:\\s*(.+)\\r?\\n---\\r?\\n/);
+    if(!frontmatter || frontmatter[1]!==name || frontmatter[2]!==skill.description) {
+      throw new Error('EDITORIAL_DEPARTMENT: portable Skill frontmatter does not match '+name);
+    }
     const localPath=name==='editorial-department' ? 'skills/editorial-department/SKILL.md'
       : name==='buyersite-production' ? department.sharedProductionSkill : department.seats.find(item=>item.id===name)?.skillRef;
     if(!localPath || skill.instructions!==await readFile(resolve(localPath),'utf8')) {
