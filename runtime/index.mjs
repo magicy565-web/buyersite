@@ -7,7 +7,7 @@ const gateway=createGateway(config);
 export default {
   async fetch(request,env,ctx){
     const path=new URL(request.url).pathname;
-    const response=path==='/api/events'?await handleAnalytics(request,env,config,{executionContext:ctx}):path==='/api/buyer/admin/feedback'?await handleFeedback(request,env,config):await gateway.fetch(request,env,ctx);
+    const response=path==='/api/events'?await handleAnalytics(request,env,config):path==='/api/buyer/admin/feedback'?await handleFeedback(request,env,config):await gateway.fetch(request,env,ctx);
     const headers=new Headers(response.headers);
     headers.set('X-Content-Type-Options','nosniff');
     headers.set('Referrer-Policy','strict-origin-when-cross-origin');
