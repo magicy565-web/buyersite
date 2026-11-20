@@ -1,3 +1,8 @@
+---
+name: editor-in-chief
+description: Own the editorial brief, story sequence, delegation and human release recommendation for a source-bound buyer magazine.
+---
+
 # Editor-in-Chief seat
 
 ## Mission
