@@ -1,10 +1,12 @@
 ---
 import SEO from '../components/common/SEO.astro';
+import Assistant from '../components/buyer/Assistant.astro';
 import '../styles/global.css';
 const { title, description } = Astro.props;
+const hasEnterpriseEdition = Boolean(process.env.BUYERSITE_BUILD_ROOT);
 ---
 <!doctype html>
 <html lang="en" data-editorial-style="editorial">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><SEO title={title} description={description} noindex /></head>
-<body><a class="sr-only focus:not-sr-only" href="#main">Skip to issue</a><slot /></body>
+<body><a class="sr-only focus:not-sr-only" href="#main">Skip to issue</a><slot />{hasEnterpriseEdition && <div class="mi-assistant-mount"><Assistant /></div>}</body>
 </html>

@@ -55,6 +55,7 @@ export function assertMagazineIssue(issue) {
   for(const article of sourceArticles){
     if(!article || !ID.test(article.id || '') || articleIds.has(article.id) ||
        !hasText(article.title,170) || !hasText(article.deck,600) ||
+       typeof article.path!=='string' || !/^\/[a-z0-9-]+\/[a-z0-9-]+\/$/.test(article.path) ||
        !Array.isArray(article.evidenceRefs)) fail('invalid source article inventory');
     articleIds.add(article.id);
   }

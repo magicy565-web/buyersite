@@ -19,7 +19,7 @@ function fixture(withProduct=true){
     {evidence_id:'website-1',claim:'Website page: About',value:'About the company',status:'supplier-stated',source_url:'https://example.com/about',source_quote:'About the company',captured_at:'2026-11-20T00:00:00.000Z',publication_permission:'public-source-review-only',notes:'Captured public website text'},
     ...(withProduct?[{evidence_id:'enterprise-product-1',claim:'Enterprise product: Cat companion',value:'A plush cat companion',status:'supplier-stated',source_url:null,source_quote:null,captured_at:'2026-11-20T00:00:00.000Z',publication_permission:'internal-only',notes:'Not independently verified'}]:[]),
   ];
-  const compiled={fingerprint:sha('a'),site:{slug:'example-company',name:'Example Company | Buyer Notes',description:'A source-backed buyer review.'},visualPlan:{direction:'editorial'},articles,evidence};
+  const compiled={fingerprint:sha('a'),site:{slug:'example-company',name:'Example Company | Buyer Notes',description:'A source-backed buyer review.'},visualPlan:{direction:'editorial'},articles,evidence,pages:articles.map(article=>({page_id:article.slug,path:'/'+(article.pageType==='supplier-profile'?'suppliers':article.pageType==='buyer-guide'?'guides':'products')+'/'+article.slug+'/'}))};
   const chapters=[
     {id:'cover',layout:'cover',purpose:'intro',article_ids:['supplier-profile'],evidence_refs:['enterprise-company','website-1']},
     {id:'contents',layout:'contents',purpose:'navigation',article_ids:[],evidence_refs:[]},
@@ -48,6 +48,7 @@ test('enterprise source pack becomes a private source-bound issue',()=>{
   const issue=compileMagazineIssueFromEnterprise(fixture());
   assert.equal(issue.publicationStatus,'private-review');
   assert.equal(issue.brand,'Example Company');
+  assert.equal(issue.sourceArticles.find(a=>a.id==='cat-companion').path,'/products/cat-companion/');
   assert.deepEqual(issue.spreads.map(s=>s.kind),['cover','contents','story','gallery','notes','notes','sourcing']);
   assert.equal(issue.assets.length,3);
   assert.equal(issue.assets.find(a=>a.id==='supplier-profile').kind,'licensed-photo');
@@ -120,4 +121,9 @@ test('agent may reorder editorial copy but cannot replace a source media descrip
   assert.throws(()=>acceptMagazineProposal({proposal:changedEvidence,approvedAssets:registry,approvedSourceIssue:issue}),/cannot rewrite source evidence/);
   const changedBinding=structuredClone(issue);changedBinding.sourceFingerprint=sha('8');
   assert.throws(()=>acceptMagazineProposal({proposal:changedBinding,approvedAssets:registry,approvedSourceIssue:issue}),/Source issue binding changed/);
+});
+
+test('source article paths must be canonical local buyer-site routes',()=>{
+  const x=fixture();x.compiled.pages[0].path='https://attacker.example/';
+  assert.throws(()=>compileMagazineIssueFromEnterprise(x),/canonical local route/);
 });

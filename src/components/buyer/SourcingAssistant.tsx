@@ -182,6 +182,14 @@ export default function SourcingAssistant({ siteSlug, guideHref, enabled, briefs
   const brief = briefs.find((item) => pathKey(item.page_path) === pathKey(activePath)) ?? null;
   function selectContext(path: string) { setActivePath(briefs.find((item) => pathKey(item.page_path) === pathKey(path))?.page_path ?? ''); }
   useEffect(() => {
+    const receiveContext = (event: Event) => {
+      const path = (event as CustomEvent<{ path?: string }>).detail?.path;
+      if (typeof path === 'string') selectContext(path);
+    };
+    window.addEventListener('buyersite:sourcing-context', receiveContext);
+    return () => window.removeEventListener('buyersite:sourcing-context', receiveContext);
+  }, [briefs]);
+  useEffect(() => {
     if (!enabled) return;
     const controller = new AbortController();
     fetch('/api/buyer/config', { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10_000)]), credentials: 'same-origin' })

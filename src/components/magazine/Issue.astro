@@ -8,6 +8,9 @@ assertMagazineIssue(issue);
 const assets=Object.fromEntries(issue.assets.map((asset:any)=>[asset.id,asset]));
 const evidence=Object.fromEntries((issue.evidence||[]).map((item:any)=>[item.id,item]));
 const isConcept=issue.publicationStatus==='concept-private';
+const sourceArticles=issue.sourceArticles||[];
+const articlePath=(id:string)=>sourceArticles.find((article:any)=>article.id===id)?.path||'';
+const guide=sourceArticles.find((article:any)=>article.pageType==='buyer-guide');
 const navItems=issue.spreads.filter((spread:any)=>!['cover','contents'].includes(spread.kind));
 ---
 <div class="mi-root" data-publication-status={issue.publicationStatus}>
@@ -21,9 +24,10 @@ const navItems=issue.spreads.filter((spread:any)=>!['cover','contents'].includes
       {navItems.slice(0,4).map((spread:any)=><a href={'#'+spread.id}>{spread.title}</a>)}
     </div>
     <a class="mi-sourcing-link" href="#sourcing">Sourcing ↗</a>
+    {issue.publicationStatus==='private-review' && guide && <button class="mi-assistant-link" type="button" data-assistant-open data-source-article={guide.path}>Ask Sourcing AI</button>}
   </nav>
   <main id="main" class="mi-main">
-    {issue.spreads.map((spread:any)=><Spread spread={spread} assets={assets} evidence={evidence}
+    {issue.spreads.map((spread:any)=><Spread spread={spread} assets={assets} evidence={evidence} sourceArticles={sourceArticles}
       brand={issue.brand} publicationStatus={issue.publicationStatus}/>)}
   </main>
   <footer class="mi-footer">

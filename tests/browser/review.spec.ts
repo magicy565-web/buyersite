@@ -76,6 +76,17 @@ for (const route of routes)
     if (route.startsWith('/issues/')) {
       await expect(page.locator('.mi-nav')).toBeVisible();
       await expect(page.locator('.mi-sourcing-link')).toHaveAttribute('href', '#sourcing');
+      if (edition) {
+        const issue = JSON.parse(readFileSync(join(edition, 'magazine-issue.json'), 'utf8'));
+        const guide = issue.sourceArticles.find((article: { pageType: string }) => article.pageType === 'buyer-guide');
+        if (guide) {
+          await page.locator('.mi-assistant-link').click();
+          await expect(page.getByRole('dialog')).toBeVisible();
+          await expect(page.locator('#sourcing-reading')).toHaveValue(guide.path);
+          await page.keyboard.press('Escape');
+          await expect(page.getByRole('dialog')).not.toBeVisible();
+        }
+      }
       await page.locator('#sourcing').scrollIntoViewIfNeeded();
       await page.locator('#mi-brief').fill('Please confirm available product options and terms.');
       await page.locator('#mi-prepare').click();
