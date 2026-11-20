@@ -54,7 +54,7 @@ export async function handleAnalytics(request, env, config) {
     if (!rate) return reply(429);
     const type = marketingType(body.name, path, landingPath);
     if (type && campaign.campaign) {
-      const queued = await enqueueMarketingEvent(env, config, {
+      await enqueueMarketingEvent(env, config, {
         eventId: body.eventId ?? crypto.randomUUID(), campaignId: campaign.campaign, type,
         occurredAt: new Date(now).toISOString(), landingUrl: new URL(landingPath, request.url).href,
         pagePath: path, utm: campaign, metadata: { source: 'buyersite', pageType: path.startsWith('/materials/') ? 'article' : path.startsWith('/products/') ? 'product' : path.startsWith('/suppliers/') ? 'supplier' : path.startsWith('/guides/') ? 'guide' : 'other', ...(body.name === 'assistant_opened' || body.name === 'enquiry_started' ? { ctaId: body.name } : {}) },
