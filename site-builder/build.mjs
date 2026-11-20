@@ -58,6 +58,7 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     categories: result.articles.map((article) => article.category).filter(Boolean),
     articles: result.articles,
   });
+  if(artDirection) result.visualPlan.art_direction=artDirection.visualDNA;
   result.mediaPlan = planMedia(result.articles, input.media_assets || []);
   const renderPolicy = {
     aiGenerationAuthorized: options.aiGenerationAuthorized === true,
