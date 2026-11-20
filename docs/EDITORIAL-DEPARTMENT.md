@@ -14,6 +14,10 @@ A portable department contract for the Buyersite virtual digital magazine team. 
 
 Role briefs live in \`skills/editorial-department/seats/\`. All seats reuse the existing \`skills/buyer-magazine-site/SKILL.md\` production rules and the current Site Builder, Astro renderer, media policy, review and Buyer Runtime.
 
+## Existing team-map placement
+
+The manifest includes six office zones for the seven seats: Editorial Room, Research Library, Creative Studio, Production Floor, Standards Desk, and Audience & Growth. This is placement metadata for the existing OpenMausBot team map, not a new Buyersite dashboard. A future UI adapter should render each seat's presence only from durable task events. Idle movement may be decorative only when no task is active; it must never imply work is running.
+
 ## Capability model
 \`editorial-department/department.json\` is the machine-readable contract. Each capability is marked:
 - \`implemented\`: repository implementation exists;
