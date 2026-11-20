@@ -578,10 +578,12 @@
   "sharedProductionSkill": "skills/buyer-magazine-site/SKILL.md",
   "workspace": {
     "target": "openmausbot-team-map",
-    "view": "isometric-editorial-office",
+    "view": "existing-section-based-team-map",
     "presenceFrom": "durable-mission-task-state",
     "idleAnimations": "cosmetic-only-when-no-active-job",
-    "zones": [
+    "sectionName": "BuyerSite Editorial Department",
+    "chiefSeatId": "editor-in-chief",
+    "workAreas": [
       {
         "id": "editorial-room",
         "label": "Editorial Room",
