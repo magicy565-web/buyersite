@@ -576,8 +576,13 @@ export async function createBuyerSiteWorker({
   return {
     handler,
     records,
+    editorialRuntime,
+    dispatcher,
+    editorialMcp,
     async idle() {
       await queue;
+      await editorialRuntime.tail;
+      await editorialMcp?.idle?.();
     },
   };
 }
