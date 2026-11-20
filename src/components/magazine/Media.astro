@@ -1,8 +1,21 @@
 ---
-interface Props { asset: { src: string; alt: string; credit: string }; className?: string; }
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
+interface Props {
+  asset: { src?: string; articleId?: string; alt: string; credit: string; caption?: string };
+  className?: string;
+}
 const { asset, className = '' } = Astro.props;
+const entry = asset.articleId ? await getEntry('articles', asset.articleId) : null;
+if (asset.articleId && !entry) throw new Error('Magazine media article binding is missing: ' + asset.articleId);
+const image = entry?.data.hero;
 ---
 <figure class:list={['mi-media',className]}>
-  <img src={asset.src} alt={asset.alt} loading="lazy" decoding="async" width="900" height="1000" />
-  <figcaption>{asset.credit}</figcaption>
+  {image ? (
+    <Image src={image} alt={asset.alt} widths={[480,800,1200,1600]} sizes="(min-width: 1000px) 48vw, 100vw"
+      format="avif" loading="lazy" decoding="async" />
+  ) : asset.src ? (
+    <img src={asset.src} alt={asset.alt} loading="lazy" decoding="async" width="900" height="1000" />
+  ) : null}
+  <figcaption>{asset.caption ? asset.caption + ' · ' : ''}{asset.credit}</figcaption>
 </figure>
