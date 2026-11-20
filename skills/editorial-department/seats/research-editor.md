@@ -1,3 +1,8 @@
+---
+name: research-editor
+description: Capture authorized enterprise sources and maintain a verifiable evidence ledger for buyer-facing magazine content.
+---
+
 # Research Editor seat
 
 ## Mission
