@@ -12,14 +12,14 @@ const safeHttps = value => {
 };
 function assertAsset(asset, publicationStatus, articleIds) {
   if (!asset || !ID.test(asset.id || '') || !hasText(asset.alt,300) ||
-      !hasText(asset.credit,300)) fail('asset requires safe ID, alt and credit');
+      !hasText(asset.credit,300)) fail('asset requires safe ID, alt and disclosure (credit)');
   if (publicationStatus==='concept-private') {
     if (asset.kind!=='ai-concept' ||
         (asset.caption!==undefined && !hasText(asset.caption,800)) ||
         typeof asset.src!=='string' ||
         !/^\/magazine-concepts\/[a-z0-9-]+\/[a-z0-9-]+\.svg$/.test(asset.src) ||
         !/concept/i.test(asset.credit) || !/not .*photograph/i.test(asset.credit)) {
-      fail('concept edition only accepts explicitly disclosed bundled concept artwork');
+      fail('unlicensed media rejected; concept edition only accepts explicitly disclosed bundled concept artwork');
     }
     return;
   }
@@ -45,7 +45,7 @@ function assertAsset(asset, publicationStatus, articleIds) {
 export function assertMagazineIssue(issue) {
   if (!issue || typeof issue!=='object' || Array.isArray(issue)) fail('object required');
   if (issue.schemaVersion!=='1.0.0') fail('unsupported version');
-  if (!['concept-private','private-review'].includes(issue.publicationStatus)) fail('public publication is not supported by this renderer');
+  if (!['concept-private','private-review'].includes(issue.publicationStatus)) fail('concept-preview only or private-review; public publication is not supported');
   if (!ID.test(issue.id || '')) fail('unsafe issue id');
   if (!hasText(issue.brand,90) || !hasText(issue.title,160) || !hasText(issue.deck,600)) fail('missing brand/title/deck');
   if (!Array.isArray(issue.assets) || issue.assets.length<1 || issue.assets.length>40) fail('asset inventory required');
