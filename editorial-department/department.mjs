@@ -58,6 +58,16 @@ export function assertDepartmentManifest(value = manifest) {
       workspace?.idleAnimations!=='cosmetic-only-when-no-active-job' ||
       !SAFE_ID.test(workspace.chiefSeatId || '') || !seatById.has(workspace.chiefSeatId) ||
       typeof workspace.sectionName!=='string' || !workspace.sectionName.trim() ||
+      workspace.teamMapBinding?.sectionField!=='BotRecord.section' ||
+      workspace.teamMapBinding?.chiefField!=='BotRecord.chiefOfStaff' ||
+      workspace.teamMapBinding?.collaborationSnapshot!=='GET /api/team-map' ||
+      workspace.teamMapBinding?.departmentInstructions!=='/api/section-context' ||
+      workspace.teamMapBinding?.seatBotCount!==value.seats.length ||
+      workspace.teamMapBinding?.importFormat!=='openmaus.team/v2' ||
+      workspace.teamMapBinding?.skillsProvisioning!=='separate-explicit-install' ||
+      !Array.isArray(workspace.teamMapBinding.statusFields) ||
+      !workspace.teamMapBinding.statusFields.includes('busy') ||
+      !workspace.teamMapBinding.statusFields.includes('activity') ||
       !Array.isArray(workspace.workAreas) || workspace.workAreas.length<1 || workspace.workAreas.length>12) {
     fail('workspace must bind to the existing section-based OpenMausBot team map');
   }
