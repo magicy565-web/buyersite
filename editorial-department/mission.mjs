@@ -70,7 +70,8 @@ export function assertMissionPlan(mission, department = manifest) {
       !SHA256.test(binding?.sourceSha256 || '') || !ISSUE.test(binding?.issueId || '') ||
       !Number.isInteger(binding?.selectedProductCount) || binding.selectedProductCount < 0 || binding.selectedProductCount > 12 ||
       mission.id !== missionIdFor(binding) || mission.publication?.state !== 'blocked' ||
-      mission.publication?.approvalRequired !== 'human-publication-approval') {
+      mission.publication?.approvalRequired !== 'human-publication-approval' ||
+      mission.publication?.externalDistribution !== 'not-configured') {
     fail('invalid mission identity, immutable source binding or execution boundary');
   }
   if (!Array.isArray(mission.tasks) || mission.tasks.length < 8 || mission.tasks.length > 24) fail('mission task count is outside bounds');
@@ -105,6 +106,11 @@ export function assertMissionPlan(mission, department = manifest) {
     if (task.capabilityReadiness !== base || task.readiness !== expected.get(task.id).readiness) {
       fail('task readiness does not match capability and dependency gates');
     }
+  }
+  const expectedBlockers=mission.tasks.filter((task)=>task.capabilityReadiness!=='ready')
+    .map((task)=>({taskId:task.id,reason:task.capabilityReadiness}));
+  if(!Array.isArray(mission.blockers)||JSON.stringify(mission.blockers)!==JSON.stringify(expectedBlockers)) {
+    fail('mission blocker summary does not match capability readiness');
   }
   return mission;
 }
