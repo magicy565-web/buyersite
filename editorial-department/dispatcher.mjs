@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import manifest from './department.json' with { type: 'json' };
 
 const fail=(code,status=503)=>{const error=new Error(code);error.code=code;error.status=status;throw error;};
@@ -35,12 +35,13 @@ function taskInstructions(task){
   return ['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail',...(tools[task.id]||[])];
 }
 
-export function buildSeatTaskPrompt({missionId,task,context}={}){
+export function buildSeatTaskPrompt({missionId,task,context,taskAccessToken}={}){
   if(!missionId||!task||!context||context.missionId!==missionId||context.task?.id!==task.id)fail('MISSION_PROMPT_CONTEXT_INVALID',500);
   const output={
     missionId,
     taskId:task.id,
     seatId:task.seatId,
+    taskAccessToken,
     sourceSha256:context.binding.sourceSha256,
     enterpriseId:context.binding.tenantId,
     issueId:context.binding.issueId,
@@ -93,17 +94,16 @@ export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date
           const existing=Array.isArray(bot.tasks)?bot.tasks.find(item=>item?.title===title&&
             typeof item.threadId==='string'&&!item.archivedAt):null;
           const created=existing?{task:existing,threadId:existing.threadId}:await openMausClient.createTask(bot.id,title);
-          const sendId=randomUUID();
-          dispatch={seatId:task.seatId,botId:bot.id,threadId:created.threadId,sendId};
-          await runtime.recordDispatchTarget({missionId,taskId:task.id,...dispatch});
+          dispatch={seatId:task.seatId,botId:bot.id,threadId:created.threadId};
         }
-        if(dispatch.state==='sent'){
-          dispatched.push({taskId:task.id,seatId:task.seatId,threadId:dispatch.threadId,reused:true});
-          continue;
-        }
-        const context=await runtime.getTaskContext(missionId,task.id,task.seatId);
-        const prompt=buildSeatTaskPrompt({missionId,task,context});
-        await openMausClient.sendGoal(dispatch.botId,dispatch.threadId,prompt,dispatch.sendId);
+        const taskAccessToken=randomBytes(32).toString('base64url');
+        const sendId=randomUUID();
+        await runtime.bindTaskAccessToken({missionId,taskId:task.id,seatId:task.seatId,accessToken:taskAccessToken});
+        await runtime.recordDispatchTarget({missionId,taskId:task.id,seatId:task.seatId,
+          botId:dispatch.botId,threadId:dispatch.threadId,sendId});
+        const context=await runtime.getTaskContext(missionId,task.id,task.seatId,taskAccessToken);
+        const prompt=buildSeatTaskPrompt({missionId,task,context,taskAccessToken});
+        await openMausClient.sendGoal(dispatch.botId,dispatch.threadId,prompt,sendId);
         await runtime.recordDispatchSent({missionId,taskId:task.id,seatId:task.seatId,threadId:dispatch.threadId});
         dispatched.push({taskId:task.id,seatId:task.seatId,threadId:dispatch.threadId,reused:Boolean(entry.state.dispatch)});
       }catch(error){
