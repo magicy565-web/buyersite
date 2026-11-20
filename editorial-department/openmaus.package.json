@@ -53,7 +53,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "editor-in-chief"
         ],
         "tools": {
@@ -77,7 +77,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "research-editor"
         ],
         "tools": {
@@ -101,7 +101,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "editorial-editor"
         ],
         "tools": {
@@ -125,7 +125,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "art-director"
         ],
         "tools": {
@@ -149,7 +149,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "production-editor"
         ],
         "tools": {
@@ -173,7 +173,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "standards-editor"
         ],
         "tools": {
@@ -197,7 +197,7 @@
         },
         "skills": [
           "editorial-department",
-          "buyer-magazine-site",
+          "buyersite-production",
           "audience-editor"
         ],
         "tools": {
@@ -222,10 +222,10 @@
           "files": []
         },
         {
-          "name": "buyer-magazine-site",
-          "description": "Build an independent source-backed buyer magazine from approved public content contracts.",
+          "name": "buyersite-production",
+          "description": "Apply the Buyersite publishing, evidence, media-rights and Astro production standards when preparing a buyer-facing digital magazine.",
           "license": "Proprietary",
-          "instructions": "---\nname: buyer-magazine-site\ndescription: Build an independent source-backed buyer magazine from approved public content contracts.\n---\nRead ../../docs/ARCHITECTURE.md and the three schemas under ../../legacy/schemas/.\nUse the editorial, evidence and QA rules in ../../legacy/skills/ as reference. Their DSH and ChatGPT Sites tool names are historical and must not be executed by this project.\nSelect one buyer audience and buying intent per page. Preserve source URLs, capture times, factual status and publication permissions. Never invent commercial terms, certification, test results or supplier relationships.\nReuse the pinned Halftone components and tokens. Compile approved page contracts to static routes. Chat and RFQ services stay behind a server-authorized HTTPS gateway.\nRun pnpm check, pnpm build and pnpm verify:output. Inspect mobile and desktop before claiming visual acceptance.\nThe present pilot is private review only, noindex and disallowed by robots. Commercial release requires reviewed imagery rights, verified deployment controls and a working primary conversion path.\n",
+          "instructions": "---\nname: buyersite-production\ndescription: Apply the Buyersite publishing, evidence, media-rights and Astro production standards when preparing a buyer-facing digital magazine.\n---\nYou are working inside the Buyersite digital magazine production system. The department manifest and the host's server-side capability policy are authoritative. Do not assume repository-relative paths from the original source checkout exist in this installed Skill.\n\n## Editorial and evidence standards\n- Select one buyer audience and one buying intent per story.\n- Preserve source URLs, capture times, source hashes, evidence IDs, factual status and publication permissions.\n- Attribute supplier statements. Never upgrade them into independent verification.\n- Never invent commercial terms, MOQ, pricing, delivery, certifications, test results, factory relationships, interviews, testimonials, buyer demand, orders or revenue.\n- If evidence is missing, mark the gap and ask the Research Editor. Do not fill it with plausible copy.\n\n## Magazine composition\n- Treat each issue as an IssueSpec composed of validated spread kinds, not free-form HTML or CSS.\n- Preserve a deliberate editorial arc: cover, contents, stories/features, evidence or buyer notes, and a contextual sourcing close.\n- Use the existing Astro spread renderer and pinned design system. Do not create a second CMS, page builder or client-side app.\n- Desktop and mobile may use different composition plans while sharing the same source-bound issue content.\n- Product galleries exist only when the frozen enterprise snapshot contains selected products.\n\n## Media rights and AI imagery\n- Use only tenant-scoped approved media with current source and rights receipts.\n- AI-generated images require explicit authorization in the frozen job/snapshot and must be labelled as conceptual artwork.\n- Never imply AI imagery depicts the actual supplier product, factory, process, certification or test result.\n- Preserve prompt/model/provider provenance and the normalized image hash.\n- Do not accept arbitrary model-supplied image URLs or silently replace media.\n\n## Production and review\n- Build isolated private previews first. Private previews remain noindex and are not public releases.\n- Verify the exact media bytes, issue/source fingerprints, generated routes and output inventory.\n- Review actual desktop and mobile screenshots, including narrow-screen overflow, crop, hierarchy, legibility, evidence links and sourcing context.\n- Fix only the failing spread or artifact and rerun its dependent checks; do not silently rewrite source facts.\n- A successful local build or preview is not a publication approval.\n\n## Commercial and privacy boundaries\n- Sourcing interactions may prepare an editable buyer brief with the current article context.\n- Only the buyer may submit their enquiry with explicit consent through the existing server-side flow.\n- Never contact suppliers, submit enquiries on a buyer's behalf, create quotations or orders, read other tenants' data, or access runtime secrets.\n- Public publication and external distribution require human approval.\n- Do not claim a task is running or complete unless the host's durable mission/job state confirms it.\n",
           "files": []
         },
         {
