@@ -60,7 +60,9 @@ export function buildSeatTaskPrompt({missionId,task,context}={}){
     JSON.stringify(output,null,2),
     'TASK CONTEXT:',
     JSON.stringify(context,null,2),
-  ].join('\n\n').slice(0,78_000);
+  ].join('\n\n');
+  if(prompt.length>78_000)fail('MISSION_PROMPT_TOO_LARGE',413);
+  return prompt;
 }
 
 export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date.now()}={}){
