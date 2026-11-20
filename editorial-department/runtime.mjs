@@ -551,5 +551,66 @@ export class EditorialMissionRuntime {
   }
 
   getDirectory(missionId){return this.missionDir(missionId);}
+  getTeamMapProjection(missionId,tenantId){
+    const record=this.records.get(missionId);
+    if(!record)fail('MISSION_NOT_FOUND',404);
+    if(tenantId&&record.plan.binding.tenantId!==tenantId)fail('MISSION_NOT_FOUND',404);
+    const tasksBySeat=new Map(manifest.seats.map(seat=>[seat.id,[]]));
+    for(const task of record.plan.tasks){
+      const list=tasksBySeat.get(task.seatId);
+      if(!list)continue;
+      const state=record.tasks[task.id];
+      list.push({task,state});
+    }
+    const seats=manifest.seats.map(seat=>{
+      const rows=tasksBySeat.get(seat.id)||[];
+      const counts={blocked:0,queued:0,running:0,completed:0,failed:0};
+      for(const row of rows)if(Object.hasOwn(counts,row.state.state))counts[row.state.state]+=1;
+      const current=rows.find(row=>row.state.state==='running')||
+        rows.find(row=>row.state.state==='queued')||
+        rows.find(row=>row.state.state==='blocked')||
+        rows.find(row=>row.state.state==='failed')||null;
+      const completed=rows.filter(row=>row.state.state==='completed'&&row.state.artifactSha256);
+      const dispatched=rows.find(row=>row.state.dispatch?.botId);
+      const status=counts.running?'working':
+        counts.queued?'queued':
+        counts.blocked||counts.failed?'waiting':'idle';
+      return {
+        seatId:seat.id,
+        title:seat.title,
+        botId:dispatched?.state.dispatch.botId||null,
+        threadId:current?.state.dispatch?.threadId||dispatched?.state.dispatch.threadId||null,
+        status,
+        currentTask:current?{
+          id:current.task.id,
+          state:current.state.state,
+          updatedAt:current.state.updatedAt,
+          reason:current.state.reason||null,
+          errorCode:current.state.error?.code||null,
+        }:null,
+        taskCounts:counts,
+        filePileCount:completed.length,
+        files:completed.map(({task,state})=>({
+          taskId:task.id,
+          label:task.output,
+          sha256:state.artifactSha256,
+          updatedAt:state.updatedAt,
+        })),
+        updatedAt:rows.reduce((latest,row)=>Math.max(latest,row.state.updatedAt||0),0)||null,
+      };
+    });
+    return {
+      schemaVersion:'buyersite-team-map/v1',
+      missionId:record.id,
+      issueId:record.plan.binding.issueId,
+      jobId:record.job.id,
+      enterpriseId:record.job.enterpriseId,
+      state:record.state,
+      seats,
+      publication:clone(record.publication),
+      updatedAt:record.updatedAt,
+    };
+  }
+
   getPublicMission(missionId){return publicMission(this.records.get(missionId)||fail('MISSION_NOT_FOUND',404));}
 }
