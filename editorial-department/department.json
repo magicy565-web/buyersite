@@ -627,6 +627,21 @@
           "audience-editor"
         ]
       }
-    ]
+    ],
+    "teamMapBinding": {
+      "sectionField": "BotRecord.section",
+      "chiefField": "BotRecord.chiefOfStaff",
+      "statusFields": [
+        "busy",
+        "activity"
+      ],
+      "collaborationSnapshot": "GET /api/team-map",
+      "departmentInstructions": "/api/section-context",
+      "seatBotCount": 7,
+      "importFormat": "openmaus.team/v2",
+      "skillsProvisioning": "separate-explicit-install",
+      "modelProvisioning": "workspace-default-until-human-configured",
+      "toolProvisioning": "least-privilege-explicit-admin-config"
+    }
   }
 }
