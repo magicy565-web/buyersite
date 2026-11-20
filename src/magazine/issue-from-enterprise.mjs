@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { lstat, readFile, realpath } from 'node:fs/promises';
+import { isAbsolute, join, resolve } from 'node:path';
 import { assertMagazineIssue } from './issue-contract.mjs';
 
 const SHA=/^[a-f0-9]{64}$/;
@@ -173,4 +175,22 @@ export function compileMagazineIssueFromEnterprise({compiled,outline,mediaPlan,m
     sourceArticles,evidence,assets,spreads,
   };
   return assertMagazineIssue(issue);
+}
+
+/** Bind every source-backed media descriptor to the exact normalized bytes in the private edition pack. */
+export async function assertIssueMediaFiles({issue,articlesDir}={}){
+  assertMagazineIssue(issue);
+  if(typeof articlesDir!=='string'||!isAbsolute(articlesDir)) fail('absolute private article media directory required');
+  const root=resolve(articlesDir);
+  const rootStat=await lstat(root).catch(()=>null);
+  if(!rootStat?.isDirectory()||rootStat.isSymbolicLink()||await realpath(root)!==root) fail('article media directory is not a private regular directory');
+  for(const asset of issue.assets){
+    if(!asset.articleId) continue; // bundled concept artwork is outside the enterprise media pack
+    const file=join(root,asset.filename);
+    const info=await lstat(file).catch(()=>null);
+    if(!info?.isFile()||info.isSymbolicLink()||info.size>12_000_000||await realpath(file)!==file) fail('unsafe or missing media file: '+asset.filename);
+    const bytes=await readFile(file);
+    if(hash(bytes)!==asset.sha256) fail('media bytes do not match the issue descriptor: '+asset.articleId);
+  }
+  return true;
 }
