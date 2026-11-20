@@ -1,3 +1,8 @@
+---
+name: audience-editor
+description: Use privacy-safe aggregate feedback to prepare evidence-led editorial and distribution recommendations.
+---
+
 # Audience & Growth Editor seat
 
 ## Mission
