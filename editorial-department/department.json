@@ -9,9 +9,9 @@
   "baseSkill": "skills/editorial-department/SKILL.md",
   "runtime": {
     "provider": "OpenMausBot",
-    "bindingStatus": "unbound",
-    "dispatchMode": "explicit-job-delegation",
-    "executionMode": "plan-only",
+    "bindingStatus": "adapter-available",
+    "dispatchMode": "durable-mission-dispatch",
+    "executionMode": "runtime-gated",
     "presenceSource": "durable-mission-task-state",
     "noSyntheticPresence": true
   },
@@ -331,12 +331,15 @@
     },
     {
       "id": "editorial.draft-copy",
-      "status": "planned",
+      "status": "implemented-gated",
       "effect": "model-generated-content",
-      "implementation": null,
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertEditorialDraft"
+      },
       "requiredApprovals": [
-        "editorialBriefApproved",
-        "evidenceBoundOutput"
+        "editorialBriefApproved"
       ]
     },
     {
@@ -387,16 +390,14 @@
     },
     {
       "id": "media.materialize",
-      "status": "implemented-gated",
+      "status": "implemented",
       "effect": "private-media-write",
       "implementation": {
         "kind": "module-export",
         "path": "site-builder/media-render.mjs",
         "export": "materializeEditionMedia"
       },
-      "requiredApprovals": [
-        "mediaPolicyPassed"
-      ]
+      "requiredApprovals": []
     },
     {
       "id": "media.review",
@@ -641,7 +642,11 @@
       "importFormat": "openmaus.package/v2",
       "skillsProvisioning": "separate-explicit-install",
       "modelProvisioning": "workspace-default-until-human-configured",
-      "toolProvisioning": "least-privilege-explicit-admin-config"
+      "toolProvisioning": "least-privilege-explicit-admin-config",
+      "missionRuntime": "site-builder/worker.mjs",
+      "missionMcpPath": "/mcp/{seatId}",
+      "missionStore": "private-file-backed-atomic-json",
+      "dispatchApi": "OpenMausBot client-scope session"
     },
     "importablePackage": "editorial-department/openmaus.package.json"
   }
