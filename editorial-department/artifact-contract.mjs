@@ -151,7 +151,7 @@ export function validateTaskArtifact(taskId,artifact,context={}){
       if(!object(page)||page.url!==context.websiteUrl||!text(page.title,300)||
          !text(page.captured_at,80)||!text(page.body_text,30_000)||
          !SHA.test(page.content_sha256||'')||
-         hash(page.body_text)!==page.content_sha256)fail('source capture does not match the authorized URL and content hash');
+         createHash('sha256').update(page.body_text).digest('hex')!==page.content_sha256)fail('source capture does not match the authorized URL and content hash');
       return artifact;
     }
     case 'compile-enterprise':
