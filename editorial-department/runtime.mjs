@@ -243,7 +243,7 @@ export class EditorialMissionRuntime {
       if(state.state!=='queued')fail('MISSION_TASK_NOT_QUEUED',409);
       if(!/^[A-Za-z0-9_-]{1,128}$/.test(botId||'')||! /^[A-Za-z0-9_-]{1,128}$/.test(threadId||'')||
          !/^[a-f0-9-]{36}$/i.test(sendId||''))fail('MISSION_DISPATCH_BINDING_INVALID',400);
-      if(state.dispatch&&state.dispatch.threadId!==threadId)fail('MISSION_DISPATCH_CONFLICT',409);
+      if(state.dispatch&&(state.dispatch.threadId!==threadId||state.dispatch.botId!==botId))fail('MISSION_DISPATCH_CONFLICT',409);
       state.dispatch={seatId,botId,threadId,sendId,state:'created',createdAt:state.dispatch?.createdAt||this.clock()};
       state.updatedAt=this.clock();
       await this.save(record);
