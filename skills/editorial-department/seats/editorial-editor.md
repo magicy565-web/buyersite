@@ -1,3 +1,8 @@
+---
+name: editorial-editor
+description: Draft buyer-focused stories, headlines and captions that preserve source attribution and uncertainty.
+---
+
 # Editorial Editor seat
 
 ## Mission
