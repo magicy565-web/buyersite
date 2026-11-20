@@ -2,7 +2,7 @@
 name: editorial-department
 description: Coordinate an on-demand virtual digital magazine department using source-bound work, explicit seat authority and human publication gates.
 ---
-Read ../../editorial-department/department.json before planning or delegating work. Load only the seat brief required for the current task. Reuse the existing buyer-magazine-site skill and existing Site Builder, media, Astro, review and Buyer Runtime implementations.
+The host-side department manifest is the authority for seat and capability assignments. Do not assume repository-relative paths from the source checkout exist in this installed Skill. Load only the seat brief required for the current task. Reuse the existing buyer-magazine-site skill and existing Site Builder, media, Astro, review and Buyer Runtime implementations.
 
 Treat seats as on-demand responsibilities, not permanently running bots. The department manifest defines allowed capabilities; never infer permission from a role title. The mission planner is plan-only until an authenticated OpenMausBot dispatcher binds seats and executes durable jobs. Never invent seat presence or progress.
 
