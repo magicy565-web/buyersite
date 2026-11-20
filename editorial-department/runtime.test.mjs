@@ -139,6 +139,46 @@ test('a public release can never be enabled by approving the private preview',as
   });
 });
 
+test('Team Map projection derives seat presence and file piles only from durable task state',async()=>{
+  await withRuntime(async(runtime)=>{
+    const f=fixture();
+    const mission=await runtime.createMission({
+      plan:f.plan,job:f.job,sourceBytes:f.source,
+      approvals:['websiteResearchAuthorized'],
+    });
+    const initial=runtime.getTeamMapProjection(mission.id,f.job.enterpriseId);
+    assert.equal(initial.schemaVersion,'buyersite-team-map/v1');
+    assert.equal(initial.seats.length,7);
+    const research=initial.seats.find(seat=>seat.seatId==='research-editor');
+    assert.equal(research.status,'queued');
+    assert.equal(research.currentTask.id,'capture-source');
+    assert.equal(research.filePileCount,0);
+    assert.equal(research.botId,null);
+
+    const accessToken=Buffer.from('b'.repeat(48)).toString('base64url');
+    runtime.bindTaskAccessToken({
+      missionId:mission.id,taskId:'capture-source',seatId:'research-editor',accessToken,
+    });
+    await runtime.recordDispatchTarget({
+      missionId:mission.id,taskId:'capture-source',seatId:'research-editor',
+      botId:'real-research-bot',threadId:'real-research-thread',sendId:randomUUID(),
+    });
+    const dispatched=runtime.getTeamMapProjection(mission.id,f.job.enterpriseId);
+    const bound=dispatched.seats.find(seat=>seat.seatId==='research-editor');
+    assert.equal(bound.botId,'real-research-bot');
+    assert.equal(bound.threadId,'real-research-thread');
+    assert.equal(bound.status,'queued');
+    assert.equal(bound.filePileCount,0);
+    assert.equal(JSON.stringify(dispatched).includes(accessToken),false);
+    assert.equal(JSON.stringify(dispatched).includes('Source-bound test fixture'),false);
+
+    assert.throws(
+      ()=>runtime.getTeamMapProjection(mission.id,'another-enterprise'),
+      error=>error.code==='MISSION_NOT_FOUND',
+    );
+  });
+});
+
 test('stdio MCP server parses and every exposed tool requires the task-scoped access token',async()=>{
   const path=fileURLToPath(new URL('./mcp-server.mjs',import.meta.url));
   execFileSync(process.execPath,['--check',path],{stdio:'pipe'});
