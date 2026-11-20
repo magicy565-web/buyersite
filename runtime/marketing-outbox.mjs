@@ -46,7 +46,7 @@ export async function enqueueMarketingEvent(env, config, input) {
       if (parsed.protocol === 'https:' && !parsed.username && !parsed.password && !parsed.search && !parsed.hash) landingUrl = parsed.toString();
     } catch {}
   }
-  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#\\\\\x00-\x20]/.test(input.pagePath)
+  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#]/.test(input.pagePath) && !input.pagePath.includes('\\\\') && !/[\\x00-\\x20]/.test(input.pagePath)
     ? input.pagePath : '/';
   const rawMetadata = input?.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {};
   const metadata = {
@@ -129,7 +129,7 @@ export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, no
     else if (outcome === 'retry') retried++;
     else dead++;
   }
-  return { status: 'connected', claimed: rows.length, delivered, retried, dead };
+  return { status: 'configured', claimed: rows.length, delivered, retried, dead };
 }
 
 export async function marketingOutboxStatus(env, config) {
@@ -138,5 +138,5 @@ export async function marketingOutboxStatus(env, config) {
     .bind(config.siteSlug).all();
   const counts = { pending: 0, sending: 0, delivered: 0, dead: 0 };
   for (const row of rows?.results ?? []) if (Object.hasOwn(counts, row.status)) counts[row.status] = Number(row.count);
-  return { connection: connection(env) ? 'connected' : 'needs_connection', ...counts };
+  return { connection: connection(env) ? 'configured' : 'needs_connection', ...counts };
 }
