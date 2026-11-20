@@ -139,7 +139,9 @@ export async function editionReviewSource({ sourceRoot, mediaRoot = process.env.
 export async function assertEditionVisualReview({ review, sourceRoot, artifactSha256, jobDir, mediaRoot, asOf }) {
   if (!review || review.status !== 'PASS_RECOMMENDED' || review.evidence_type !== 'observed' ||
       !['interactive-vision', 'openai-responses'].includes(review.review_method) || !passingReviewTime(review.reviewed_at, asOf)) fail('EDITION_REVIEW_REQUIRED');
-  const current = await editionReviewSource({ sourceRoot, mediaRoot, asOf });
+  let current;
+  try { current = await editionReviewSource({ sourceRoot, mediaRoot, asOf }); }
+  catch (cause) { if (cause?.code === 'MAGAZINE_ISSUE_SOURCE_STALE') fail('EDITION_REVIEW_STALE'); throw cause; }
   const reviewedPages = current.magazineIssue
     ? [...current.pages, { page_id: 'magazine-issue', path: '/issues/' + current.magazineIssue.id + '/',
         page_type: 'magazine-issue', title: current.magazineIssue.title }]
