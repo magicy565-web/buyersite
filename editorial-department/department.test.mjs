@@ -24,7 +24,7 @@ test('department manifest declares seven on-demand seats and a bounded capabilit
   assert.equal(getCapability('editorial.draft-copy').status, 'planned');
 });
 
-test('all seven seats map exactly once into the existing pixel-office zones', () => {
+test('all seven seats map exactly once into the six logical work areas', () => {
   const value=assertDepartmentManifest();
   const mapped=value.workspace.workAreas.flatMap((zone)=>zone.seatIds);
   assert.equal(mapped.length,7);
