@@ -7,6 +7,7 @@ const TENANT = /^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$/;
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[a-f0-9]{12}$/i;
 const ISSUE = /^[a-z0-9][a-z0-9-]{1,63}$/;
 const READINESS = new Set(['ready','approval-required','not-implemented','human-review','dependency-blocked']);
+const EXECUTORS = new Set(['buyersite-local','openmaus-seat','human-gate']);
 const fail = (message) => { throw new TypeError('EDITORIAL_MISSION: ' + message); };
 
 function missionIdFor(binding) {
@@ -81,7 +82,9 @@ export function assertMissionPlan(mission, department = manifest) {
         !department.seats.some((seat) => seat.id === task.seatId) ||
         !Array.isArray(task.dependsOn) || !Array.isArray(task.requiredApprovals) ||
         task.state !== 'planned' || !READINESS.has(task.capabilityReadiness) ||
-        !READINESS.has(task.readiness)) fail('invalid or duplicate mission task');
+        !READINESS.has(task.readiness) || !EXECUTORS.has(task.executor) ||
+        (task.executor==='human-gate' && !task.humanGate) ||
+        (task.executor==='openmaus-seat' && !task.capabilityId)) fail('invalid or duplicate mission task');
     ids.add(task.id);
     if (task.capabilityId) {
       const seat = department.seats.find((item) => item.id === task.seatId);
@@ -130,25 +133,25 @@ export function planIssueMission({
   }
 
   const definitions = [
-    {id:'capture-source',seatId:'research-editor',capabilityId:'source.capture-homepage',dependsOn:[],requiredApprovals:['websiteResearchAuthorized'],output:'captured-source-snapshot'},
-    {id:'compile-enterprise',seatId:'research-editor',capabilityId:'source.compile-enterprise',dependsOn:['capture-source'],requiredApprovals:[],output:'enterprise-edition-pack'},
-    {id:'editorial-outline',seatId:'editor-in-chief',capabilityId:'editorial.plan-outline',dependsOn:['compile-enterprise'],requiredApprovals:[],output:'source-bound-magazine-outline'},
-    {id:'human-brief-approval',seatId:'editor-in-chief',capabilityId:null,dependsOn:['editorial-outline'],requiredApprovals:['editorialBriefApproved'],humanGate:'editorialBriefApproved',output:'approved-editorial-brief'},
-    {id:'draft-editorial-copy',seatId:'editorial-editor',capabilityId:'editorial.draft-copy',dependsOn:['human-brief-approval'],requiredApprovals:['editorialBriefApproved'],output:'article-drafts'},
-    {id:'art-direction',seatId:'art-director',capabilityId:'visual.plan',dependsOn:['editorial-outline'],requiredApprovals:[],output:'responsive-visual-plan'},
-    {id:'prepare-media',seatId:'art-director',capabilityId:'media.materialize',dependsOn:['compile-enterprise','art-direction'],requiredApprovals:[],output:'rights-bound-media-report'},
-    {id:'compile-issue',seatId:'production-editor',capabilityId:'editorial.compile-issue',dependsOn:['draft-editorial-copy','prepare-media'],requiredApprovals:[],output:'validated-magazine-issue'},
-    {id:'build-private-preview',seatId:'production-editor',capabilityId:'production.build-private',dependsOn:['compile-issue'],requiredApprovals:[],output:'private-astro-preview'},
-    {id:'review-content',seatId:'standards-editor',capabilityId:'editorial.validate-issue',dependsOn:['compile-issue'],requiredApprovals:[],output:'content-contract-review'},
-    {id:'review-media',seatId:'standards-editor',capabilityId:'media.review',dependsOn:['prepare-media'],requiredApprovals:['aiReviewAuthorized'],output:'media-review-receipts'},
-    {id:'review-visuals',seatId:'standards-editor',capabilityId:'production.visual-review',dependsOn:['build-private-preview'],requiredApprovals:['aiReviewAuthorized'],output:'desktop-mobile-visual-review'},
-    {id:'verify-output',seatId:'production-editor',capabilityId:'production.verify-output',dependsOn:['build-private-preview'],requiredApprovals:[],output:'output-integrity-report'},
-    {id:'human-release-approval',seatId:'editor-in-chief',capabilityId:null,dependsOn:['review-content','review-media','review-visuals','verify-output'],requiredApprovals:['human-publication-approval'],humanGate:'human-publication-approval',output:'signed-publication-decision'},
-    {id:'prepare-distribution',seatId:'audience-editor',capabilityId:'distribution.prepare',dependsOn:['human-release-approval'],requiredApprovals:['human-channel-approval'],output:'channel-distribution-plan'},
+    {id:'capture-source',seatId:'research-editor',capabilityId:'source.capture-homepage',executor:'buyersite-local',dependsOn:[],requiredApprovals:['websiteResearchAuthorized'],output:'captured-source-snapshot'},
+    {id:'compile-enterprise',seatId:'research-editor',capabilityId:'source.compile-enterprise',executor:'buyersite-local',dependsOn:['capture-source'],requiredApprovals:[],output:'enterprise-edition-pack'},
+    {id:'editorial-outline',seatId:'editor-in-chief',capabilityId:'editorial.write-outline',executor:'openmaus-seat',dependsOn:['compile-enterprise'],requiredApprovals:[],output:'source-bound-magazine-outline'},
+    {id:'human-brief-approval',seatId:'editor-in-chief',capabilityId:null,executor:'human-gate',dependsOn:['editorial-outline'],requiredApprovals:['editorialBriefApproved'],humanGate:'editorialBriefApproved',output:'approved-editorial-brief'},
+    {id:'draft-editorial-copy',seatId:'editorial-editor',capabilityId:'editorial.draft-copy',executor:'openmaus-seat',dependsOn:['human-brief-approval'],requiredApprovals:['editorialBriefApproved'],output:'article-drafts'},
+    {id:'art-direction',seatId:'art-director',capabilityId:'visual.propose-art-direction',executor:'openmaus-seat',dependsOn:['editorial-outline'],requiredApprovals:[],output:'responsive-visual-plan'},
+    {id:'prepare-media',seatId:'art-director',capabilityId:'media.materialize',executor:'buyersite-local',dependsOn:['compile-enterprise','art-direction'],requiredApprovals:[],output:'rights-bound-media-report'},
+    {id:'compile-issue',seatId:'production-editor',capabilityId:'editorial.compile-issue',executor:'buyersite-local',dependsOn:['draft-editorial-copy','prepare-media'],requiredApprovals:[],output:'validated-magazine-issue'},
+    {id:'build-private-preview',seatId:'production-editor',capabilityId:'production.build-private',executor:'buyersite-local',dependsOn:['compile-issue'],requiredApprovals:[],output:'private-astro-preview'},
+    {id:'review-content',seatId:'standards-editor',capabilityId:'editorial.standards-review',executor:'openmaus-seat',dependsOn:['compile-issue'],requiredApprovals:['aiReviewAuthorized'],output:'content-contract-review'},
+    {id:'review-media',seatId:'standards-editor',capabilityId:'media.review',executor:'buyersite-local',dependsOn:['prepare-media'],requiredApprovals:['aiReviewAuthorized'],output:'media-review-receipts'},
+    {id:'review-visuals',seatId:'standards-editor',capabilityId:'production.visual-review',executor:'buyersite-local',dependsOn:['build-private-preview'],requiredApprovals:['aiReviewAuthorized'],output:'desktop-mobile-visual-review'},
+    {id:'verify-output',seatId:'production-editor',capabilityId:'production.verify-output',executor:'buyersite-local',dependsOn:['build-private-preview'],requiredApprovals:[],output:'output-integrity-report'},
+    {id:'human-release-approval',seatId:'editor-in-chief',capabilityId:null,executor:'human-gate',dependsOn:['review-content','review-media','review-visuals','verify-output'],requiredApprovals:['human-publication-approval'],humanGate:'human-publication-approval',output:'signed-publication-decision'},
+    {id:'prepare-distribution',seatId:'audience-editor',capabilityId:'audience.prepare-distribution',executor:'openmaus-seat',dependsOn:['human-release-approval'],requiredApprovals:['human-channel-approval'],output:'channel-distribution-plan'},
   ];
   if (selectedProductCount === 0) {
     definitions.splice(definitions.findIndex((task) => task.id === 'draft-editorial-copy') + 1, 0,
-      {id:'skip-product-gallery',seatId:'editor-in-chief',capabilityId:'editorial.plan-outline',dependsOn:['human-brief-approval'],requiredApprovals:[],output:'no-product-gallery-confirmation'});
+      {id:'skip-product-gallery',seatId:'editor-in-chief',capabilityId:'editorial.plan-outline',executor:'buyersite-local',dependsOn:['human-brief-approval'],requiredApprovals:[],output:'no-product-gallery-confirmation'});
   }
 
   const tasks = definitions.map((definition) => ({
