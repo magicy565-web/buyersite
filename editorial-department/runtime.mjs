@@ -9,7 +9,8 @@ import { getCapability } from './department.mjs';
 const MISSION_ID=/^mission-[a-f0-9]{24}$/;
 const TASK_ID=/^[a-z][a-z0-9-]{1,63}$/;
 const SHA=/^[a-f0-9]{64}$/;
-const LEASE_MS=15*60_000;
+const LEASE_MS=60*60_000;
+const ACCESS_MS=4*60*60_000;
 const MAX_ATTEMPTS=2;
 const fail=(code,status=409)=>{const error=new Error(code);error.code=code;error.status=status;throw error;};
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -293,7 +294,30 @@ export class EditorialMissionRuntime {
     return readFile(join(this.missionDir(missionId),'source.json'));
   }
 
-  async getTaskContext(missionId,taskId,seatId){
+  bindTaskAccessToken({missionId,taskId,seatId,accessToken}={}){
+    const record=this.records.get(missionId);
+    if(!record)fail('MISSION_NOT_FOUND',404);
+    const task=record.plan.tasks.find(item=>item.id===taskId);
+    const state=record.tasks[taskId];
+    if(!task||task.seatId!==seatId||state.state!=='queued' || typeof accessToken!=='string' || accessToken.length<32)fail('MISSION_ACCESS_BINDING_DENIED',403);
+    state.accessHash=hash(accessToken);
+    state.accessExpiresAt=this.clock()+ACCESS_MS;
+    state.updatedAt=this.clock();
+    return true;
+  }
+
+  assertTaskAccess({missionId,taskId,seatId,accessToken}={}){
+    const record=this.records.get(missionId);
+    if(!record)fail('MISSION_NOT_FOUND',404);
+    const task=record.plan.tasks.find(item=>item.id===taskId);
+    const state=record.tasks[taskId];
+    if(!task||task.seatId!==seatId||!state?.accessHash||state.accessExpiresAt<=this.clock() ||
+       typeof accessToken!=='string'||!sameSecret(hash(accessToken),state.accessHash))fail('MISSION_ACCESS_DENIED',403);
+    return true;
+  }
+
+  async getTaskContext(missionId,taskId,seatId,accessToken){
+    this.assertTaskAccess({missionId,taskId,seatId,accessToken});
     const record=this.records.get(missionId);
     if(!record)fail('MISSION_NOT_FOUND',404);
     const task=record.plan.tasks.find(item=>item.id===taskId);
@@ -341,7 +365,8 @@ export class EditorialMissionRuntime {
     return context;
   }
 
-  async getArtifact(missionId,artifactTaskId,seatId,currentTaskId){
+  async getArtifact(missionId,artifactTaskId,seatId,currentTaskId,accessToken){
+    this.assertTaskAccess({missionId,taskId:currentTaskId,seatId,accessToken});
     const record=this.records.get(missionId);
     if(!record)fail('MISSION_NOT_FOUND',404);
     const state=record.tasks[artifactTaskId];
@@ -355,8 +380,9 @@ export class EditorialMissionRuntime {
     return JSON.parse(bytes.toString('utf8'));
   }
 
-  async claimTask({missionId,taskId,seatId}={}){
+  async claimTask({missionId,taskId,seatId,accessToken}={}){
     return this.exclusive(async()=>{
+      this.assertTaskAccess({missionId,taskId,seatId,accessToken});
       const record=this.records.get(missionId);
       if(!record)fail('MISSION_NOT_FOUND',404);
       const task=record.plan.tasks.find(item=>item.id===taskId);
@@ -387,8 +413,9 @@ export class EditorialMissionRuntime {
     });
   }
 
-  async completeTask({missionId,taskId,seatId,claimToken,artifact}={}){
+  async completeTask({missionId,taskId,seatId,claimToken,accessToken,artifact}={}){
     return this.exclusive(async()=>{
+      this.assertTaskAccess({missionId,taskId,seatId,accessToken});
       const record=this.records.get(missionId);
       if(!record)fail('MISSION_NOT_FOUND',404);
       const task=record.plan.tasks.find(item=>item.id===taskId);
@@ -422,6 +449,7 @@ export class EditorialMissionRuntime {
       state.completedAt=this.clock();
       state.updatedAt=state.completedAt;
       delete state.leaseHash;delete state.leaseExpiresAt;delete state.claimedBySeat;
+      delete state.accessHash;delete state.accessExpiresAt;
       delete state.error;delete state.reason;
       this.refreshReady(record);
       this.assertRecord(record);
@@ -430,8 +458,9 @@ export class EditorialMissionRuntime {
     });
   }
 
-  async failTask({missionId,taskId,seatId,claimToken,code='TASK_FAILED',message='Task failed'}={}){
+  async failTask({missionId,taskId,seatId,claimToken,accessToken,code='TASK_FAILED',message='Task failed'}={}){
     return this.exclusive(async()=>{
+      this.assertTaskAccess({missionId,taskId,seatId,accessToken});
       const record=this.records.get(missionId);
       if(!record)fail('MISSION_NOT_FOUND',404);
       const task=record.plan.tasks.find(item=>item.id===taskId);
@@ -444,6 +473,7 @@ export class EditorialMissionRuntime {
       state.error={code:String(code).slice(0,80),message:String(message).slice(0,500)};
       state.updatedAt=this.clock();
       delete state.leaseHash;delete state.leaseExpiresAt;delete state.claimedBySeat;
+      delete state.accessHash;delete state.accessExpiresAt;
       this.refreshReady(record);
       await this.save(record);
       return publicMission(record);
@@ -503,7 +533,7 @@ export class EditorialMissionRuntime {
       if(!task)fail('MISSION_TASK_NOT_FOUND',404);
       const state=record.tasks[taskId];
       if(state.state!=='failed'||state.attempts>=MAX_ATTEMPTS)fail('MISSION_TASK_NOT_RETRYABLE',409);
-      state.state='blocked';delete state.error;delete state.reason;delete state.dispatch;delete state.dispatchError;
+      state.state='blocked';delete state.error;delete state.reason;delete state.dispatch;delete state.dispatchError;delete state.accessHash;delete state.accessExpiresAt;
       this.refreshReady(record);
       await this.save(record);
       if(state.state!=='queued')fail('MISSION_TASK_GATES_UNMET',409);
