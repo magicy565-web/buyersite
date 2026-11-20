@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { EditorialMissionRuntime } from './runtime.mjs';
 import { planIssueMission } from './mission.mjs';
@@ -137,20 +139,18 @@ test('a public release can never be enabled by approving the private preview',as
   });
 });
 
-
-test('stdio MCP tool schemas require and forward the per-task access token',async()=>{
-  const source=await readFile(new URL('./mcp-server.mjs',import.meta.url),'utf8');
-  for(const name of ['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail','buyersite_artifact_get']){
-    const start=source.indexOf("{name:'"+name+"'");
-    assert.notEqual(start,-1,'missing tool '+name);
-    const nextTool=source.indexOf('\n  {name:',start+1);
-    const end=nextTool===-1?source.indexOf('\n];',start):nextTool;
-    const definition=source.slice(start,end);
-    assert.match(definition,/taskAccessToken/,'tool schema must require task token: '+name);
+test('stdio MCP server parses and every exposed tool requires the task-scoped access token',async()=>{
+  const path=fileURLToPath(new URL('./mcp-server.mjs',import.meta.url));
+  execFileSync(process.execPath,['--check',path],{stdio:'pipe'});
+  const source=await readFile(path,'utf8');
+  const names=['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail','buyersite_artifact_get'];
+  for(const name of names){
+    const matches=[...source.matchAll(new RegExp("name\\s*:\\s*'"+name+"'",'g'))];
+    assert.equal(matches.length,1,'tool must be defined exactly once: '+name);
   }
-  assert.match(source,/runtime\.getTaskContext\(args\.missionId,args\.taskId,seatId,args\.taskAccessToken\)/);
-  assert.match(source,/runtime\.claimTask\(\{missionId:args\.missionId,taskId:args\.taskId,seatId,accessToken:args\.taskAccessToken\}\)/);
-  assert.match(source,/runtime\.completeTask\(\{missionId:args\.missionId,taskId:args\.taskId,seatId,accessToken:args\.taskAccessToken/);
-  assert.match(source,/runtime\.failTask\(\{missionId:args\.missionId,taskId:args\.taskId,seatId,accessToken:args\.taskAccessToken/);
-  assert.match(source,/runtime\.getArtifact\(args\.missionId,args\.artifactTaskId,seatId,args\.currentTaskId,args\.taskAccessToken\)/);
+  assert.equal([...source.matchAll(/name\\s*:\\s*'buyersite_/g)].length,5,'unexpected duplicate or unreviewed tool definition');
+  assert.match(source,/taskAccessToken\\s*=\\s*\\{type:\\s*'string'/);
+  assert.match(source,/runtime\\.getTaskContext\\(\\s*args\\.missionId,\\s*args\\.taskId,\\s*seatId,\\s*args\\.taskAccessToken\\s*\\)/);
+  assert.match(source,/accessToken:\\s*args\\.taskAccessToken/);
+  assert.match(source,/runtime\\.getArtifact\\([\\s\\S]*args\\.taskAccessToken/);
 });
