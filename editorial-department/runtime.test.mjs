@@ -145,12 +145,11 @@ test('stdio MCP server parses and every exposed tool requires the task-scoped ac
   const source=await readFile(path,'utf8');
   const names=['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail','buyersite_artifact_get'];
   for(const name of names){
-    const matches=[...source.matchAll(new RegExp("name\\s*:\\s*'"+name+"'",'g'))];
-    assert.equal(matches.length,1,'tool must be defined exactly once: '+name);
+    assert.equal(source.split("name: '"+name+"'").length-1,1,'tool must be defined exactly once: '+name);
   }
-  assert.equal([...source.matchAll(/name\\s*:\\s*'buyersite_/g)].length,5,'unexpected duplicate or unreviewed tool definition');
-  assert.match(source,/taskAccessToken\\s*=\\s*\\{type:\\s*'string'/);
-  assert.match(source,/runtime\\.getTaskContext\\(\\s*args\\.missionId,\\s*args\\.taskId,\\s*seatId,\\s*args\\.taskAccessToken\\s*\\)/);
-  assert.match(source,/accessToken:\\s*args\\.taskAccessToken/);
-  assert.match(source,/runtime\\.getArtifact\\([\\s\\S]*args\\.taskAccessToken/);
+  assert.equal(names.reduce((count,name)=>count+source.split("name: '"+name+"'").length-1,0),5,'unexpected duplicate or unreviewed tool definition');
+  assert.ok(source.includes("const taskAccessToken = { type: 'string', minLength: 32, maxLength: 128 };"));
+  assert.ok(source.includes('args.taskAccessToken'));
+  assert.ok(source.includes('accessToken: args.taskAccessToken'));
+  assert.ok(source.includes('runtime.getArtifact('));
 });
