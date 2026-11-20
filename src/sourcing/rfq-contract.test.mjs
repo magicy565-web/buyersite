@@ -34,9 +34,8 @@ test("refuses an unconfirmed session",()=>{
 test("refuses model-only or unconfirmed requirement provenance",()=>{
   const session=confirmed();
   const changed=structuredClone(session);
-  changed.requirements.product.provenance="source-derived";
-  const draft=createRFQDraft({rfqId:"rfq_000001",session:changed,createdAt:now});
-  assert.equal(draft.snapshot.requirements.product.provenance,"source-derived");
+  changed.requirements.product.provenance="buyer-stated";
+  assert.throws(()=>createRFQDraft({rfqId:"rfq_000001",session:changed,createdAt:now}),/unconfirmed requirement/);
 });
 
 test("snapshot hash detects edits to commercial requirements",()=>{
