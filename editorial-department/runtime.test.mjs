@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { EditorialMissionRuntime } from './runtime.mjs';
@@ -135,4 +135,21 @@ test('a public release can never be enabled by approving the private preview',as
     assert.equal(state.state,'blocked');
     assert.equal(state.publicReleaseSupported,false);
   });
+});
+
+
+test('stdio MCP tool schemas require and forward the per-task access token',async()=>{
+  const source=await readFile(new URL('./mcp-server.mjs',import.meta.url),'utf8');
+  for(const name of ['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail','buyersite_artifact_get']){
+    const start=source.indexOf("{name:'"+name+"'");
+    assert.notEqual(start,-1,'missing tool '+name);
+    const end=source.indexOf('\n  },',start);
+    const definition=source.slice(start,end);
+    assert.match(definition,/taskAccessToken/,'tool schema must require task token: '+name);
+  }
+  assert.match(source,/runtime\.getTaskContext\(args\.missionId,args\.taskId,seatId,args\.taskAccessToken\)/);
+  assert.match(source,/runtime\.claimTask\(\{missionId:args\.missionId,taskId:args\.taskId,seatId,accessToken:args\.taskAccessToken\}\)/);
+  assert.match(source,/runtime\.completeTask\(\{missionId:args\.missionId,taskId:args\.taskId,seatId,accessToken:args\.taskAccessToken/);
+  assert.match(source,/runtime\.failTask\(\{missionId:args\.missionId,taskId:args\.taskId,seatId,accessToken:args\.taskAccessToken/);
+  assert.match(source,/runtime\.getArtifact\(args\.missionId,args\.artifactTaskId,seatId,args\.currentTaskId,args\.taskAccessToken\)/);
 });
