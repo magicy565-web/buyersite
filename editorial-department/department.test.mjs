@@ -53,7 +53,7 @@ test('OpenMausBot package provisions the seven seat profiles, Chief and portable
     const roleSkill=seat.skillRef.split('/').at(-1).replace(/\.md$/,'');
     assert.ok(agent);
     assert.ok(agent.skills.includes('editorial-department'));
-    assert.ok(agent.skills.includes('buyer-magazine-site'));
+    assert.ok(agent.skills.includes('buyersite-production'));
     assert.ok(agent.skills.includes(roleSkill));
     assert.deepEqual(agent.tools.off,['meetings','data','pages','images','email']);
   }
