@@ -11,9 +11,10 @@ const safeHttps = value => {
 };
 function assertAsset(asset, publicationStatus, articleIds) {
   if (!asset || !ID.test(asset.id || '') || !hasText(asset.alt,300) ||
-      !hasText(asset.credit,300) || !hasText(asset.caption,800)) fail('asset requires safe ID, alt, credit and caption');
+      !hasText(asset.credit,300)) fail('asset requires safe ID, alt and credit');
   if (publicationStatus==='concept-private') {
     if (asset.kind!=='ai-concept' ||
+        (asset.caption!==undefined && !hasText(asset.caption,800)) ||
         typeof asset.src!=='string' ||
         !/^\/magazine-concepts\/[a-z0-9-]+\/[a-z0-9-]+\.svg$/.test(asset.src) ||
         !/concept/i.test(asset.credit) || !/not .*photograph/i.test(asset.credit)) {
@@ -22,7 +23,7 @@ function assertAsset(asset, publicationStatus, articleIds) {
     return;
   }
   if (!['licensed-photo','ai-generated','abstract-fallback'].includes(asset.kind)) fail('unsupported source media kind');
-  if (!ID.test(asset.articleId || '') || !articleIds.has(asset.articleId) ||
+  if (!hasText(asset.caption,800) || !ID.test(asset.articleId || '') || !articleIds.has(asset.articleId) ||
       asset.filename!=='hero-'+asset.articleId+'.png' || !SHA.test(asset.sha256 || '') ||
       asset.reviewStatus!=='required') fail('source media must bind to an article and pending review');
   if (asset.kind==='licensed-photo') {
@@ -66,6 +67,9 @@ export function assertMagazineIssue(issue) {
       fail('invalid evidence ledger entry');
     }
     evidenceById.set(item.id,item);
+  }
+  for(const article of sourceArticles){
+    if(article.evidenceRefs.some(ref=>!evidenceById.has(ref))) fail('source article references unknown evidence');
   }
   if(issue.publicationStatus==='private-review'){
     if(!SHA.test(issue.sourceFingerprint || '') || !SHA.test(issue.outlineSha256 || '') ||
