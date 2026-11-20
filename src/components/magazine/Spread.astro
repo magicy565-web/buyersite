@@ -4,10 +4,12 @@ interface Props {
   spread: any;
   assets: Record<string,any>;
   evidence: Record<string,any>;
+  sourceArticles: any[];
   brand: string;
   publicationStatus: string;
 }
-const {spread,assets,evidence,brand,publicationStatus}=Astro.props;
+const {spread,assets,evidence,sourceArticles,brand,publicationStatus}=Astro.props;
+const articlePath=(id:string)=>sourceArticles.find((article:any)=>article.id===id)?.path||'';
 const media=(spread.assetIds||[]).map((id:string)=>assets[id]).filter(Boolean);
 const cited=(spread.evidenceRefs||[]).map((id:string)=>evidence[id]).filter(Boolean);
 const galleryItems=new Map((spread.items||[]).map((item:any)=>[item.articleId,item]));
@@ -41,7 +43,7 @@ const galleryItems=new Map((spread.items||[]).map((item:any)=>[item.articleId,it
     <div class="mi-head"><p class="mi-kicker">{spread.kicker}</p><h2>{spread.title}</h2><p class="mi-deck">{spread.deck}</p></div>
     <div class="mi-gallery-images">{media.map((asset:any)=><div class="mi-gallery-item">
       <Media asset={asset}/>
-      {galleryItems.get(asset.articleId) && <div class="mi-gallery-copy"><h3>{galleryItems.get(asset.articleId).title}</h3><p>{galleryItems.get(asset.articleId).deck}</p></div>}
+      {galleryItems.get(asset.articleId) && <div class="mi-gallery-copy"><h3><a href={articlePath(asset.articleId)}>{galleryItems.get(asset.articleId).title}</a></h3><p>{galleryItems.get(asset.articleId).deck}</p><a href={articlePath(asset.articleId)} class="mi-article-link">Read the story ↗</a></div>}
     </div>)}</div>
   </>}
   {spread.kind==='notes' && <>
@@ -61,7 +63,8 @@ const galleryItems=new Map((spread.items||[]).map((item:any)=>[item.articleId,it
       <label for="mi-brief">What would you like to source?</label>
       <textarea id="mi-brief" rows="4" maxlength="500" placeholder="Describe your product idea or sourcing question"></textarea>
       <button id="mi-prepare" type="button">Prepare a local brief ↗</button><output id="mi-result" hidden></output>
-      <p class="mi-disclaimer">Private preview: this creates a local draft only. It does not contact a supplier or submit an enquiry.</p>
+      <button class="mi-open-assistant" type="button" data-assistant-open data-source-article={articlePath(spread.articleId)}>Ask about this edition ↗</button>
+      <p class="mi-disclaimer">The sourcing assistant uses this edition\u0027s approved article context. Preparing a brief does not submit an enquiry.</p>
     </div>
     <Media asset={media[0]} className="mi-tall"/>
   </>}
