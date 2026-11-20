@@ -7,7 +7,7 @@
     "name": "BuyerSite Editorial Department",
     "tagline": "An on-demand virtual editorial team for source-bound buyer magazines.",
     "summary": "Seven specialist Bots for research, editorial, art direction, production, standards and audience growth. Imports role profiles and portable Skills only; a separate reviewed host adapter is required before the Bots can execute BuyerSite capabilities.",
-    "notes": "No model, MCP connection, app, routine, computer or publication permission is provisioned by this package. Built-in tool groups are hidden to keep the imported seats quiet until a host administrator configures an explicit capability bridge. Tool-group hiding is not a security boundary.",
+    "notes": "Install on the same host as the BuyerSite worker. The seven MCP connections are imported disabled and contain blank Authorization headers. Start the BuyerSite worker with BUYERSITE_EDITORIAL_SECRET, run `pnpm setup:editorial-secrets` locally to derive one seat-specific bearer per role, then set each connection's Authorization header to its matching `Bearer` value and enable only after verifying the seat-to-Bot mapping. Never reuse one seat token for another Bot. This package does not provision the runtime secret.",
     "category": "Editorial & Publishing",
     "author": {
       "name": "BuyerSite",
@@ -64,7 +64,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-editor-in-chief"
+        ]
       },
       {
         "key": "research-editor",
@@ -88,7 +92,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-research-editor"
+        ]
       },
       {
         "key": "editorial-editor",
@@ -112,7 +120,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-editorial-editor"
+        ]
       },
       {
         "key": "art-director",
@@ -136,7 +148,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-art-director"
+        ]
       },
       {
         "key": "production-editor",
@@ -160,7 +176,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-production-editor"
+        ]
       },
       {
         "key": "standards-editor",
@@ -184,7 +204,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-standards-editor"
+        ]
       },
       {
         "key": "audience-editor",
@@ -208,7 +232,11 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask",
+        "connections": [
+          "buyersite-audience-editor"
+        ]
       }
     ],
     "skills": {
@@ -278,6 +306,92 @@
           "files": []
         }
       ]
-    }
+    },
+    "connections": [
+      {
+        "key": "buyersite-editor-in-chief",
+        "label": "BuyerSite Chief of Staff · Editorial Leadership capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/editor-in-chief",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      },
+      {
+        "key": "buyersite-research-editor",
+        "label": "BuyerSite Research Desk capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/research-editor",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      },
+      {
+        "key": "buyersite-editorial-editor",
+        "label": "BuyerSite Editorial Desk capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/editorial-editor",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      },
+      {
+        "key": "buyersite-art-director",
+        "label": "BuyerSite Creative Studio capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/art-director",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      },
+      {
+        "key": "buyersite-production-editor",
+        "label": "BuyerSite Production Desk capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/production-editor",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      },
+      {
+        "key": "buyersite-standards-editor",
+        "label": "BuyerSite Standards Desk capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/standards-editor",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      },
+      {
+        "key": "buyersite-audience-editor",
+        "label": "BuyerSite Audience & Growth Desk capabilities",
+        "reason": "Allows this specialist Bot to read its assigned editorial mission, claim its own task and submit a source-bound artifact through the local BuyerSite runtime.",
+        "mcp": {
+          "transport": "http",
+          "url": "http://127.0.0.1:4319/mcp/audience-editor",
+          "valueNames": [
+            "Authorization"
+          ]
+        }
+      }
+    ]
   }
 }

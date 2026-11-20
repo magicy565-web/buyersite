@@ -1,14 +1,20 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import { compileEnterpriseSite } from './compile.mjs';
 import { planMagazineOutline } from './magazine-outline.mjs';
+import { planEditorialVisuals } from './visual-director.mjs';
+import { planMedia } from './media-policy.mjs';
 import { compileMagazineIssueFromEnterprise, assertIssueMediaFiles } from '../src/magazine/issue-from-enterprise.mjs';
+import { assertMagazineIssue } from '../src/magazine/issue-contract.mjs';
 import { materializeEditionMedia } from './media-render.mjs';
-import { createHash } from 'node:crypto';
+import { applyEditorialDraft, assertArtDirection } from '../editorial-department/artifact-contract.mjs';
 
 const json = (value) => JSON.stringify(value, null, 2) + '\n';
 const inline = (value) => JSON.stringify(value);
+const hash = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const unique = (items) => [...new Set(items)];
 const markdown = (value) =>
   String(value)
     .replace(/\\/g, '\\\\')
@@ -44,14 +50,27 @@ export function articleMarkdown(entry, dateString, media) {
 }
 
 export async function writeSitePreview(input, baseDir = '.generated/company-sites', options = {}) {
-  const result = compileEnterpriseSite(input);
+  let result = compileEnterpriseSite(input);
+  if (options.editorialDraft) result = applyEditorialDraft(result, options.editorialDraft);
+  const artDirection = options.artDirection ? assertArtDirection(options.artDirection, result) : null;
+  result.visualPlan = planEditorialVisuals({
+    companyName: result.site.name,
+    categories: result.articles.map((article) => article.category).filter(Boolean),
+    articles: result.articles,
+  });
+  if(artDirection) result.visualPlan.art_direction=artDirection.visualDNA;
+  result.mediaPlan = planMedia(result.articles, input.media_assets || []);
   const renderPolicy = {
     aiGenerationAuthorized: options.aiGenerationAuthorized === true,
     imageModel: options.imageModel || process.env.BUYERSITE_IMAGE_MODEL || 'gpt-image-2',
     maxAiImages: options.maxAiImages ?? 4,
     imageProviderConfigured: Boolean(Object.hasOwn(options,'apiKey') ? options.apiKey : process.env.OPENAI_API_KEY),
   };
-  result.fingerprint = createHash('sha256').update(JSON.stringify({ content: result.fingerprint, renderPolicy })).digest('hex');
+  result.fingerprint = createHash('sha256').update(JSON.stringify({
+    content: result.fingerprint,
+    renderPolicy,
+    artDirectionSha256: artDirection ? hash(artDirection) : null,
+  })).digest('hex');
   const folder = result.site.slug + '-' + result.fingerprint.slice(0, 12);
   const root = resolve(baseDir, folder);
   const articlesDir = join(root, 'articles');
@@ -81,6 +100,8 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
         bio: 'Prepared from enterprise records and captured website pages; no independent supplier audit is implied.',
       },
     ],
+    ...(options.editorialDraft ? { 'editorial-draft.json': options.editorialDraft } : {}),
+    ...(artDirection ? { 'art-direction.json': artDirection } : {}),
     'receipt.json': {
       version: '1.0.0',
       fingerprint: result.fingerprint,
@@ -92,10 +113,12 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
       publication_blockers: result.publication_blockers,
       source_count: result.sourceSnapshots.length,
       article_count: result.articles.length,
+      editorial_draft_sha256: options.editorialDraft ? hash(options.editorialDraft) : null,
+      art_direction_sha256: artDirection ? hash(artDirection) : null,
     },
   };
   for (const [name, value] of Object.entries(outputFiles)) {
-    await writeFile(join(root, name), json(value), { flag: 'w' });
+    await writeFile(join(root, name), json(value), { flag: 'w', mode: 0o600 });
   }
   // Media is resolved from server-owned, tenant-scoped approved files.
   // No supplier image URLs are fetched or assumed to have publication rights.
@@ -111,13 +134,21 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   const magazineIssue = compileMagazineIssueFromEnterprise({
     compiled: result, outline: magazineOutline, mediaPlan: result.mediaPlan, mediaReport,
   });
+  if (options.editorialDraft) {
+    const questions = options.editorialDraft.buyerQuestions;
+    const spread = magazineIssue.spreads.find((item) => item.id === 'buyer-questions');
+    if (!spread) throw new Error('EDITORIAL_BUYER_QUESTIONS_SPREAD_MISSING');
+    spread.questions = questions.map(({ title, body }) => ({ title, body }));
+    spread.evidenceRefs = unique([...spread.evidenceRefs, ...questions.flatMap((item) => item.evidenceRefs)]);
+  }
+  assertMagazineIssue(magazineIssue);
   await assertIssueMediaFiles({ issue: magazineIssue, articlesDir });
   await writeFile(join(root, 'magazine-issue.json'), json(magazineIssue), { mode: 0o600, flag: 'w' });
   const dateString = new Date(input.exported_at).toISOString().slice(0, 10);
   for (const item of result.articles) {
     const media = mediaReport.images.find((image) => image.page_id === item.slug);
     if (!media) throw new Error('MEDIA_BINDING_MISSING: ' + item.slug);
-    await writeFile(join(articlesDir, item.slug + '.md'), articleMarkdown(item, dateString, media));
+    await writeFile(join(articlesDir, item.slug + '.md'), articleMarkdown(item, dateString, media), { mode: 0o600, flag: 'w' });
   }
   return {
     root,
@@ -127,6 +158,8 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     articles: result.articles.length,
     magazine_issue_id: magazineIssue.id,
     magazine_spreads: magazineIssue.spreads.length,
+    editorialDraftSha256: options.editorialDraft ? hash(options.editorialDraft) : null,
+    artDirectionSha256: artDirection ? hash(artDirection) : null,
     media: { rightsPhotos: mediaReport.rights_photo_count, aiGenerated: mediaReport.ai_generated_count, fallback: mediaReport.abstract_fallback_count },
     preview_only: true,
   };

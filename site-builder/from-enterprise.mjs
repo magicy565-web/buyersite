@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { captureCompanyHomepage } from './capture.mjs';
+import { compileEnterpriseSite } from './compile.mjs';
 import { writeSitePreview } from './build.mjs';
 import { SiteInputError } from './compile.mjs';
 
@@ -10,106 +11,64 @@ import { SiteInputError } from './compile.mjs';
  * This binding check does not replace native authentication. Never expose it as
  * a visitor upload API or accept a browser-supplied job/enterprise identity.
  */
-export async function createSiteFromStudio(job, sourceBytes, options = {}) {
-  const fail = (code, message) => {
-    throw new SiteInputError(code, message);
-  };
-  if (
-    !job ||
-    typeof job.enterpriseId !== 'string' ||
-    !job.enterpriseId ||
-    !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(job.id || '') ||
-    !/^[a-f0-9]{64}$/.test(job.sourceHash || '')
-  ) {
-    fail(
-      'STUDIO_SOURCE_BINDING_REQUIRED',
-      'A server-owned Studio job and frozen source hash are required',
-    );
+export async function createStudioSiteInput(job, sourceBytes, options = {}) {
+  const fail = (code, message) => { throw new SiteInputError(code, message); };
+  if (!job || typeof job.enterpriseId !== 'string' || !job.enterpriseId ||
+      !/^[a-f0-9]{8}-[a-f0-9]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[a-f0-9]{12}$/i.test(job.id || '') ||
+      !/^[a-f0-9]{64}$/.test(job.sourceHash || '')) {
+    fail('STUDIO_SOURCE_BINDING_REQUIRED', 'A server-owned Studio job and frozen source hash are required');
   }
   if (!Buffer.isBuffer(sourceBytes) || sourceBytes.length > 2_000_000) {
     fail('STUDIO_SOURCE_REQUIRED', 'Pass the original bounded source.json bytes');
   }
   const digest = createHash('sha256').update(sourceBytes).digest('hex');
-  if (digest !== job.sourceHash)
-    fail('STUDIO_SOURCE_CHANGED', 'Studio source snapshot has changed');
+  if (digest !== job.sourceHash) fail('STUDIO_SOURCE_CHANGED', 'Studio source snapshot has changed');
   let snapshot;
-  try {
-    snapshot = JSON.parse(sourceBytes.toString('utf8'));
-  } catch {
-    fail('STUDIO_SOURCE_REQUIRED', 'Studio source snapshot is not valid JSON');
-  }
-  if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot))
+  try { snapshot = JSON.parse(sourceBytes.toString('utf8')); }
+  catch { fail('STUDIO_SOURCE_REQUIRED', 'Studio source snapshot is not valid JSON'); }
+  if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
     fail('STUDIO_SOURCE_REQUIRED', 'Studio source snapshot must be an object');
-  if (snapshot.enterprise?.id !== job.enterpriseId)
-    fail(
-      'STUDIO_ENTERPRISE_MISMATCH',
-      'Studio job and native snapshot are from different enterprises',
-    );
+  }
+  if (snapshot.enterprise?.id !== job.enterpriseId) {
+    fail('STUDIO_ENTERPRISE_MISMATCH', 'Studio job and native snapshot are from different enterprises');
+  }
   if (job.input?.allowResearch !== true || snapshot.collectionAuthorized !== true) {
-    fail(
-      'STUDIO_WEBSITE_PERMISSION_REQUIRED',
-      'The existing Studio job must authorize website capture',
-    );
+    fail('STUDIO_WEBSITE_PERMISSION_REQUIRED', 'The existing Studio job must authorize website capture');
   }
   const company = snapshot.enterprise.company;
-  if (
-    !company ||
-    !Number.isSafeInteger(company.revision) ||
-    company.revision < 1 ||
-    !Array.isArray(snapshot.products)
-  ) {
+  if (!company || !Number.isSafeInteger(company.revision) || company.revision < 1 || !Array.isArray(snapshot.products)) {
     fail('STUDIO_REVISION_REQUIRED', 'Use a versioned native enterprise snapshot');
   }
-  if (
-    !Array.isArray(job.input?.productIds) ||
-    job.input.productIds.length > 12 ||
-    new Set(job.input.productIds).size !== job.input.productIds.length
-  ) {
-    fail(
-      'STUDIO_PRODUCT_SNAPSHOT_INVALID',
-      'Product IDs and revisions must match the frozen selection',
-    );
+  if (!Array.isArray(job.input?.productIds) || job.input.productIds.length > 12 ||
+      new Set(job.input.productIds).size !== job.input.productIds.length) {
+    fail('STUDIO_PRODUCT_SNAPSHOT_INVALID', 'Product IDs and revisions must match the frozen selection');
   }
   let website;
   try {
     website = new URL(job.input.url);
-    if (
-      website.protocol !== 'https:' ||
-      website.username ||
-      website.password ||
-      snapshot.website !== job.input.url
-    )
-      throw Error();
+    if (website.protocol !== 'https:' || website.username || website.password || snapshot.website !== job.input.url) throw Error();
   } catch {
-    fail(
-      'STUDIO_WEBSITE_MISMATCH',
-      'Capture only the recorded job URL on the native company website',
-    );
+    fail('STUDIO_WEBSITE_MISMATCH', 'Capture only the recorded job URL on the native company website');
   }
   const products = snapshot.products;
-  if (
-    products.some(
-      (p) =>
-        !p ||
-        typeof p.id !== 'string' ||
-        !Number.isSafeInteger(p.revision) ||
-        p.revision < 1 ||
-        p.status !== 'draft',
-    ) ||
-    new Set(products.map((p) => p.id)).size !== products.length ||
-    job.input.productIds.some((id) => !products.some((p) => p.id === id))
-  ) {
-    fail(
-      'STUDIO_PRODUCT_SNAPSHOT_INVALID',
-      'Product IDs and revisions must match the frozen selection',
-    );
+  if (products.some((p) => !p || typeof p.id !== 'string' || !Number.isSafeInteger(p.revision) ||
+      p.revision < 1 || p.status !== 'draft') ||
+      new Set(products.map((p) => p.id)).size !== products.length ||
+      job.input.productIds.some((id) => !products.some((p) => p.id === id))) {
+    fail('STUDIO_PRODUCT_SNAPSHOT_INVALID', 'Product IDs and revisions must match the frozen selection');
   }
-  const selectedProducts = job.input.productIds.map((id) =>
-    products.find((product) => product.id === id),
-  );
+  const selectedProducts = job.input.productIds.map((id) => products.find((product) => product.id === id));
   if (Array.isArray(snapshot.mediaAssets) && snapshot.mediaAssets.length > 0 &&
       !(snapshot.mediaUsageAuthorized === true && job.input?.allowApprovedMedia === true)) {
     fail('STUDIO_MEDIA_PERMISSION_REQUIRED', 'Use of licensed images requires frozen source and server-owned permission');
+  }
+
+  const captured = options.websiteSnapshot ??
+    await (options.capture ?? captureCompanyHomepage)(website.href);
+  if (!captured || captured.url !== website.href || typeof captured.body_text !== 'string' ||
+      !/^[a-f0-9]{64}$/.test(captured.content_sha256 || '') ||
+      createHash('sha256').update(captured.body_text).digest('hex') !== captured.content_sha256) {
+    fail('STUDIO_CAPTURE_BINDING_INVALID', 'The frozen website capture does not match the enterprise website and content hash');
   }
   const sourceBinding = {
     job_id: job.id,
@@ -117,35 +76,42 @@ export async function createSiteFromStudio(job, sourceBytes, options = {}) {
     source_sha256: digest,
     company_revision: company.revision,
     product_revisions: selectedProducts.map(({ id, revision }) => ({ id, revision })),
+    website_capture_sha256: captured.content_sha256,
+    website_captured_at: captured.captured_at,
   };
-  // Explicit allowlist: never pass internal SKUs, price tiers, supply policies,
-  // document contents, contacts or unapproved photos into the site compiler.
-  const result = await createSiteFromEnterprise(
-    {
-      enterprise: {
-        id: job.enterpriseId,
-        revision: 'studio-snapshot-' + digest,
-        company: {
-          displayName: company.displayName,
-          legalName: company.legalName,
-          description: company.description,
-          website: website.href,
-        },
-        products: selectedProducts.map(({ id, name, category, description }) => ({
-          id,
-          name,
-          category,
-          description,
-        })),
+  const input = {
+    schema_version: '1.0.0',
+    site_slug: defaultSlug({ id: job.enterpriseId, company }),
+    exported_at: captured.captured_at,
+    enterprise: {
+      id: job.enterpriseId,
+      revision: 'studio-snapshot-' + digest,
+      company: {
+        displayName: company.displayName,
+        legalName: company.legalName,
+        description: company.description,
+        website: website.href,
       },
-      media_assets: snapshot.mediaUsageAuthorized === true && job.input?.allowApprovedMedia === true
-        ? snapshot.mediaAssets || [] : [],
+      products: selectedProducts.map(({ id, name, category, description }) => ({ id, name, category, description })),
     },
-    {
-      ...options,
-      aiGenerationAuthorized: snapshot.mediaGenerationAuthorized === true && job.input?.allowAiGeneration === true,
-    },
-  );
+    website_pages: [captured],
+    media_assets: snapshot.mediaUsageAuthorized === true && job.input?.allowApprovedMedia === true
+      ? snapshot.mediaAssets || [] : [],
+  };
+  return { input, sourceBinding, snapshot, websiteSnapshot: captured };
+}
+
+/** Compile a frozen Studio job into the exact source-bound inputs used by the existing Astro builder. */
+export async function compileStudioEdition(job, sourceBytes, options = {}) {
+  const { input, sourceBinding, websiteSnapshot } = await createStudioSiteInput(job, sourceBytes, options);
+  const compiled = compileEnterpriseSite(input);
+  return { input, sourceBinding, websiteSnapshot, compiled };
+}
+
+export async function createSiteFromStudio(job, sourceBytes, options = {}) {
+  const { input, sourceBinding } = await createStudioSiteInput(job, sourceBytes, options);
+  const { outputBase, capture: _capture, websiteSnapshot: _websiteSnapshot, ...renderOptions } = options;
+  const result = await writeSitePreview(input, outputBase, renderOptions);
   return { ...result, source_binding: sourceBinding };
 }
 

@@ -17,15 +17,18 @@ const input = (overrides = {}) => ({
 test('department manifest declares seven on-demand seats and a bounded capability catalog', () => {
   const value = assertDepartmentManifest();
   assert.equal(value.seats.length, 7);
-  assert.equal(value.runtime.bindingStatus, 'unbound');
-  assert.equal(value.runtime.executionMode, 'plan-only');
+  assert.equal(value.runtime.bindingStatus, 'adapter-available');
+  assert.equal(value.runtime.executionMode, 'runtime-gated');
+  assert.equal(value.runtime.dispatchMode, 'durable-mission-dispatch');
   assert.equal(value.workspace.sectionName, 'BuyerSite Editorial Department');
   assert.equal(value.workspace.chiefSeatId, 'editor-in-chief');
   assert.equal(value.workspace.teamMapBinding.importFormat, 'openmaus.package/v2');
   assert.ok(value.seats.every((seat) => seat.activation === 'on-demand' && seat.runtimeBinding === null));
   assert.equal(new Set(value.capabilities.map((capability) => capability.id)).size, value.capabilities.length);
   assert.equal(getSeat('art-director').title, 'Art & Photo Director');
-  assert.equal(getCapability('editorial.draft-copy').status, 'planned');
+  assert.equal(getCapability('editorial.draft-copy').status, 'implemented-gated');
+  assert.equal(getCapability('editorial.write-outline').status, 'implemented-gated');
+  assert.equal(getCapability('visual.propose-art-direction').status, 'implemented-gated');
 });
 
 test('all seven seats map exactly once into the six logical work areas', () => {
@@ -52,6 +55,7 @@ test('OpenMausBot package declares the seven seat profiles, Chief and portable S
     const agent=pkg.agents.find((item)=>item.key===seat.id);
     const roleSkill=seat.skillRef.split('/').at(-1).replace(/\.md$/,'');
     assert.ok(agent);
+    assert.equal(agent.approval,'ask');
     assert.ok(agent.skills.includes('editorial-department'));
     assert.ok(agent.skills.includes('buyersite-production'));
     assert.ok(agent.skills.includes(roleSkill));
@@ -96,7 +100,10 @@ test('mission plan is deterministic, tenant-bound and explicitly non-dispatchabl
   assert.equal(first.publication.state, 'blocked');
   assert.equal(first.tasks.find((task) => task.id === 'capture-source').readiness, 'approval-required');
   assert.equal(first.tasks.find((task) => task.id === 'compile-enterprise').readiness, 'dependency-blocked');
-  assert.equal(first.tasks.find((task) => task.id === 'draft-editorial-copy').capabilityReadiness, 'not-implemented');
+  assert.equal(first.tasks.find((task) => task.id === 'draft-editorial-copy').capabilityReadiness, 'approval-required');
+  assert.equal(first.tasks.find((task) => task.id === 'editorial-outline').executor, 'openmaus-seat');
+  assert.equal(first.tasks.find((task) => task.id === 'art-direction').executor, 'openmaus-seat');
+  assert.equal(first.tasks.find((task) => task.id === 'human-brief-approval').capabilityReadiness, 'human-review');
   assert.equal(first.tasks.find((task) => task.id === 'human-release-approval').capabilityReadiness, 'human-review');
   assert.ok(first.blockers.some((blocker) => blocker.taskId === 'draft-editorial-copy'));
   assertMissionPlan(first);
@@ -109,9 +116,10 @@ test('zero selected products produces an explicit no-gallery task, never product
   assert.equal(mission.binding.selectedProductCount, 0);
 });
 
-test('selected products create a bounded product-story task', () => {
+test('selected products stay inside the single evidence-bound editorial copy task', () => {
   const mission = planIssueMission(input({ selectedProductCount: 12 }));
-  assert.ok(mission.tasks.some((task) => task.id === 'draft-product-stories'));
+  assert.ok(mission.tasks.some((task) => task.id === 'draft-editorial-copy'));
+  assert.ok(!mission.tasks.some((task) => task.id === 'draft-product-stories'));
   assert.ok(!mission.tasks.some((task) => task.id === 'skip-product-gallery'));
   assert.throws(() => planIssueMission(input({ selectedProductCount: 13 })), /invalid tenant\/job\/source\/issue binding/);
 });

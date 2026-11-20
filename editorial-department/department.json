@@ -9,9 +9,9 @@
   "baseSkill": "skills/editorial-department/SKILL.md",
   "runtime": {
     "provider": "OpenMausBot",
-    "bindingStatus": "unbound",
-    "dispatchMode": "explicit-job-delegation",
-    "executionMode": "plan-only",
+    "bindingStatus": "adapter-available",
+    "dispatchMode": "durable-mission-dispatch",
+    "executionMode": "runtime-gated",
     "presenceSource": "durable-mission-task-state",
     "noSyntheticPresence": true
   },
@@ -42,7 +42,8 @@
       ],
       "capabilityIds": [
         "mission.plan-issue",
-        "editorial.plan-outline"
+        "editorial.plan-outline",
+        "editorial.write-outline"
       ],
       "decisionRights": [
         "propose-issue-angle",
@@ -155,7 +156,8 @@
         "visual.plan",
         "media.verify-rights",
         "media.materialize",
-        "media.review"
+        "media.review",
+        "visual.propose-art-direction"
       ],
       "decisionRights": [
         "propose-layout-and-crop",
@@ -233,7 +235,8 @@
         "editorial.validate-issue",
         "media.review",
         "production.visual-review",
-        "production.verify-output"
+        "production.verify-output",
+        "editorial.standards-review"
       ],
       "decisionRights": [
         "pass-or-block-review-gates",
@@ -270,7 +273,8 @@
       "capabilityIds": [
         "audience.read-feedback",
         "audience.source-guide",
-        "distribution.prepare"
+        "distribution.prepare",
+        "audience.prepare-distribution"
       ],
       "decisionRights": [
         "recommend-next-issue-topics",
@@ -331,12 +335,15 @@
     },
     {
       "id": "editorial.draft-copy",
-      "status": "planned",
+      "status": "implemented-gated",
       "effect": "model-generated-content",
-      "implementation": null,
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertEditorialDraft"
+      },
       "requiredApprovals": [
-        "editorialBriefApproved",
-        "evidenceBoundOutput"
+        "editorialBriefApproved"
       ]
     },
     {
@@ -387,16 +394,14 @@
     },
     {
       "id": "media.materialize",
-      "status": "implemented-gated",
+      "status": "implemented",
       "effect": "private-media-write",
       "implementation": {
         "kind": "module-export",
         "path": "site-builder/media-render.mjs",
         "export": "materializeEditionMedia"
       },
-      "requiredApprovals": [
-        "mediaPolicyPassed"
-      ]
+      "requiredApprovals": []
     },
     {
       "id": "media.review",
@@ -514,6 +519,54 @@
       "effect": "secret-access",
       "implementation": null,
       "requiredApprovals": []
+    },
+    {
+      "id": "editorial.write-outline",
+      "status": "implemented-gated",
+      "effect": "model-generated-editorial-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertEditorialOutline"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "visual.propose-art-direction",
+      "status": "implemented-gated",
+      "effect": "model-generated-visual-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertArtDirection"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "editorial.standards-review",
+      "status": "implemented-gated",
+      "effect": "independent-editorial-review",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertReviewArtifact"
+      },
+      "requiredApprovals": [
+        "aiReviewAuthorized"
+      ]
+    },
+    {
+      "id": "audience.prepare-distribution",
+      "status": "implemented-gated",
+      "effect": "unpublished-channel-draft",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "validateTaskArtifact"
+      },
+      "requiredApprovals": [
+        "human-channel-approval"
+      ]
     }
   ],
   "missionPolicy": {
@@ -641,7 +694,11 @@
       "importFormat": "openmaus.package/v2",
       "skillsProvisioning": "separate-explicit-install",
       "modelProvisioning": "workspace-default-until-human-configured",
-      "toolProvisioning": "least-privilege-explicit-admin-config"
+      "toolProvisioning": "least-privilege-explicit-admin-config",
+      "missionRuntime": "site-builder/worker.mjs",
+      "missionMcpPath": "/mcp/{seatId}",
+      "missionStore": "private-file-backed-atomic-json",
+      "dispatchApi": "OpenMausBot client-scope session"
     },
     "importablePackage": "editorial-department/openmaus.package.json"
   }
