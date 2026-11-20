@@ -22,6 +22,8 @@ The department manifest defines seat responsibilities, skill references, capabil
 
 The image path distinguishes authorized commercial photos from unavailable imagery. Generated images carry concept-art labels and provenance; they are not evidence of a supplier's actual product, factory, certification or capacity. The pilot uses three reviewed AI concept images recorded in [concept-media.json](src/data/concept-media.json). Its media preparation verifies their hashes and visible disclosures and no longer downloads supplier photography.
 
+
+Runtime integration is implemented in the stacked [PR #14](https://github.com/magicy565-web/buyersite/pull/14): durable mission state, OpenMausBot seat dispatch, per-task MCP credentials and private Site Builder handoff. See [EDITORIAL-RUNTIME.md](docs/EDITORIAL-RUNTIME.md) for installation, secret configuration and mission API details. This code still requires Node 24 test execution and a real non-production OpenMausBot import/mission acceptance before operational use.
 ## Local build and verification
 
 Use **Node 24** for the complete runtime and SQLite test suite. `package.json` pins **pnpm 11.25.0**. From the repository root:
