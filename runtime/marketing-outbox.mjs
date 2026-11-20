@@ -46,7 +46,7 @@ export async function enqueueMarketingEvent(env, config, input) {
       if (parsed.protocol === 'https:' && !parsed.username && !parsed.password && !parsed.search && !parsed.hash) landingUrl = parsed.toString();
     } catch {}
   }
-  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#]/.test(input.pagePath) && !input.pagePath.includes('\\\\') && !/[\\x00-\\x20]/.test(input.pagePath)
+  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#]/.test(input.pagePath) && !input.pagePath.includes('\\') && !/[\x00-\x20]/.test(input.pagePath)
     ? input.pagePath : '/';
   const rawMetadata = input?.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {};
   const metadata = {
