@@ -394,7 +394,7 @@ export class EditorialMissionRuntime {
         state.state='queued';delete state.leaseHash;delete state.leaseExpiresAt;
       }
       if(state.state!=='queued')fail(state.state==='running'?'MISSION_TASK_ALREADY_CLAIMED':'MISSION_TASK_NOT_READY',409);
-      if(state.dispatch?.state!=='sent')fail('MISSION_TASK_NOT_DISPATCHED',409);
+      if(!state.dispatch||!['created','sent'].includes(state.dispatch.state))fail('MISSION_TASK_NOT_DISPATCHED',409);
       if(state.attempts>=MAX_ATTEMPTS)fail('MISSION_TASK_RETRY_LIMIT',409);
       const capability=task.capabilityId?getCapability(task.capabilityId):null;
       if(task.humanGate||!capability||['planned','forbidden','human-only'].includes(capability.status))fail('MISSION_TASK_NOT_EXECUTABLE',409);
