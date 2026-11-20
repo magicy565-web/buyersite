@@ -592,7 +592,7 @@ export class EditorialMissionRuntime {
         filePileCount:completed.length,
         files:completed.map(({task,state})=>({
           taskId:task.id,
-          label:task.output,
+          label:task.id,
           sha256:state.artifactSha256,
           updatedAt:state.updatedAt,
         })),
