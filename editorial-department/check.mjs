@@ -39,7 +39,7 @@ console.log(JSON.stringify({
   status:'CONTRACT_VALID',
   department:department.id,
   seats:department.seats.length,
-  zones:department.workspace.zones.length,
+  workAreas:department.workspace.workAreas.length,
   capabilities:department.capabilities.length,
   checkedRepositoryReferences:checked.size,
   missionTasks:mission.tasks.length,
