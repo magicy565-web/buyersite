@@ -262,18 +262,22 @@ export async function reviewBuiltSite({
       error('VISUAL_REVIEW_MANIFEST_INVALID', 'Bounded review budget and artifact SHA-256 required');
     }
     const source = await editionReviewSource({ sourceRoot });
-    const selected = source.pages;
     const mediaReport = source.mediaReport;
-    if (!Array.isArray(selected) || selected.length < 1 || selected.length > maxPages ||
-        selected.filter((p) => p?.page_type === 'home').length !== 1 ||
+    const sourcePages = source.pages;
+    const selected = source.magazineIssue
+      ? [...sourcePages, { page_id: 'magazine-issue', path: '/issues/' + source.magazineIssue.id + '/',
+          page_type: 'magazine-issue', title: source.magazineIssue.title }]
+      : sourcePages;
+    if (!Array.isArray(sourcePages) || sourcePages.length < 1 || selected.length > maxPages ||
+        sourcePages.filter((p) => p?.page_type === 'home').length !== 1 ||
         new Set(selected.map((p) => p?.page_id)).size !== selected.length ||
         new Set(selected.map((p) => p?.path)).size !== selected.length ||
         selected.some((p) => !p || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(p.page_id || '') ||
           !/^\/(?:[a-z0-9-]+\/)*$/.test(p.path || '') ||
-          !['home', 'product-editorial', 'supplier-profile', 'buyer-guide'].includes(p.page_type)) ||
-        !Array.isArray(mediaReport.images) || mediaReport.images.length !== selected.length - 1 ||
+          !['home', 'product-editorial', 'supplier-profile', 'buyer-guide', 'magazine-issue'].includes(p.page_type)) ||
+        !Array.isArray(mediaReport.images) || mediaReport.images.length !== sourcePages.length - 1 ||
         new Set(mediaReport.images.map((m) => m?.page_id)).size !== mediaReport.images.length ||
-        selected.some((p) => p.page_type !== 'home' && !mediaReport.images.some((m) => m.page_id === p.page_id))) {
+        sourcePages.some((p) => p.page_type !== 'home' && !mediaReport.images.some((m) => m.page_id === p.page_id))) {
       error('VISUAL_REVIEW_MANIFEST_INVALID', 'Every generated page and image must be included in the review');
     }
     const screenshotDir = join(jobDir, 'visual-review', 'screenshots');
