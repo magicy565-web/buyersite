@@ -24,7 +24,7 @@ const navItems=issue.spreads.filter((spread:any)=>!['cover','contents'].includes
       {navItems.slice(0,4).map((spread:any)=><a href={'#'+spread.id}>{spread.title}</a>)}
     </div>
     <a class="mi-sourcing-link" href="#sourcing">Sourcing ↗</a>
-    <button class="mi-assistant-link" type="button" data-assistant-open data-source-article={guide?.path||''}>Ask Sourcing AI</button>
+    {issue.publicationStatus==='private-review' && guide && <button class="mi-assistant-link" type="button" data-assistant-open data-source-article={guide.path}>Ask Sourcing AI</button>}
   </nav>
   <main id="main" class="mi-main">
     {issue.spreads.map((spread:any)=><Spread spread={spread} assets={assets} evidence={evidence} sourceArticles={sourceArticles}
