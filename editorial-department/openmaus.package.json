@@ -64,7 +64,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       },
       {
         "key": "research-editor",
@@ -88,7 +89,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       },
       {
         "key": "editorial-editor",
@@ -112,7 +114,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       },
       {
         "key": "art-director",
@@ -136,7 +139,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       },
       {
         "key": "production-editor",
@@ -160,7 +164,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       },
       {
         "key": "standards-editor",
@@ -184,7 +189,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       },
       {
         "key": "audience-editor",
@@ -208,7 +214,8 @@
             "images",
             "email"
           ]
-        }
+        },
+        "approval": "ask"
       }
     ],
     "skills": {
