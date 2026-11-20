@@ -133,9 +133,10 @@ export function planIssueMission({
     {id:'capture-source',seatId:'research-editor',capabilityId:'source.capture-homepage',dependsOn:[],requiredApprovals:['websiteResearchAuthorized'],output:'captured-source-snapshot'},
     {id:'compile-enterprise',seatId:'research-editor',capabilityId:'source.compile-enterprise',dependsOn:['capture-source'],requiredApprovals:[],output:'enterprise-edition-pack'},
     {id:'editorial-outline',seatId:'editor-in-chief',capabilityId:'editorial.plan-outline',dependsOn:['compile-enterprise'],requiredApprovals:[],output:'source-bound-magazine-outline'},
-    {id:'draft-editorial-copy',seatId:'editorial-editor',capabilityId:'editorial.draft-copy',dependsOn:['editorial-outline'],requiredApprovals:['editorialBriefApproved','evidenceBoundOutput'],output:'article-drafts'},
+    {id:'human-brief-approval',seatId:'editor-in-chief',capabilityId:null,dependsOn:['editorial-outline'],requiredApprovals:['editorialBriefApproved'],humanGate:'editorialBriefApproved',output:'approved-editorial-brief'},
+    {id:'draft-editorial-copy',seatId:'editorial-editor',capabilityId:'editorial.draft-copy',dependsOn:['human-brief-approval'],requiredApprovals:['editorialBriefApproved'],output:'article-drafts'},
     {id:'art-direction',seatId:'art-director',capabilityId:'visual.plan',dependsOn:['editorial-outline'],requiredApprovals:[],output:'responsive-visual-plan'},
-    {id:'prepare-media',seatId:'art-director',capabilityId:'media.materialize',dependsOn:['compile-enterprise','art-direction'],requiredApprovals:['mediaPolicyPassed'],output:'rights-bound-media-report'},
+    {id:'prepare-media',seatId:'art-director',capabilityId:'media.materialize',dependsOn:['compile-enterprise','art-direction'],requiredApprovals:[],output:'rights-bound-media-report'},
     {id:'compile-issue',seatId:'production-editor',capabilityId:'editorial.compile-issue',dependsOn:['draft-editorial-copy','prepare-media'],requiredApprovals:[],output:'validated-magazine-issue'},
     {id:'build-private-preview',seatId:'production-editor',capabilityId:'production.build-private',dependsOn:['compile-issue'],requiredApprovals:[],output:'private-astro-preview'},
     {id:'review-content',seatId:'standards-editor',capabilityId:'editorial.validate-issue',dependsOn:['compile-issue'],requiredApprovals:[],output:'content-contract-review'},
@@ -147,10 +148,7 @@ export function planIssueMission({
   ];
   if (selectedProductCount === 0) {
     definitions.splice(definitions.findIndex((task) => task.id === 'draft-editorial-copy') + 1, 0,
-      {id:'skip-product-gallery',seatId:'editor-in-chief',capabilityId:'editorial.plan-outline',dependsOn:['editorial-outline'],requiredApprovals:[],output:'no-product-gallery-confirmation'});
-  } else {
-    definitions.splice(definitions.findIndex((task) => task.id === 'draft-editorial-copy') + 1, 0,
-      {id:'draft-product-stories',seatId:'editorial-editor',capabilityId:'editorial.draft-copy',dependsOn:['editorial-outline'],requiredApprovals:['editorialBriefApproved','evidenceBoundOutput'],output:'selected-product-stories'});
+      {id:'skip-product-gallery',seatId:'editor-in-chief',capabilityId:'editorial.plan-outline',dependsOn:['human-brief-approval'],requiredApprovals:[],output:'no-product-gallery-confirmation'});
   }
 
   const tasks = definitions.map((definition) => ({
