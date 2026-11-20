@@ -50,7 +50,7 @@ for(const seat of department.seats) {
   const agent=packageAgents.get(seat.id);
   const roleSkill=seat.skillRef.split('/').at(-1).replace(/\.md$/,'');
   if(!agent || !agent.skills.includes('editorial-department') ||
-     !agent.skills.includes('buyer-magazine-site') || !agent.skills.includes(roleSkill) ||
+     !agent.skills.includes('buyersite-production') || !agent.skills.includes(roleSkill) ||
      !Array.isArray(agent.tools?.off) || hiddenGroups.some(group=>!agent.tools.off.includes(group))) {
     throw new Error('EDITORIAL_DEPARTMENT: OpenMausBot agent profile does not match seat '+seat.id);
   }
@@ -58,7 +58,7 @@ for(const seat of department.seats) {
     const skill=packageSkills.get(name);
     if(!skill) throw new Error('EDITORIAL_DEPARTMENT: package is missing skill '+name);
     const localPath=name==='editorial-department' ? 'skills/editorial-department/SKILL.md'
-      : name==='buyer-magazine-site' ? department.sharedProductionSkill : department.seats.find(item=>item.id===name)?.skillRef;
+      : name==='buyersite-production' ? department.sharedProductionSkill : department.seats.find(item=>item.id===name)?.skillRef;
     if(!localPath || skill.instructions!==await readFile(resolve(localPath),'utf8')) {
       throw new Error('EDITORIAL_DEPARTMENT: packaged skill content drifted for '+name);
     }
