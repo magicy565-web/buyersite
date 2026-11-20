@@ -1,5 +1,6 @@
 import { buildSourceGuideReply } from './source-guide.mjs';
 import { findPublishedContext, normalizeKnownPath, sanitizeCampaign } from '../src/lib/buyer-journey.mjs';
+import { enqueueMarketingEvent, dispatchMarketingOutbox } from './marketing-outbox.mjs';
 
 /**
  * Same-origin conversion adapter for the static magazine.
@@ -228,7 +229,27 @@ function receipt(row, replay = false) {
   }, replay ? 200 : 201);
 }
 
-async function saveEnquiry(request, env, config) {
+
+async function queueInquiryMarketingEvent(request, env, config, data, enquiry, executionContext) {
+  // The outbox contains only campaign attribution and an opaque enquiry receipt id.
+  // Contact details, product requirements and buyer free text never leave D1 here.
+  const utm = data.attribution ?? {};
+  const landingPath = data.landing_page_path ?? data.page_path;
+  const queued = await enqueueMarketingEvent(env, config, {
+    eventId: 'buyersite:' + config.siteSlug + ':inquiry:' + enquiry.id,
+    campaignId: utm.campaign,
+    type: 'inquiry_submitted',
+    occurredAt: enquiry.created_at,
+    landingUrl: new URL(landingPath, request.url).href,
+    pagePath: data.page_path,
+    utm,
+    inquiryId: enquiry.id,
+    metadata: { destination: 'buyersite-editorial-inbox', attributionMethod: data.attribution_method ?? null },
+  });
+  if (queued && executionContext?.waitUntil) executionContext.waitUntil(dispatchMarketingOutbox(env, config));
+}
+
+async function saveEnquiry(request, env, config, executionContext) {
   sameOrigin(request);
   if (!config.enquiriesEnabled || !dbReady(env)) {
     throw new HttpError(503, 'ENQUIRIES_UNAVAILABLE', 'The enquiry inbox is unavailable. Download your brief and try again later.');
@@ -245,6 +266,7 @@ async function saveEnquiry(request, env, config) {
     WHERE site_slug = ? AND idempotency_key_hash = ?`).bind(config.siteSlug, keyHash).first();
   if (existing) {
     if (existing.payload_hash !== payloadHash) throw new HttpError(409, 'IDEMPOTENCY_CONFLICT', 'The brief changed. Start a new enquiry before sending it.');
+    await queueInquiryMarketingEvent(request, env, config, data, existing, executionContext);
     return receipt(existing, true);
   }
   await limitRequest(request, env, config, 'enquiry', 5, 3_600);
@@ -261,11 +283,15 @@ async function saveEnquiry(request, env, config) {
       JSON.stringify(data.attribution), data.consent_version, now, data.context ? JSON.stringify(data.context) : null,
       data.context?.page_path ?? null, data.landing_page_path ?? null,
       data.attribution_method ?? (Object.keys(data.attribution).length ? 'reported-campaign' : null)).first();
-  if (inserted) return receipt(inserted);
+  if (inserted) {
+    await queueInquiryMarketingEvent(request, env, config, data, inserted, executionContext);
+    return receipt(inserted);
+  }
   // A concurrent retry may have won the unique-key race after our first read.
   const raced = await env.DB.prepare(`SELECT id, created_at, status, payload_hash FROM buyer_enquiries
     WHERE site_slug = ? AND idempotency_key_hash = ?`).bind(config.siteSlug, keyHash).first();
   if (!raced || raced.payload_hash !== payloadHash) throw new HttpError(409, 'IDEMPOTENCY_CONFLICT', 'Start a new enquiry for the changed brief.');
+  await queueInquiryMarketingEvent(request, env, config, data, raced, executionContext);
   return receipt(raced, true);
 }
 
@@ -400,7 +426,7 @@ async function sourceGuide(request, env, config) {
   return json(buildSourceGuideReply(query, config, body.page_path ? pagePath(body.page_path, config) : null));
 }
 
-export async function handleBuyerRequest(request, env, config, { fetchFn = fetch } = {}) {
+export async function handleBuyerRequest(request, env, config, { fetchFn = fetch, executionContext } = {}) {
   const pathname = new URL(request.url).pathname.replace(/\/+$/, '');
   if (!pathname.startsWith('/api/buyer')) return null;
   try {
@@ -417,7 +443,7 @@ export async function handleBuyerRequest(request, env, config, { fetchFn = fetch
         consent_version: consentVersion,
       });
     }
-    if (pathname === '/api/buyer/enquiries' && request.method === 'POST') return await saveEnquiry(request, env, config);
+    if (pathname === '/api/buyer/enquiries' && request.method === 'POST') return await saveEnquiry(request, env, config, executionContext);
     if (pathname === '/api/buyer/assistant' && request.method === 'POST') return await answerQuestion(request, env, config, fetchFn);
     if (pathname === '/api/buyer/source-guide' && request.method === 'POST') return await sourceGuide(request, env, config);
     const owner = pathname.match(/^\/api\/buyer\/admin\/enquiries(?:\/([0-9a-f-]+))?$/);
@@ -434,8 +460,8 @@ export async function handleBuyerRequest(request, env, config, { fetchFn = fetch
 
 export function createGateway(config, options = {}) {
   return {
-    async fetch(request, env) {
-      const response = await handleBuyerRequest(request, env, config, options);
+    async fetch(request, env, ctx) {
+      const response = await handleBuyerRequest(request, env, config, { ...options, executionContext: ctx });
       if (response) return response;
       if (env.ASSETS && typeof env.ASSETS.fetch === 'function') return env.ASSETS.fetch(request);
       return new Response('Not found', { status: 404 });
