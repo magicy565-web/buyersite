@@ -96,10 +96,13 @@ export function compileMagazineIssueFromEnterprise({compiled,outline,mediaPlan,m
     sourceUrl:item.source_url||null,capturedAt:plain(item.captured_at,80),
     sourceQuote:plain(item.source_quote,600),notes:plain(item.notes,500),
   }));
-  const sourceArticles=compiled.articles.map(article=>({
-    id:article.slug,pageType:article.pageType,title:plain(article.title,170),
-    deck:plain(article.deck,600),evidenceRefs:unique(article.refs),
-  }));
+  const pageById=new Map((compiled.pages||[]).map(page=>[page.page_id,page]));
+  const sourceArticles=compiled.articles.map(article=>{
+    const page=pageById.get(article.slug);
+    if(!page || typeof page.path!=='string' || !/^\/[a-z0-9-]+\/[a-z0-9-]+\/$/.test(page.path)) fail('source article has no canonical local route: '+article.slug);
+    return {id:article.slug,path:page.path,pageType:article.pageType,title:plain(article.title,170),
+      deck:plain(article.deck,600),evidenceRefs:unique(article.refs)};
+  });
   const spreads=[];
   const outlineChapter=id=>outline.chapters.find(chapter=>chapter.id===id);
   const push=(id,spread)=>{if(!outlineChapter(id)) fail('outline chapter missing: '+id);spreads.push({id,...spread});};
