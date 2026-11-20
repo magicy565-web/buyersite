@@ -409,7 +409,7 @@ export function createEditorialMcpHandler({
     return true;
   }
 
-  return Object.freeze({handle});
+  return Object.freeze({handle,async idle(){await background;}});
 }
 
 function requireSeatTask(actualSeat,args,expectedSeat,expectedTask){
