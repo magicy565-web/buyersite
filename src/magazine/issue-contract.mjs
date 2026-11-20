@@ -1,6 +1,7 @@
 // Versioned magazine issue contract. Agent output is DATA, never executable Astro/HTML.
 const ID = /^[a-z][a-z0-9-]{1,79}$/;
 const SHA = /^[a-f0-9]{64}$/;
+const ASSET_ID = /^[a-z0-9][a-z0-9_-]{0,79}$/;
 const KINDS = Object.freeze(['cover','contents','story','craft','gallery','notes','sourcing']);
 const allowed = new Set(KINDS);
 const fail = (message) => { throw new TypeError('MAGAZINE_ISSUE: ' + message); };
@@ -27,7 +28,7 @@ function assertAsset(asset, publicationStatus, articleIds) {
       asset.filename!=='hero-'+asset.articleId+'.png' || !SHA.test(asset.sha256 || '') ||
       asset.reviewStatus!=='required') fail('source media must bind to an article and pending review');
   if (asset.kind==='licensed-photo') {
-    if (!ID.test(asset.assetId || '') || !SHA.test(asset.sourceSha256 || '') ||
+    if (!ASSET_ID.test(asset.assetId || '') || !SHA.test(asset.sourceSha256 || '') ||
         !SHA.test(asset.grantSha256 || '') || !SHA.test(asset.rightsSha256 || '')) {
       fail('licensed photo requires current source, grant and rights fingerprints');
     }
