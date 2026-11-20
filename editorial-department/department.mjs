@@ -29,7 +29,7 @@ export function assertDepartmentManifest(value = manifest) {
       const implementation = capability.implementation;
       if (!implementation || !['module-export','script'].includes(implementation.kind) ||
           !safeRelativePath(implementation.path) ||
-          (implementation.kind === 'module-export' && !SAFE_ID.test(String(implementation.export || '').replaceAll('_','-')))) {
+          (implementation.kind === 'module-export' && !/^[A-Za-z_$][A-Za-z0-9_$]{0,79}$/.test(String(implementation.export || '')))) {
         fail('implemented capability requires a safe repository implementation reference');
       }
     } else if (capability.implementation !== null) {
