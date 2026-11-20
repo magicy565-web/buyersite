@@ -16,7 +16,7 @@ export default {
     if(path.startsWith('/api/'))headers.set('Cache-Control','no-store');
     return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
   },
-  async scheduled(controller,env,ctx){
+  async scheduled(_event,env,ctx){
     ctx.waitUntil(dispatchMarketingOutbox(env,config));
   }
 };
