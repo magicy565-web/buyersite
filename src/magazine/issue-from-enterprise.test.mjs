@@ -5,6 +5,7 @@ import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { compileMagazineIssueFromEnterprise, assertIssueMediaFiles } from './issue-from-enterprise.mjs';
+import { acceptMagazineProposal } from './compose-issue.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const sha=char=>char.repeat(64);
 function fixture(withProduct=true){
@@ -106,4 +107,13 @@ test('source media bytes must match their SHA-256 before rendering',async()=>{
     await writeFile(join(root,'hero-supplier-profile.png'),Buffer.from('tampered'));
     await assert.rejects(()=>assertIssueMediaFiles({issue,articlesDir:root}),/bytes do not match/);
   }finally{await rm(root,{recursive:true,force:true});}
+});
+
+test('agent may reorder editorial copy but cannot replace a source media descriptor',()=>{
+  const issue=compileMagazineIssueFromEnterprise(fixture());
+  const registry=structuredClone(issue.assets);
+  assert.equal(acceptMagazineProposal({proposal:issue,approvedAssets:registry}).spreads.length,7);
+  const changed=structuredClone(issue);
+  changed.assets[0].grantSha256=sha('9');
+  assert.throws(()=>acceptMagazineProposal({proposal:changed,approvedAssets:registry}),/provenance descriptor/);
 });
