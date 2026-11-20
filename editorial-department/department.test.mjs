@@ -24,6 +24,16 @@ test('department manifest declares seven on-demand seats and a bounded capabilit
   assert.equal(getCapability('editorial.draft-copy').status, 'planned');
 });
 
+test('all seven seats map exactly once into the existing pixel-office zones', () => {
+  const value=assertDepartmentManifest();
+  const mapped=value.workspace.zones.flatMap((zone)=>zone.seatIds);
+  assert.equal(mapped.length,7);
+  assert.equal(new Set(mapped).size,7);
+  const duplicate=structuredClone(manifest);
+  duplicate.workspace.zones[1].seatIds.push('editor-in-chief');
+  assert.throws(()=>assertDepartmentManifest(duplicate),/unknown or duplicated/);
+});
+
 test('manifest rejects duplicate seats, missing capability references and executable forbidden tools', () => {
   const duplicate = structuredClone(manifest);
   duplicate.seats.push(structuredClone(duplicate.seats[0]));
