@@ -12,10 +12,11 @@ export function assertDepartmentManifest(value = manifest) {
   if (!value || value.schemaVersion !== 'editorial-department/v1' ||
       !SAFE_ID.test(value.id || '') || value.operatingModel !== 'on-demand-seats' ||
       value.tenantBoundary !== 'one-enterprise-per-mission') fail('invalid department identity or operating model');
-  if (!safeRelativePath(value.baseSkill) || !safeRelativePath(value.sharedProductionSkill) || value.runtime?.executionMode !== 'plan-only' ||
-      value.runtime?.bindingStatus !== 'unbound' || value.runtime?.noSyntheticPresence !== true ||
+  if (!safeRelativePath(value.baseSkill) || !safeRelativePath(value.sharedProductionSkill) || value.runtime?.executionMode !== 'runtime-gated' ||
+      value.runtime?.bindingStatus !== 'adapter-available' ||
+      value.runtime?.dispatchMode !== 'durable-mission-dispatch' || value.runtime?.noSyntheticPresence !== true ||
       value.missionPolicy?.presenceRule !== 'derive-seat-presence-only-from-durable-task-state') {
-    fail('runtime must remain unbound and presence must be event-derived');
+    fail('runtime must use the durable adapter and event-derived presence');
   }
   if (!Array.isArray(value.seats) || value.seats.length < 5 || value.seats.length > 12 ||
       !Array.isArray(value.capabilities) || value.capabilities.length < 8) fail('seat/capability inventory is missing or unbounded');
@@ -63,6 +64,10 @@ export function assertDepartmentManifest(value = manifest) {
       workspace.teamMapBinding?.chiefField!=='BotRecord.chiefOfStaff' ||
       workspace.teamMapBinding?.collaborationSnapshot!=='GET /api/team-map' ||
       workspace.teamMapBinding?.departmentInstructions!=='/api/section-context' ||
+      workspace.teamMapBinding?.missionRuntime!=='site-builder/worker.mjs' ||
+      workspace.teamMapBinding?.missionMcpPath!=='/mcp/{seatId}' ||
+      workspace.teamMapBinding?.missionStore!=='private-file-backed-atomic-json' ||
+      workspace.teamMapBinding?.dispatchApi!=='OpenMausBot client-scope session' ||
       workspace.teamMapBinding?.seatBotCount!==value.seats.length ||
       workspace.teamMapBinding?.importFormat!=='openmaus.package/v2' ||
       workspace.teamMapBinding?.skillsProvisioning!=='separate-explicit-install' ||
