@@ -16,7 +16,7 @@ Role briefs live in \`skills/editorial-department/seats/\`. All seats reuse the 
 
 ## Existing team-map placement
 
-The manifest includes six office zones for the seven seats: Editorial Room, Research Library, Creative Studio, Production Floor, Standards Desk, and Audience & Growth. This is placement metadata for the existing OpenMausBot team map, not a new Buyersite dashboard. A future UI adapter should render each seat's presence only from durable task events. Idle movement may be decorative only when no task is active; it must never imply work is running.
+The manifest targets the existing section-based OpenMausBot Team Map: one department section named BuyerSite Editorial Department, with Editor-in-Chief as the intended Chief of Staff and seven role Bots. It also records six logical work areas (Editorial Room, Research Library, Creative Studio, Production Floor, Standards Desk, and Audience & Growth) for a future pixel-office layout. The current Team Map does not render those six areas as separate rooms; this PR does not claim that UI exists. Presence must be derived from durable task events. Idle movement may be decorative only when no task is active; it must never imply work is running.
 
 ## Capability model
 \`editorial-department/department.json\` is the machine-readable contract. Each capability is marked:
