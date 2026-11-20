@@ -149,7 +149,8 @@ export function validateTaskArtifact(taskId,artifact,context={}){
   switch(taskId){
     case 'capture-source':{
       const page=artifact.snapshot;
-      if(!object(page)||page.url!==context.websiteUrl||!text(page.title,300)||
+      let expectedUrl='';try{expectedUrl=new URL(context.websiteUrl).href;}catch{fail('authorized website URL is invalid');}
+      if(!object(page)||page.url!==expectedUrl||!text(page.title,300)||
          !text(page.captured_at,80)||!text(page.body_text,30_000)||
          !SHA.test(page.content_sha256||'')||
          createHash('sha256').update(page.body_text).digest('hex')!==page.content_sha256)fail('source capture does not match the authorized URL and content hash');
