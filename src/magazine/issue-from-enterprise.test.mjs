@@ -123,4 +123,7 @@ test('agent may reorder editorial copy but cannot replace a source media descrip
   assert.throws(()=>acceptMagazineProposal({proposal:changedBinding,approvedAssets:registry,approvedSourceIssue:issue}),/Source issue binding changed/);
 });
 
-test('source article paths must be canonical local buyer-site routes',()=>{\n  const x=fixture();x.compiled.pages[0].path='https://attacker.example/';\n  assert.throws(()=>compileMagazineIssueFromEnterprise(x),/canonical local route/);\n});\n
+test('source article paths must be canonical local buyer-site routes',()=>{
+  const x=fixture();x.compiled.pages[0].path='https://attacker.example/';
+  assert.throws(()=>compileMagazineIssueFromEnterprise(x),/canonical local route/);
+});
