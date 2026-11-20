@@ -50,8 +50,10 @@ export async function enqueueMarketingEvent(env, config, input) {
     ? input.pagePath : '/';
   const rawMetadata = input?.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {};
   const metadata = {
-    ...(typeof rawMetadata.browserEventName === 'string' && ['page_view','article_opened','enquiry_started','assistant_opened'].includes(rawMetadata.browserEventName) ? { browserEventName: rawMetadata.browserEventName } : {}),
-    ...(rawMetadata.destination === 'buyersite-editorial-inbox' ? { destination: rawMetadata.destination } : {}),
+    ...(typeof rawMetadata.source === 'string' && rawMetadata.source === 'buyersite' ? { source: rawMetadata.source } : {}),
+    ...(typeof rawMetadata.pageType === 'string' && ['article','product','supplier','guide','other'].includes(rawMetadata.pageType) ? { pageType: rawMetadata.pageType } : {}),
+    ...(typeof rawMetadata.ctaId === 'string' && ['assistant_opened','enquiry_started'].includes(rawMetadata.ctaId) ? { ctaId: rawMetadata.ctaId } : {}),
+    ...(rawMetadata.formType === 'buyer-enquiry' ? { formType: rawMetadata.formType } : {}),
     ...(typeof rawMetadata.attributionMethod === 'string' && ['reported-session','reported-campaign','withheld'].includes(rawMetadata.attributionMethod) ? { attributionMethod: rawMetadata.attributionMethod } : {}),
   };
   const payload = {
