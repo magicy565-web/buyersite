@@ -17,7 +17,7 @@ const briefs = loadBuyerBriefs();
       <button type="submit" class="sourcing-close" aria-label={conversion.close}><span aria-hidden="true">×</span></button>
     </form>
   </div>
-  <SourcingAssistant client:visible siteSlug={site.slug} guideHref={'/guides/' + site.guideSlug} enabled={site.enquiriesEnabled} briefs={briefs} initialPath={Astro.url.pathname} />
+  <SourcingAssistant client:load siteSlug={site.slug} guideHref={'/guides/' + site.guideSlug} enabled={site.enquiriesEnabled} briefs={briefs} initialPath={Astro.url.pathname} />
 </dialog>
 <script>
   const panel = document.querySelector<HTMLDialogElement>('#buyer-assistant');
@@ -26,6 +26,8 @@ const briefs = loadBuyerBriefs();
     opener.addEventListener('click', () => {
       if (!panel || panel.open) return;
       returnFocus = opener;
+      const sourcePath = opener.dataset.sourceArticle;
+      if (sourcePath) window.dispatchEvent(new CustomEvent('buyersite:sourcing-context', { detail: { path: sourcePath } }));
       panel.showModal();
       window.dispatchEvent(new CustomEvent('buyersite:event', {
         detail: { name: 'assistant_opened', pagePath: location.pathname },
