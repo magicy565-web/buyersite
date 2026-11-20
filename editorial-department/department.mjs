@@ -12,7 +12,7 @@ export function assertDepartmentManifest(value = manifest) {
   if (!value || value.schemaVersion !== 'editorial-department/v1' ||
       !SAFE_ID.test(value.id || '') || value.operatingModel !== 'on-demand-seats' ||
       value.tenantBoundary !== 'one-enterprise-per-mission') fail('invalid department identity or operating model');
-  if (!safeRelativePath(value.baseSkill) || value.runtime?.executionMode !== 'plan-only' ||
+  if (!safeRelativePath(value.baseSkill) || !safeRelativePath(value.sharedProductionSkill) || value.runtime?.executionMode !== 'plan-only' ||
       value.runtime?.bindingStatus !== 'unbound' || value.runtime?.noSyntheticPresence !== true ||
       value.missionPolicy?.presenceRule !== 'derive-seat-presence-only-from-durable-task-state') {
     fail('runtime must remain unbound and presence must be event-derived');
@@ -51,6 +51,27 @@ export function assertDepartmentManifest(value = manifest) {
     }
     seatById.set(seat.id, seat);
   }
+
+  const workspace=value.workspace;
+  if(workspace?.target!=='openmausbot-team-map' || workspace?.view!=='isometric-editorial-office' ||
+      workspace?.presenceFrom!=='durable-mission-task-state' ||
+      workspace?.idleAnimations!=='cosmetic-only-when-no-active-job' ||
+      !Array.isArray(workspace.zones) || workspace.zones.length<1 || workspace.zones.length>12) {
+    fail('workspace must bind to the existing event-driven OpenMausBot team map');
+  }
+  const mappedSeats=new Set();
+  const zoneIds=new Set();
+  for(const zone of workspace.zones) {
+    if(!zone || !SAFE_ID.test(zone.id || '') || zoneIds.has(zone.id) ||
+        typeof zone.label!=='string' || !zone.label.trim() ||
+        !Array.isArray(zone.seatIds) || zone.seatIds.length<1) fail('invalid team-map zone');
+    zoneIds.add(zone.id);
+    for(const seatId of zone.seatIds) {
+      if(!seatById.has(seatId) || mappedSeats.has(seatId)) fail('team-map seat assignment is unknown or duplicated');
+      mappedSeats.add(seatId);
+    }
+  }
+  if(mappedSeats.size!==seatById.size) fail('every department seat must map to exactly one team-map zone');
 
   const requiredDenied = ['contact-supplier','submit-buyer-enquiry','place-order','read-other-tenant-data','read-runtime-secrets','publish-without-human-approval'];
   if (value.securityPolicy?.noMockEvidence !== true ||
