@@ -23,7 +23,7 @@ function normalizeOrigin(value) {
 }
 
 function safeJsonPath(value) {
-  if (typeof value!=='string' || value.length>300 || value.includes('\0') || value.includes('\\')) {
+  if (typeof value!=='string' || value.length>300 || !value.startsWith('/') || value.startsWith('//') || value.includes('\0') || value.includes('\\') || value.split('/').includes('..')) {
     throw new TypeError('Invalid OpenMausBot API path');
   }
   return value;
@@ -91,6 +91,12 @@ export function createOpenMausBotClient({
     },
     async importPackage(packageDocument) {
       return request('/api/teams/import?mode=add',{method:'POST',body:packageDocument});
+    },
+    async getBot(botId) {
+      if(!SAFE_BOT.test(botId)) throw new TypeError('Invalid Bot ID');
+      const data=await request('/api/bots/'+encodeURIComponent(botId)+'?messages=0');
+      if(!data.bot) throw new OpenMausBotApiError(502,'BOT_RESPONSE_INVALID','OpenMausBot returned no Bot record');
+      return data.bot;
     },
     async createTask(botId,title) {
       if(!SAFE_BOT.test(botId) || typeof title!=='string' || !title.trim() || title.length>100) {
