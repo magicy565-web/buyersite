@@ -62,6 +62,7 @@ function publicMission(record){
         output:task.output,humanGate:task.humanGate||null,
         state:state.state,attempts:state.attempts,
         artifactSha256:state.artifactSha256||null,
+        dispatch:state.dispatch?{botId:state.dispatch.botId,threadId:state.dispatch.threadId,state:state.dispatch.state}:null,
         error:state.error||null,reason:state.reason||null,
         updatedAt:state.updatedAt,
       };
@@ -219,6 +220,67 @@ export class EditorialMissionRuntime {
     return publicMission(record);
   }
 
+  getQueuedTasks(missionId){
+    const record=this.records.get(missionId);
+    if(!record)fail('MISSION_NOT_FOUND',404);
+    return record.plan.taskOrder.flatMap(taskId=>{
+      const task=record.plan.tasks.find(item=>item.id===taskId);
+      const state=record.tasks[taskId];
+      return state.state==='queued'&&state.dispatch?.state!=='sent'
+        ? [{task:clone(task),state:clone({attempts:state.attempts,dispatch:state.dispatch||null})}]
+        : [];
+    });
+  }
+
+  async recordDispatchTarget({missionId,taskId,seatId,botId,threadId,sendId}={}){
+    return this.exclusive(async()=>{
+      const record=this.records.get(missionId);
+      if(!record)fail('MISSION_NOT_FOUND',404);
+      const task=record.plan.tasks.find(item=>item.id===taskId);
+      if(!task||task.seatId!==seatId)fail('SEAT_TASK_SCOPE_DENIED',403);
+      const state=record.tasks[taskId];
+      if(state.state!=='queued')fail('MISSION_TASK_NOT_QUEUED',409);
+      if(!/^[A-Za-z0-9_-]{1,128}$/.test(botId||'')||! /^[A-Za-z0-9_-]{1,128}$/.test(threadId||'')||
+         !/^[a-f0-9-]{36}$/i.test(sendId||''))fail('MISSION_DISPATCH_BINDING_INVALID',400);
+      if(state.dispatch&&state.dispatch.threadId!==threadId)fail('MISSION_DISPATCH_CONFLICT',409);
+      state.dispatch={seatId,botId,threadId,sendId,state:'created',createdAt:state.dispatch?.createdAt||this.clock()};
+      state.updatedAt=this.clock();
+      await this.save(record);
+      return publicMission(record);
+    });
+  }
+
+  async recordDispatchSent({missionId,taskId,seatId,threadId}={}){
+    return this.exclusive(async()=>{
+      const record=this.records.get(missionId);
+      if(!record)fail('MISSION_NOT_FOUND',404);
+      const task=record.plan.tasks.find(item=>item.id===taskId);
+      const state=record.tasks[taskId];
+      if(!task||task.seatId!==seatId||state.state!=='queued'||
+         state.dispatch?.threadId!==threadId)fail('MISSION_DISPATCH_CONFLICT',409);
+      state.dispatch.state='sent';
+      state.dispatch.sentAt=this.clock();
+      state.updatedAt=this.clock();
+      delete state.dispatchError;
+      await this.save(record);
+      return publicMission(record);
+    });
+  }
+
+  async recordDispatchError({missionId,taskId,seatId,code}={}){
+    return this.exclusive(async()=>{
+      const record=this.records.get(missionId);
+      if(!record)fail('MISSION_NOT_FOUND',404);
+      const task=record.plan.tasks.find(item=>item.id===taskId);
+      const state=record.tasks[taskId];
+      if(!task||task.seatId!==seatId||state.state!=='queued')fail('MISSION_DISPATCH_CONFLICT',409);
+      state.dispatchError=String(code||'DISPATCH_FAILED').slice(0,100);
+      state.updatedAt=this.clock();
+      await this.save(record);
+      return publicMission(record);
+    });
+  }
+
   getJob(missionId){
     const record=this.records.get(missionId);
     if(!record)fail('MISSION_NOT_FOUND',404);
@@ -306,6 +368,7 @@ export class EditorialMissionRuntime {
         state.state='queued';delete state.leaseHash;delete state.leaseExpiresAt;
       }
       if(state.state!=='queued')fail(state.state==='running'?'MISSION_TASK_ALREADY_CLAIMED':'MISSION_TASK_NOT_READY',409);
+      if(state.dispatch?.state!=='sent')fail('MISSION_TASK_NOT_DISPATCHED',409);
       if(state.attempts>=MAX_ATTEMPTS)fail('MISSION_TASK_RETRY_LIMIT',409);
       const capability=task.capabilityId?getCapability(task.capabilityId):null;
       if(task.humanGate||!capability||['planned','forbidden','human-only'].includes(capability.status))fail('MISSION_TASK_NOT_EXECUTABLE',409);
@@ -440,7 +503,7 @@ export class EditorialMissionRuntime {
       if(!task)fail('MISSION_TASK_NOT_FOUND',404);
       const state=record.tasks[taskId];
       if(state.state!=='failed'||state.attempts>=MAX_ATTEMPTS)fail('MISSION_TASK_NOT_RETRYABLE',409);
-      state.state='blocked';delete state.error;delete state.reason;
+      state.state='blocked';delete state.error;delete state.reason;delete state.dispatch;delete state.dispatchError;
       this.refreshReady(record);
       await this.save(record);
       if(state.state!=='queued')fail('MISSION_TASK_GATES_UNMET',409);
