@@ -12,6 +12,12 @@ The current foundation is **Astro 7 + Halftone + Tailwind 4**, with Markdown/MDX
 | 2. Buyer conversion | Source-backed decision summaries, context-aware source search, editable brief handoff, server-bound article/product provenance, consented enquiries, durable receipts and owner review | [runtime contract](runtime/README.md), `src/components/buyer/`, `src/lib/buyer-brief.ts`, `runtime/gateway.mjs` |
 | 3. Publication and feedback | Public source notebook and machine-readable evidence, Pagefind, canonical/robots/sitemap controls, Worker deployment, first-party aggregate events and article/landing/campaign enquiry reporting | `src/pages/buyer-data.json.ts`, `scripts/finalize-site.mjs`, `scripts/release-gate.mjs`, `runtime/analytics.mjs`, `runtime/feedback.mjs` |
 
+## Virtual Editorial Department
+
+The repository now defines a portable, on-demand virtual magazine department in [EDITORIAL-DEPARTMENT.md](docs/EDITORIAL-DEPARTMENT.md). Seven specialist seats share the existing Site Builder, Astro renderer, media policy, review and Buyer Runtime; they are not seven permanently running bots and do not create a second workbench.
+
+The department manifest defines seat responsibilities, skill references, capability allowlists, authorization gates and a plan-only issue Mission DAG. OpenMausBot runtime bindings and durable task dispatch are intentionally not connected yet. Seat presence must later be derived from persisted job state, never simulated. Public release and external distribution remain human-approved.
+
 The image path distinguishes authorized commercial photos from unavailable imagery. Generated images carry concept-art labels and provenance; they are not evidence of a supplier's actual product, factory, certification or capacity. The pilot uses three reviewed AI concept images recorded in [concept-media.json](src/data/concept-media.json). Its media preparation verifies their hashes and visible disclosures and no longer downloads supplier photography.
 
 ## Local build and verification
