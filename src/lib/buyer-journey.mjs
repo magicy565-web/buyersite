@@ -26,7 +26,8 @@ export function sanitizeCampaign(input, { strict = false } = {}) {
     if (typeof value !== 'string') { fail(); continue; }
     const label = value.trim();
     const max = name === 'campaign' ? 64 : 32;
-    if (!label || label.length > max || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(label) || /\d{6,}/.test(label) || /^[a-f0-9]{8}-[a-f0-9-]{20,}$/i.test(label)) { fail(); continue; }
+    const mausbotCampaignId = name === 'campaign' && /^cmp_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(label);
+    if (!label || label.length > max || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(label) || (!mausbotCampaignId && (/\d{6,}/.test(label) || /^[a-f0-9]{8}-[a-f0-9-]{20,}$/i.test(label)))) { fail(); continue; }
     output[name] = label;
   }
   return output;
