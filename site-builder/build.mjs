@@ -2,6 +2,8 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileEnterpriseSite } from './compile.mjs';
+import { planMagazineOutline } from './magazine-outline.mjs';
+import { compileMagazineIssueFromEnterprise, assertIssueMediaFiles } from '../src/magazine/issue-from-enterprise.mjs';
 import { materializeEditionMedia } from './media-render.mjs';
 import { createHash } from 'node:crypto';
 
@@ -54,7 +56,9 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
   const root = resolve(baseDir, folder);
   const articlesDir = join(root, 'articles');
   await mkdir(articlesDir, { recursive: true });
+  const magazineOutline = planMagazineOutline(result);
   const outputFiles = {
+    'magazine-outline.json': magazineOutline,
     'site.json': result.site,
     'visual-plan.json': result.visualPlan,
     'media-plan.json': result.mediaPlan,
@@ -104,6 +108,11 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     enterpriseId: input.enterprise.id,
   });
   await writeFile(join(root, 'media-report.json'), json(mediaReport), { mode: 0o600 });
+  const magazineIssue = compileMagazineIssueFromEnterprise({
+    compiled: result, outline: magazineOutline, mediaPlan: result.mediaPlan, mediaReport,
+  });
+  await assertIssueMediaFiles({ issue: magazineIssue, articlesDir });
+  await writeFile(join(root, 'magazine-issue.json'), json(magazineIssue), { mode: 0o600, flag: 'w' });
   const dateString = new Date(input.exported_at).toISOString().slice(0, 10);
   for (const item of result.articles) {
     const media = mediaReport.images.find((image) => image.page_id === item.slug);
@@ -116,6 +125,8 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     fingerprint: result.fingerprint,
     pages: result.pages.length,
     articles: result.articles.length,
+    magazine_issue_id: magazineIssue.id,
+    magazine_spreads: magazineIssue.spreads.length,
     media: { rightsPhotos: mediaReport.rights_photo_count, aiGenerated: mediaReport.ai_generated_count, fallback: mediaReport.abstract_fallback_count },
     preview_only: true,
   };
