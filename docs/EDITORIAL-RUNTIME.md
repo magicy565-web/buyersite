@@ -81,9 +81,9 @@ The worker serves one endpoint per seat:
 
 \`POST /mcp/<seat-id>\`
 
-Each request must carry the editorial mission secret and the matching seat identity in the configured authentication headers. The MCP tool schema requires a short-lived per-task access token for mission context, claim, completion, failure and dependency-artifact reads. A successful claim returns a distinct lease token; both credentials are required for task completion.
+Each request must carry an `Authorization: Bearer <seat-token>` header. The seat token is derived server-side from `BUYERSITE_EDITORIAL_SECRET` and the seat ID; the raw mission secret is never sent to a Bot. The MCP tool schema requires a short-lived per-task access token for mission context, claim, completion, failure and dependency-artifact reads. A successful claim returns a distinct lease token; both credentials are required for task completion.
 
-Do not point every Bot at one shared unrestricted MCP server. Configure each Bot with only its own seat endpoint and keep the mission secret out of its prompt and Skill.
+Do not point every Bot at one shared unrestricted MCP server. Configure each Bot with only its own seat endpoint and its derived seat token through the host's protected MCP configuration. Never put the raw mission secret in a prompt or Skill.
 
 ## Presence and recovery
 
