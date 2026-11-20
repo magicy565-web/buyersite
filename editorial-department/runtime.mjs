@@ -62,7 +62,7 @@ function publicMission(record){
         output:task.output,humanGate:task.humanGate||null,
         state:state.state,attempts:state.attempts,
         artifactSha256:state.artifactSha256||null,
-        error:state.error||null,
+        error:state.error||null,reason:state.reason||null,
         updatedAt:state.updatedAt,
       };
     }),
@@ -128,6 +128,7 @@ export class EditorialMissionRuntime {
       if(!isObject(state)||!['blocked','queued','running','completed','failed'].includes(state.state)||
          !Number.isInteger(state.attempts)||state.attempts<0||state.attempts>MAX_ATTEMPTS)fail('MISSION_TASK_STATE_INVALID',500);
       if(state.artifactSha256!==undefined&&!SHA.test(state.artifactSha256))fail('MISSION_ARTIFACT_HASH_INVALID',500);
+      if(state.artifactPath!==undefined&&!/^artifacts\/[a-z][a-z0-9-]{1,63}\.json$/.test(state.artifactPath))fail('MISSION_ARTIFACT_PATH_INVALID',500);
     }
     return record;
   }
@@ -253,7 +254,9 @@ export class EditorialMissionRuntime {
     const context={
       missionId,
       task:clone(task),
-      taskState:clone(record.tasks[taskId]),
+      taskState:{state:record.tasks[taskId].state,attempts:record.tasks[taskId].attempts,
+        reason:record.tasks[taskId].reason||null,error:record.tasks[taskId].error||null,
+        artifactSha256:record.tasks[taskId].artifactSha256||null,updatedAt:record.tasks[taskId].updatedAt},
       binding:clone(record.plan.binding),
       approvals:[...record.approvals],
       enterprise:{
@@ -282,7 +285,7 @@ export class EditorialMissionRuntime {
     const state=record.tasks[artifactTaskId];
     if(!state||state.state!=='completed'||!state.artifactPath)fail('MISSION_ARTIFACT_NOT_READY',409);
     const allowed=seatId==='editor-in-chief'||seatId==='standards-editor'||
-      dependencyClosure(record.plan,currentTaskId||'').has(artifactTaskId)||
+      (currentTaskId&&dependencyClosure(record.plan,currentTaskId).has(artifactTaskId))||
       record.plan.tasks.find(task=>task.id===artifactTaskId)?.seatId===seatId;
     if(!allowed)fail('SEAT_ARTIFACT_SCOPE_DENIED',403);
     const bytes=await readFile(join(this.missionDir(missionId),state.artifactPath));
@@ -330,8 +333,9 @@ export class EditorialMissionRuntime {
       if(task.seatId!==seatId)fail('SEAT_TASK_SCOPE_DENIED',403);
       const state=record.tasks[taskId];
       if(state.state==='completed'){
-        const digest=jsonHash(artifact);
-        if(digest===state.artifactSha256)return publicMission(record);
+        const existingBytes=await readFile(join(this.missionDir(missionId),state.artifactPath));
+        const existingArtifact=JSON.parse(existingBytes.toString('utf8'));
+        if(jsonHash(existingArtifact)===jsonHash(artifact))return publicMission(record);
         fail('MISSION_TASK_ALREADY_COMPLETED',409);
       }
       if(state.state!=='running'||state.leaseExpiresAt<=this.clock()||
@@ -438,8 +442,8 @@ export class EditorialMissionRuntime {
       if(state.state!=='failed'||state.attempts>=MAX_ATTEMPTS)fail('MISSION_TASK_NOT_RETRYABLE',409);
       state.state='blocked';delete state.error;delete state.reason;
       this.refreshReady(record);
-      if(state.state!=='queued')fail('MISSION_TASK_GATES_UNMET',409);
       await this.save(record);
+      if(state.state!=='queued')fail('MISSION_TASK_GATES_UNMET',409);
       return publicMission(record);
     });
   }
