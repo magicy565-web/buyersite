@@ -116,8 +116,34 @@ test('writes isolated Astro content with escaped source text and immutable hash 
     const receipt = JSON.parse(await readFile(join(generated.root, 'receipt.json'), 'utf8'));
     assert.equal(receipt.preview_only, true);
     assert.equal(receipt.enterprise_revision, 7);
+    const issue = JSON.parse(await readFile(join(generated.root, 'magazine-issue.json'), 'utf8'));
+    assert.equal(issue.publicationStatus, 'private-review');
+    assert.equal(issue.sourceFingerprint, receipt.fingerprint);
+    assert.ok(issue.spreads.some((spread) => spread.kind === 'gallery'));
+    assert.ok(issue.assets.every((asset) => asset.kind === 'abstract-fallback'));
+    for (const asset of issue.assets) {
+      const image = await readFile(join(generated.root, 'articles', asset.filename));
+      assert.equal(createHash('sha256').update(image).digest('hex'), asset.sha256);
+    }
+    assert.equal(generated.magazine_issue_id, issue.id);
+    assert.equal(generated.magazine_spreads, issue.spreads.length);
     const repeated = await writeSitePreview(fixture, dir);
     assert.equal(generated.root, repeated.root);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('private magazine omits a product gallery when the enterprise has no selected products', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'buyer-site-empty-magazine-'));
+  try {
+    const fixture = input();
+    fixture.enterprise.products = [];
+    const generated = await writeSitePreview(fixture, dir);
+    const issue = JSON.parse(await readFile(join(generated.root, 'magazine-issue.json'), 'utf8'));
+    assert.equal(issue.publicationStatus, 'private-review');
+    assert.ok(!issue.spreads.some((spread) => spread.kind === 'gallery'));
+    assert.deepEqual(issue.spreads.map((spread) => spread.kind), ['cover', 'contents', 'story', 'notes', 'notes', 'sourcing']);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
