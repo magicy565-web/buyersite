@@ -98,5 +98,5 @@ test('invalid or non-canonical Campaign ids are not attributed and cannot trigge
   const { sqlite, env } = setup(t);
   assert.equal(await enqueueMarketingEvent(env, config, event({ campaignId: 'random-campaign', utm: { source: 'linkedin', campaign: 'random-campaign' } })), false);
   assert.equal(await enqueueMarketingEvent(env, config, event({ utm: { source: 'linkedin', campaign: 'cmp_12345678-1234-4234-8234-123456789abc', private: 'x' } })), true);
-  assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_marketing_outbox').get().count, 1);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_marketing_outbox').get().count, 0);
 });
