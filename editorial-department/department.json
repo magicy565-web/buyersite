@@ -642,6 +642,7 @@
       "skillsProvisioning": "separate-explicit-install",
       "modelProvisioning": "workspace-default-until-human-configured",
       "toolProvisioning": "least-privilege-explicit-admin-config"
-    }
+    },
+    "importablePackage": "editorial-department/openmaus.package.json"
   }
 }
