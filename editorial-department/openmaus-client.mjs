@@ -92,6 +92,26 @@ export function createOpenMausBotClient({
     async importPackage(packageDocument) {
       return request('/api/teams/import?mode=add',{method:'POST',body:packageDocument});
     },
+    async listMcpServers() {
+      const data=await request('/api/mcp/servers');
+      if(!Array.isArray(data.servers)) throw new OpenMausBotApiError(502,'MCP_ROSTER_INVALID','OpenMausBot returned an invalid MCP server list');
+      return data.servers;
+    },
+    async importMcpServers(mcpServers) {
+      if(!mcpServers||typeof mcpServers!=='object'||Array.isArray(mcpServers)) throw new TypeError('MCP server map is required');
+      return request('/api/mcp/servers/import',{method:'POST',body:{json:JSON.stringify({mcpServers})}});
+    },
+    async setMcpServerEnabled(name,enabled=true) {
+      if(!/^[a-z][a-z0-9_-]{0,31}$/.test(name)||typeof enabled!=='boolean') throw new TypeError('Invalid MCP server setting');
+      return request('/api/mcp/servers/'+encodeURIComponent(name),{method:'PATCH',body:{enabled}});
+    },
+    async setBotMcpServers(botId,names) {
+      if(!SAFE_BOT.test(botId)||!Array.isArray(names)||names.length>20||
+         names.some(name=>typeof name!=='string'||!/^[a-z][a-z0-9_-]{0,31}$/.test(name))) throw new TypeError('Invalid Bot MCP assignment');
+      return request('/api/bots/'+encodeURIComponent(botId),{method:'PATCH',body:{
+        mcpServers:names,computer:'off',browser:false,composio:false,autoApprove:false,approvalMode:'ask',
+      }});
+    },
     async getBot(botId) {
       if(!SAFE_BOT.test(botId)) throw new TypeError('Invalid Bot ID');
       const data=await request('/api/bots/'+encodeURIComponent(botId)+'?messages=0');
