@@ -17,6 +17,11 @@ import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSiteFromStudio } from './from-enterprise.mjs';
 import { reviewBuiltSite } from './visual-review.mjs';
+import { planIssueMission } from '../editorial-department/mission.mjs';
+import { EditorialMissionRuntime } from '../editorial-department/runtime.mjs';
+import { createOpenMausBotClient } from '../editorial-department/openmaus-client.mjs';
+import { createEditorialDispatcher } from '../editorial-department/dispatcher.mjs';
+import { createEditorialMcpHandler } from '../editorial-department/mcp.mjs';
 
 const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const JOB_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -294,6 +299,9 @@ export async function createBuyerSiteWorker({
   buildJob = buildStudioSite,
   projectRoot = PROJECT_ROOT,
   clock = () => new Date().toISOString(),
+  editorialSecret = process.env.BUYERSITE_EDITORIAL_SECRET,
+  openMausBaseUrl = process.env.OPENMAUSBOT_BASE_URL,
+  openMausToken = process.env.OPENMAUSBOT_CLIENT_TOKEN,
 } = {}) {
   if (!TOKEN.test(bridgeToken || '')) fail('BRIDGE_TOKEN_INVALID', 500);
   if (typeof dataDir !== 'string' || !dataDir) fail('DATA_DIR_REQUIRED', 500);
@@ -302,6 +310,24 @@ export async function createBuyerSiteWorker({
   await chmod(root, 0o700);
   const records = new Map();
   let queue = Promise.resolve();
+  if(editorialSecret && (typeof editorialSecret!=='string'||editorialSecret.length<40||editorialSecret===bridgeToken))
+    fail('EDITORIAL_SECRET_INVALID',500);
+  const editorialRuntime=await new EditorialMissionRuntime({
+    dataDir:join(root,'editorial-missions'),
+    clock:()=>Date.now(),
+  }).init();
+  const openMausClient=(openMausBaseUrl&&openMausToken)
+    ? createOpenMausBotClient({baseUrl:openMausBaseUrl,token:openMausToken})
+    : null;
+  const dispatcher=openMausClient
+    ? createEditorialDispatcher({runtime:editorialRuntime,openMausClient})
+    : null;
+  const editorialMcp=editorialSecret
+    ? createEditorialMcpHandler({
+        runtime:editorialRuntime,dispatcher,missionSecret:editorialSecret,
+        buildJob,projectRoot,
+      })
+    : null;
 
   const save = async (record) => {
     record.updatedAt = clock();
