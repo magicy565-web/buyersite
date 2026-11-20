@@ -244,7 +244,7 @@ async function queueInquiryMarketingEvent(request, env, config, data, enquiry, e
     pagePath: data.page_path,
     utm,
     inquiryId: enquiry.id,
-    metadata: { destination: 'buyersite-editorial-inbox', attributionMethod: data.attribution_method ?? null },
+    metadata: { source: 'buyersite', formType: 'buyer-enquiry' },
   });
   if (queued && executionContext?.waitUntil) executionContext.waitUntil(dispatchMarketingOutbox(env, config));
 }
