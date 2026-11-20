@@ -43,9 +43,13 @@ test('injected captures cover every page and preserve full-height mobile readabi
     const mediaReport = { images, plan_sha256: plan.plan_sha256 };
     await writeFile(join(root, 'media-report.json'), JSON.stringify(mediaReport));
     const sourceFingerprint = 'f'.repeat(64);
-    const outlineSha256 = 'a'.repeat(64);
+    const outlineBody = { schema_version: '1.0.0', kind: 'source-bound-magazine-outline',
+      publication_status: 'private-review', source_fingerprint: sourceFingerprint,
+      site_slug: 'synthetic-magazine', brand: 'Synthetic Magazine', design_direction: 'editorial',
+      chapters: [], media_policy: 'bind-after-rights-check', approval_required: [] };
+    const outlineSha256 = mediaHash(JSON.stringify(outlineBody));
     await writeFile(join(root, 'receipt.json'), JSON.stringify({ fingerprint: sourceFingerprint, enterprise_id: 'synthetic-enterprise' }));
-    await writeFile(join(root, 'magazine-outline.json'), JSON.stringify({ outline_sha256: outlineSha256 }));
+    await writeFile(join(root, 'magazine-outline.json'), JSON.stringify({ ...outlineBody, outline_sha256: outlineSha256 }));
     const sourceArticles = articles.map(({slug}) => ({
       id: slug, pageType: slug === 'guide' ? 'buyer-guide' : slug === 'supplier' ? 'supplier-profile' : 'product-editorial',
       title: slug, deck: 'Synthetic source-backed article.', evidenceRefs: slug === 'supplier' ? ['website-fact'] : [],
@@ -106,6 +110,13 @@ test('injected captures cover every page and preserve full-height mobile readabi
     // This copied observation is solely a synthetic contract fixture, never saved as production approval.
     const observedFixture = { ...result, evidence_type: 'observed', review_method: 'interactive-vision' };
     assert.equal((await assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir })).media_review_complete, true);
+    const outlineFile = join(root, 'magazine-outline.json');
+    const originalOutline = await readFile(outlineFile, 'utf8');
+    const changedOutline = JSON.parse(originalOutline);
+    changedOutline.brand = 'Tampered outline';
+    await writeFile(outlineFile, JSON.stringify(changedOutline));
+    await assert.rejects(() => assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir }), /EDITION_REVIEW_STALE/);
+    await writeFile(outlineFile, originalOutline);
     const reportFile = join(root, 'media-report.json');
     const originalReport = await readFile(reportFile, 'utf8');
     const changed = JSON.parse(originalReport);

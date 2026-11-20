@@ -102,6 +102,8 @@ export async function editionReviewSource({ sourceRoot, mediaRoot = process.env.
     if (magazineIssue.publicationStatus !== 'private-review') fail('MAGAZINE_ISSUE_NOT_PRIVATE');
     const [outline, receipt] = await Promise.all(['magazine-outline.json', 'receipt.json']
       .map(async (file) => JSON.parse(await readFile(join(sourceRoot, file), 'utf8'))));
+    const { outline_sha256: recordedOutlineHash, ...outlineBody } = outline;
+    if (!HEX.test(recordedOutlineHash || '') || mediaHash(JSON.stringify(outlineBody)) !== recordedOutlineHash) fail('MAGAZINE_ISSUE_SOURCE_STALE');
     if (magazineIssue.sourceFingerprint !== receipt.fingerprint ||
         magazineIssue.outlineSha256 !== outline.outline_sha256 ||
         magazineIssue.mediaPlanSha256 !== mediaPlan.plan_sha256 ||
