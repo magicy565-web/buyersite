@@ -21,11 +21,11 @@ const missionId={type:'string',pattern:'^mission-[a-f0-9]{24}$'};
 const taskId={type:'string',pattern:'^[a-z][a-z0-9-]{1,63}$'};
 const token={type:'string',minLength:32,maxLength:100};
 const common=[
-  {name:'buyersite_mission_get',description:'Read the assigned task context and completed dependency artifacts for one BuyerSite mission.',inputSchema:jsonSchema({missionId,taskId},['missionId','taskId'])},
-  {name:'buyersite_task_claim',description:'Claim your assigned task and receive its short-lived completion token.',inputSchema:jsonSchema({missionId,taskId},['missionId','taskId'])},
-  {name:'buyersite_task_complete',description:'Submit a typed, evidence-bound artifact for a model-authored task. The host validates it before unlocking dependents.',inputSchema:jsonSchema({missionId,taskId,claimToken:token,artifact:{type:'object'}},['missionId','taskId','claimToken','artifact'])},
-  {name:'buyersite_task_fail',description:'Record a real blocker for your currently claimed task. Never use this to disguise missing evidence as success.',inputSchema:jsonSchema({missionId,taskId,claimToken:token,code:str,message:{type:'string',maxLength:500}},['missionId','taskId','claimToken','code','message'])},
-  {name:'buyersite_artifact_get',description:'Read a completed artifact that is an ancestor of your current task, or a review artifact available to the Editor-in-Chief or Standards Editor.',inputSchema:jsonSchema({missionId,artifactTaskId:taskId,currentTaskId:taskId},['missionId','artifactTaskId','currentTaskId'])},
+  {name:'buyersite_mission_get',description:'Read the assigned task context and completed dependency artifacts for one BuyerSite mission. Requires the task-scoped access token in your assignment.',inputSchema:jsonSchema({missionId,taskId,taskAccessToken:token},['missionId','taskId','taskAccessToken'])},
+  {name:'buyersite_task_claim',description:'Claim your assigned task and receive its short-lived completion token.',inputSchema:jsonSchema({missionId,taskId,taskAccessToken:token},['missionId','taskId','taskAccessToken'])},
+  {name:'buyersite_task_complete',description:'Submit a typed, evidence-bound artifact for a model-authored task. The host validates it before unlocking dependents.',inputSchema:jsonSchema({missionId,taskId,taskAccessToken:token,claimToken:token,artifact:{type:'object'}},['missionId','taskId','taskAccessToken','claimToken','artifact'])},
+  {name:'buyersite_task_fail',description:'Record a real blocker for your currently claimed task. Never use this to disguise missing evidence as success.',inputSchema:jsonSchema({missionId,taskId,taskAccessToken:token,claimToken:token,code:str,message:{type:'string',maxLength:500}},['missionId','taskId','taskAccessToken','claimToken','code','message'])},
+  {name:'buyersite_artifact_get',description:'Read a completed artifact that is an ancestor of your current task, or a review artifact available to the Editor-in-Chief or Standards Editor.',inputSchema:jsonSchema({missionId,artifactTaskId:taskId,currentTaskId:taskId,taskAccessToken:token},['missionId','artifactTaskId','currentTaskId','taskAccessToken'])},
 ];
 const specialized={
  'research-editor':[
