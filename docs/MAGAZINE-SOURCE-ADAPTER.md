@@ -28,7 +28,7 @@ The issue composer deliberately does not invent craft/process chapters. It adds 
 
 The issue route can now read \`magazine-issue.json\` from the existing \`BUYERSITE_BUILD_ROOT\`. The media component resolves \`articleId\` against the existing Astro articles collection and uses its local image metadata. It does not trust a model-supplied image URL.
 
-The issue is rendered as a noindex private preview. The sourcing end page still creates an unsent local draft; it does not submit an RFQ or contact a supplier.
+The issue is rendered as a noindex private preview. The existing full-page visual reviewer now adds this route to desktop/mobile screenshot coverage and binds the exact issue JSON hash into the review source fingerprint. The Playwright route sweep also exercises the issue's local sourcing draft. The sourcing end page still creates an unsent local draft; it does not submit an RFQ or contact a supplier.
 
 ## Required integration in the stacked PR #9 build
 

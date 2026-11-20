@@ -73,20 +73,30 @@ for (const route of routes)
         )
         .toBe(true);
     }
-    await expect(page.locator('header a[href^="/enquiry"]')).toBeVisible();
-    const opener = page.locator('header [data-assistant-open]');
-    await opener.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(
-      page.getByRole('dialog').locator('#assistant-status'),
-    ).toContainText('Published facts, their sources');
-    await expect(
-      page.getByRole('dialog').locator('[data-assistant-mode="source-guide"]'),
-    ).toBeVisible();
-    await expect(page.getByLabel('Your sourcing question', { exact: true })).toHaveCount(0);
-    await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-    await expect(opener).toBeFocused();
+    if (route.startsWith('/issues/')) {
+      await expect(page.locator('.mi-nav')).toBeVisible();
+      await expect(page.locator('.mi-sourcing-link')).toHaveAttribute('href', '#sourcing');
+      await page.locator('#sourcing').scrollIntoViewIfNeeded();
+      await page.locator('#mi-brief').fill('Please confirm available product options and terms.');
+      await page.locator('#mi-prepare').click();
+      await expect(page.locator('#mi-result')).toContainText('LOCAL DRAFT — NOT SUBMITTED');
+      await expect(page.locator('#mi-result')).toBeVisible();
+    } else {
+      await expect(page.locator('header a[href^="/enquiry"]')).toBeVisible();
+      const opener = page.locator('header [data-assistant-open]');
+      await opener.click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await expect(
+        page.getByRole('dialog').locator('#assistant-status'),
+      ).toContainText('Published facts, their sources');
+      await expect(
+        page.getByRole('dialog').locator('[data-assistant-mode="source-guide"]'),
+      ).toBeVisible();
+      await expect(page.getByLabel('Your sourcing question', { exact: true })).toHaveCount(0);
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+      await expect(opener).toBeFocused();
+    }
     // Lazy layout can reveal long labels below the fold only after scrolling.
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.evaluate(

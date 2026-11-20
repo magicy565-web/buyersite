@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { assertCurrentLicensedSelection } from './media-rights.mjs';
 import { normalizeLicensedPhoto } from './media-render.mjs';
+import { assertMagazineIssue } from '../src/magazine/issue-contract.mjs';
 
 export const MEDIA_REVIEW_POLICY = 'buyer-media-review/v1';
 export const mediaHash = (value) => createHash('sha256').update(value).digest('hex');
@@ -89,6 +90,24 @@ export function assertReviewedMedia({ page, asset, bytes, asOf }) {
 export async function editionReviewSource({ sourceRoot, mediaRoot = process.env.BUYERSITE_MEDIA_ROOT, asOf }) {
   const [pages, mediaPlan, mediaReport] = await Promise.all(['pages.json', 'media-plan.json', 'media-report.json']
     .map(async (file) => JSON.parse(await readFile(join(sourceRoot, file), 'utf8'))));
+  let magazineIssue = null;
+  let magazineIssueSha256 = null;
+  const issueBytes = await readFile(join(sourceRoot, 'magazine-issue.json')).catch((error) => {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  });
+  if (issueBytes) {
+    magazineIssue = JSON.parse(issueBytes.toString('utf8'));
+    assertMagazineIssue(magazineIssue);
+    if (magazineIssue.publicationStatus !== 'private-review') fail('MAGAZINE_ISSUE_NOT_PRIVATE');
+    const [outline, receipt] = await Promise.all(['magazine-outline.json', 'receipt.json']
+      .map(async (file) => JSON.parse(await readFile(join(sourceRoot, file), 'utf8'))));
+    if (magazineIssue.sourceFingerprint !== receipt.fingerprint ||
+        magazineIssue.outlineSha256 !== outline.outline_sha256 ||
+        magazineIssue.mediaPlanSha256 !== mediaPlan.plan_sha256 ||
+        magazineIssue.mediaReportSha256 !== mediaHash(JSON.stringify(mediaReport))) fail('MAGAZINE_ISSUE_SOURCE_STALE');
+    magazineIssueSha256 = mediaHash(issueBytes);
+  }
   if (!Array.isArray(pages) || !Array.isArray(mediaPlan.selections) || !Array.isArray(mediaReport.images) ||
       mediaPlan.plan_sha256 !== mediaHash(JSON.stringify(mediaPlan.selections)) || mediaReport.plan_sha256 !== mediaPlan.plan_sha256 ||
       mediaReport.images.length !== pages.length - 1 || mediaPlan.selections.length !== mediaReport.images.length ||
@@ -111,7 +130,8 @@ export async function editionReviewSource({ sourceRoot, mediaRoot = process.env.
     if (asset.kind === 'ai-generated' && (typeof asset.prompt !== 'string' || mediaHash(asset.prompt) !== asset.prompt_sha256)) fail('MEDIA_PROMPT_HASH_MISMATCH');
     bindings.push(mediaReviewBinding({ page, asset }));
   }
-  return { pages, mediaReport, bindings, source_sha256: mediaHash(JSON.stringify({ pages, plan_sha256: mediaPlan.plan_sha256, bindings })) };
+  return { pages, mediaReport, bindings, magazineIssue, magazineIssueSha256,
+    source_sha256: mediaHash(JSON.stringify({ pages, plan_sha256: mediaPlan.plan_sha256, bindings, magazine_issue_sha256: magazineIssueSha256 })) };
 }
 
 // A publisher may consume a completed automated or interactive AI page review.
@@ -119,13 +139,19 @@ export async function editionReviewSource({ sourceRoot, mediaRoot = process.env.
 export async function assertEditionVisualReview({ review, sourceRoot, artifactSha256, jobDir, mediaRoot, asOf }) {
   if (!review || review.status !== 'PASS_RECOMMENDED' || review.evidence_type !== 'observed' ||
       !['interactive-vision', 'openai-responses'].includes(review.review_method) || !passingReviewTime(review.reviewed_at, asOf)) fail('EDITION_REVIEW_REQUIRED');
-  const current = await editionReviewSource({ sourceRoot, mediaRoot, asOf });
+  let current;
+  try { current = await editionReviewSource({ sourceRoot, mediaRoot, asOf }); }
+  catch (cause) { if (cause?.code === 'MAGAZINE_ISSUE_SOURCE_STALE') fail('EDITION_REVIEW_STALE'); throw cause; }
+  const reviewedPages = current.magazineIssue
+    ? [...current.pages, { page_id: 'magazine-issue', path: '/issues/' + current.magazineIssue.id + '/',
+        page_type: 'magazine-issue', title: current.magazineIssue.title }]
+    : current.pages;
   if (!HEX.test(artifactSha256 || '') || review.artifact_sha256 !== artifactSha256 ||
       review.source_sha256 !== current.source_sha256 || JSON.stringify(review.media_bindings) !== JSON.stringify(current.bindings)) fail('EDITION_REVIEW_STALE');
-  if (review.coverage?.complete !== true || review.coverage.reviewed_pages !== current.pages.length ||
-      review.coverage.expected_pages !== current.pages.length || !Array.isArray(review.pages) || review.pages.length !== current.pages.length ||
+  if (review.coverage?.complete !== true || review.coverage.reviewed_pages !== reviewedPages.length ||
+      review.coverage.expected_pages !== reviewedPages.length || !Array.isArray(review.pages) || review.pages.length !== reviewedPages.length ||
       current.mediaReport.images.some((asset) => asset.kind === 'abstract-fallback')) fail('EDITION_REVIEW_INCOMPLETE');
-  for (const page of current.pages) {
+  for (const page of reviewedPages) {
     const matches = review.pages.filter((entry) => entry.page_id === page.page_id && entry.path === page.path);
     const entry = matches[0];
     if (matches.length !== 1 || entry.status !== 'PASS_RECOMMENDED' || !passingVisualAssessment(entry.assessment) ||
