@@ -58,6 +58,7 @@ export function assertDepartmentManifest(value = manifest) {
       workspace?.idleAnimations!=='cosmetic-only-when-no-active-job' ||
       !SAFE_ID.test(workspace.chiefSeatId || '') || !seatById.has(workspace.chiefSeatId) ||
       typeof workspace.sectionName!=='string' || !workspace.sectionName.trim() ||
+      !safeRelativePath(workspace.importablePackage) ||
       workspace.teamMapBinding?.sectionField!=='BotRecord.section' ||
       workspace.teamMapBinding?.chiefField!=='BotRecord.chiefOfStaff' ||
       workspace.teamMapBinding?.collaborationSnapshot!=='GET /api/team-map' ||
