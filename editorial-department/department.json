@@ -575,7 +575,7 @@
     "noMockEvidence": true,
     "noSyntheticPresence": true
   },
-  "sharedProductionSkill": "skills/buyer-magazine-site/SKILL.md",
+  "sharedProductionSkill": "skills/editorial-department/buyersite-production.md",
   "workspace": {
     "target": "openmausbot-team-map",
     "view": "existing-section-based-team-map",
