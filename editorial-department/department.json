@@ -1,0 +1,648 @@
+{
+  "schemaVersion": "editorial-department/v1",
+  "id": "buyer-magazine-editorial",
+  "name": "Buyer Magazine Editorial Department",
+  "product": "buyersite",
+  "description": "An on-demand virtual editorial team that researches, commissions, produces, reviews and prepares buyer-facing digital magazine issues.",
+  "operatingModel": "on-demand-seats",
+  "tenantBoundary": "one-enterprise-per-mission",
+  "baseSkill": "skills/editorial-department/SKILL.md",
+  "runtime": {
+    "provider": "OpenMausBot",
+    "bindingStatus": "unbound",
+    "dispatchMode": "explicit-job-delegation",
+    "executionMode": "plan-only",
+    "presenceSource": "durable-mission-task-state",
+    "noSyntheticPresence": true
+  },
+  "seats": [
+    {
+      "id": "editor-in-chief",
+      "title": "Editor-in-Chief",
+      "department": "Editorial Leadership",
+      "mission": "Own the editorial brief, issue coherence, delegation and release recommendation.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/editor-in-chief.md",
+      "responsibilities": [
+        "translate the approved business objective into an editorial brief",
+        "choose audience, buying intent, issue angle and story order",
+        "delegate work to specialist seats and resolve editorial conflicts",
+        "review the complete issue and prepare a human release recommendation"
+      ],
+      "inputs": [
+        "enterprise-source-binding",
+        "buyer-audience-brief",
+        "editorial-bible"
+      ],
+      "outputs": [
+        "editorial-brief",
+        "issue-outline",
+        "release-recommendation"
+      ],
+      "capabilityIds": [
+        "mission.plan-issue",
+        "editorial.plan-outline"
+      ],
+      "decisionRights": [
+        "propose-issue-angle",
+        "assign-specialist-seat",
+        "request-human-release-review"
+      ],
+      "approvalRequired": [
+        "human-publication-approval"
+      ]
+    },
+    {
+      "id": "research-editor",
+      "title": "Research Editor",
+      "department": "Research Desk",
+      "mission": "Build a trustworthy, source-bound understanding of the enterprise, its products and buyer questions.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/research-editor.md",
+      "responsibilities": [
+        "capture only authorized public company sources",
+        "preserve source URL, timestamp, snapshot hash and enterprise revision",
+        "separate supplier-stated facts from independently verified facts",
+        "identify missing information without filling gaps by inference"
+      ],
+      "inputs": [
+        "authorized-enterprise-snapshot",
+        "website-research-authorization"
+      ],
+      "outputs": [
+        "source-snapshot",
+        "evidence-ledger",
+        "research-notes"
+      ],
+      "capabilityIds": [
+        "source.capture-homepage",
+        "source.compile-enterprise",
+        "editorial.plan-outline"
+      ],
+      "decisionRights": [
+        "flag-insufficient-evidence",
+        "recommend-follow-up-research"
+      ],
+      "approvalRequired": [
+        "websiteResearchAuthorized"
+      ]
+    },
+    {
+      "id": "editorial-editor",
+      "title": "Editorial Editor",
+      "department": "Editorial Desk",
+      "mission": "Turn approved research into readable buyer-focused stories without changing the meaning or confidence of source facts.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/editorial-editor.md",
+      "responsibilities": [
+        "draft headlines, decks, captions and story structures for the selected buyer",
+        "attach every factual claim to evidence references",
+        "preserve attribution and uncertainty in the copy",
+        "adapt tone and length to the publication's Editorial Bible"
+      ],
+      "inputs": [
+        "editorial-brief",
+        "evidence-ledger",
+        "approved-article-records",
+        "editorial-bible"
+      ],
+      "outputs": [
+        "article-drafts",
+        "caption-drafts",
+        "editorial-change-log"
+      ],
+      "capabilityIds": [
+        "editorial.draft-copy",
+        "editorial.validate-issue"
+      ],
+      "decisionRights": [
+        "propose-headlines",
+        "propose-story-structure"
+      ],
+      "approvalRequired": [
+        "editorial-fact-review"
+      ]
+    },
+    {
+      "id": "art-director",
+      "title": "Art & Photo Director",
+      "department": "Creative Studio",
+      "mission": "Create a coherent visual direction and rights-aware image plan for every spread and viewport.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/art-director.md",
+      "responsibilities": [
+        "define issue visual DNA and spread-by-spread art direction",
+        "choose responsive desktop and mobile compositions",
+        "select only tenant-scoped approved media or explicitly disclosed concept artwork",
+        "request AI imagery only when the frozen job and enterprise snapshot authorize it"
+      ],
+      "inputs": [
+        "editorial-brief",
+        "editorial-bible",
+        "approved-media-inventory",
+        "spread-plan"
+      ],
+      "outputs": [
+        "visual-plan",
+        "media-plan",
+        "media-provenance-records"
+      ],
+      "capabilityIds": [
+        "visual.plan",
+        "media.verify-rights",
+        "media.materialize",
+        "media.review"
+      ],
+      "decisionRights": [
+        "propose-layout-and-crop",
+        "request-concept-art-generation"
+      ],
+      "approvalRequired": [
+        "mediaPolicyPassed",
+        "aiGenerationAuthorized",
+        "aiReviewAuthorized"
+      ]
+    },
+    {
+      "id": "production-editor",
+      "title": "Production Editor",
+      "department": "Production Desk",
+      "mission": "Convert approved editorial and visual plans into a reproducible, responsive Astro issue and private preview.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/production-editor.md",
+      "responsibilities": [
+        "compile the source-bound IssueSpec",
+        "build isolated private Astro output",
+        "verify route inventory, asset bindings and output integrity",
+        "retain build logs, source fingerprints and artifact manifests"
+      ],
+      "inputs": [
+        "validated-issue-spec",
+        "approved-media-report",
+        "enterprise-build-pack"
+      ],
+      "outputs": [
+        "magazine-issue",
+        "private-preview-artifact",
+        "build-receipt"
+      ],
+      "capabilityIds": [
+        "editorial.compile-issue",
+        "production.build-private",
+        "production.verify-output"
+      ],
+      "decisionRights": [
+        "choose-approved-renderer-layout",
+        "request-build-retry"
+      ],
+      "approvalRequired": []
+    },
+    {
+      "id": "standards-editor",
+      "title": "Standards & Review Editor",
+      "department": "Standards Desk",
+      "mission": "Independently check facts, source references, media rights, disclosure and desktop/mobile quality.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/standards-editor.md",
+      "responsibilities": [
+        "check that every factual section resolves to the frozen evidence ledger",
+        "verify image rights and AI-concept disclosures",
+        "review actual desktop and mobile screenshots and report actionable defects",
+        "block release on unresolved critical factual, rights, privacy or rendering issues"
+      ],
+      "inputs": [
+        "magazine-issue",
+        "evidence-ledger",
+        "media-report",
+        "desktop-mobile-screenshots",
+        "build-receipt"
+      ],
+      "outputs": [
+        "content-review-report",
+        "media-review-receipts",
+        "visual-review-report",
+        "release-blockers"
+      ],
+      "capabilityIds": [
+        "editorial.validate-issue",
+        "media.review",
+        "production.visual-review",
+        "production.verify-output"
+      ],
+      "decisionRights": [
+        "pass-or-block-review-gates",
+        "request-targeted-revision"
+      ],
+      "approvalRequired": [
+        "aiReviewAuthorized"
+      ]
+    },
+    {
+      "id": "audience-editor",
+      "title": "Audience & Growth Editor",
+      "department": "Audience & Growth Desk",
+      "mission": "Learn from privacy-safe aggregate reader feedback and prepare evidence-led distribution plans.",
+      "activation": "on-demand",
+      "runtimeBinding": null,
+      "skillRef": "skills/editorial-department/seats/audience-editor.md",
+      "responsibilities": [
+        "inspect owner-authorized aggregate feedback, not raw buyer records",
+        "identify useful topics from observed reading and enquiry patterns",
+        "prepare channel-specific distribution drafts with canonical source links",
+        "measure qualified enquiries separately from views and clicks"
+      ],
+      "inputs": [
+        "approved-issue",
+        "aggregate-feedback",
+        "channel-policy"
+      ],
+      "outputs": [
+        "audience-insight",
+        "distribution-plan",
+        "next-issue-pitch"
+      ],
+      "capabilityIds": [
+        "audience.read-feedback",
+        "audience.source-guide",
+        "distribution.prepare"
+      ],
+      "decisionRights": [
+        "recommend-next-issue-topics",
+        "prepare-channel-copy"
+      ],
+      "approvalRequired": [
+        "ownerAuthenticated",
+        "human-channel-approval"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "mission.plan-issue",
+      "status": "implemented",
+      "effect": "private-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/mission.mjs",
+        "export": "planIssueMission"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "source.capture-homepage",
+      "status": "implemented-gated",
+      "effect": "public-network-read",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/capture.mjs",
+        "export": "captureCompanyHomepage"
+      },
+      "requiredApprovals": [
+        "websiteResearchAuthorized"
+      ]
+    },
+    {
+      "id": "source.compile-enterprise",
+      "status": "implemented",
+      "effect": "private-data-transform",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/compile.mjs",
+        "export": "compileEnterpriseSite"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "editorial.plan-outline",
+      "status": "implemented",
+      "effect": "private-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/magazine-outline.mjs",
+        "export": "planMagazineOutline"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "editorial.draft-copy",
+      "status": "planned",
+      "effect": "model-generated-content",
+      "implementation": null,
+      "requiredApprovals": [
+        "editorialBriefApproved",
+        "evidenceBoundOutput"
+      ]
+    },
+    {
+      "id": "editorial.validate-issue",
+      "status": "implemented",
+      "effect": "local-validation",
+      "implementation": {
+        "kind": "module-export",
+        "path": "src/magazine/issue-contract.mjs",
+        "export": "assertMagazineIssue"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "editorial.compile-issue",
+      "status": "implemented",
+      "effect": "private-data-transform",
+      "implementation": {
+        "kind": "module-export",
+        "path": "src/magazine/issue-from-enterprise.mjs",
+        "export": "compileMagazineIssueFromEnterprise"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "visual.plan",
+      "status": "implemented",
+      "effect": "private-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/visual-director.mjs",
+        "export": "planEditorialVisuals"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "media.verify-rights",
+      "status": "implemented-gated",
+      "effect": "tenant-media-read",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/media-rights.mjs",
+        "export": "assertCurrentLicensedSelection"
+      },
+      "requiredApprovals": [
+        "enterpriseMediaScopeVerified"
+      ]
+    },
+    {
+      "id": "media.materialize",
+      "status": "implemented-gated",
+      "effect": "private-media-write",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/media-render.mjs",
+        "export": "materializeEditionMedia"
+      },
+      "requiredApprovals": [
+        "mediaPolicyPassed"
+      ]
+    },
+    {
+      "id": "media.review",
+      "status": "implemented-gated",
+      "effect": "media-review",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/visual-review.mjs",
+        "export": "reviewMediaAsset"
+      },
+      "requiredApprovals": [
+        "aiReviewAuthorized"
+      ]
+    },
+    {
+      "id": "production.build-private",
+      "status": "implemented",
+      "effect": "private-artifact-write",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/build.mjs",
+        "export": "writeSitePreview"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "production.verify-output",
+      "status": "implemented",
+      "effect": "local-validation",
+      "implementation": {
+        "kind": "script",
+        "path": "scripts/verify-output.mjs"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "production.visual-review",
+      "status": "implemented-gated",
+      "effect": "screenshot-review",
+      "implementation": {
+        "kind": "module-export",
+        "path": "site-builder/visual-review.mjs",
+        "export": "reviewBuiltSite"
+      },
+      "requiredApprovals": [
+        "aiReviewAuthorized"
+      ]
+    },
+    {
+      "id": "audience.read-feedback",
+      "status": "implemented-gated",
+      "effect": "aggregate-private-read",
+      "implementation": {
+        "kind": "module-export",
+        "path": "runtime/feedback.mjs",
+        "export": "handleFeedback"
+      },
+      "requiredApprovals": [
+        "ownerAuthenticated"
+      ]
+    },
+    {
+      "id": "audience.source-guide",
+      "status": "implemented",
+      "effect": "published-source-read",
+      "implementation": {
+        "kind": "module-export",
+        "path": "runtime/source-guide.mjs",
+        "export": "searchSourceRecords"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "distribution.prepare",
+      "status": "planned",
+      "effect": "external-content-draft",
+      "implementation": null,
+      "requiredApprovals": [
+        "human-channel-approval"
+      ]
+    },
+    {
+      "id": "publication.human-approval",
+      "status": "human-only",
+      "effect": "public-publication",
+      "implementation": null,
+      "requiredApprovals": [
+        "human-publication-approval"
+      ]
+    },
+    {
+      "id": "supplier.contact",
+      "status": "forbidden",
+      "effect": "external-communication",
+      "implementation": null,
+      "requiredApprovals": []
+    },
+    {
+      "id": "buyer.enquiry.submit",
+      "status": "forbidden",
+      "effect": "buyer-personal-data-and-submission",
+      "implementation": null,
+      "requiredApprovals": []
+    },
+    {
+      "id": "tenant.cross-read",
+      "status": "forbidden",
+      "effect": "cross-tenant-data-access",
+      "implementation": null,
+      "requiredApprovals": []
+    },
+    {
+      "id": "runtime.secrets.read",
+      "status": "forbidden",
+      "effect": "secret-access",
+      "implementation": null,
+      "requiredApprovals": []
+    }
+  ],
+  "missionPolicy": {
+    "missionType": "magazine-issue",
+    "executionMode": "plan-only",
+    "maxParallelTasks": 3,
+    "maxAutomaticRetries": 2,
+    "retryPolicy": "retry-failed-task-only-with-identical-frozen-input",
+    "taskStates": [
+      "planned",
+      "queued",
+      "running",
+      "blocked",
+      "review",
+      "completed",
+      "failed",
+      "cancelled"
+    ],
+    "taskPresenceMap": {
+      "planned": "waiting",
+      "queued": "waiting",
+      "running": "working",
+      "blocked": "blocked",
+      "review": "review",
+      "completed": "idle",
+      "failed": "blocked",
+      "cancelled": "idle"
+    },
+    "issueLifecycle": [
+      "brief",
+      "research",
+      "editorial",
+      "creative",
+      "production",
+      "review",
+      "private-preview",
+      "human-approval",
+      "published",
+      "distribution"
+    ],
+    "publicationGate": "human-publication-approval",
+    "publicPublicationRequires": "independent-release-gate",
+    "presenceRule": "derive-seat-presence-only-from-durable-task-state"
+  },
+  "securityPolicy": {
+    "tenantIsolation": "one-enterprise-per-mission",
+    "sourceSnapshot": "immutable-sha256-bound",
+    "secrets": "never-exposed-to-seat-tools-or-model-context",
+    "externalActions": "human-approved-only",
+    "forbiddenActions": [
+      "contact-supplier",
+      "submit-buyer-enquiry",
+      "place-order",
+      "create-quote-or-commercial-offer",
+      "read-other-tenant-data",
+      "read-runtime-secrets",
+      "publish-without-human-approval"
+    ],
+    "noMockEvidence": true,
+    "noSyntheticPresence": true
+  },
+  "sharedProductionSkill": "skills/editorial-department/buyersite-production.md",
+  "workspace": {
+    "target": "openmausbot-team-map",
+    "view": "existing-section-based-team-map",
+    "presenceFrom": "durable-mission-task-state",
+    "idleAnimations": "cosmetic-only-when-no-active-job",
+    "sectionName": "BuyerSite Editorial Department",
+    "chiefSeatId": "editor-in-chief",
+    "workAreas": [
+      {
+        "id": "editorial-room",
+        "label": "Editorial Room",
+        "seatIds": [
+          "editor-in-chief",
+          "editorial-editor"
+        ]
+      },
+      {
+        "id": "research-library",
+        "label": "Research Library",
+        "seatIds": [
+          "research-editor"
+        ]
+      },
+      {
+        "id": "creative-studio",
+        "label": "Creative Studio",
+        "seatIds": [
+          "art-director"
+        ]
+      },
+      {
+        "id": "production-floor",
+        "label": "Production Floor",
+        "seatIds": [
+          "production-editor"
+        ]
+      },
+      {
+        "id": "standards-desk",
+        "label": "Standards Desk",
+        "seatIds": [
+          "standards-editor"
+        ]
+      },
+      {
+        "id": "audience-room",
+        "label": "Audience & Growth",
+        "seatIds": [
+          "audience-editor"
+        ]
+      }
+    ],
+    "teamMapBinding": {
+      "sectionField": "BotRecord.section",
+      "chiefField": "BotRecord.chiefOfStaff",
+      "statusFields": [
+        "busy",
+        "activity"
+      ],
+      "collaborationSnapshot": "GET /api/team-map",
+      "departmentInstructions": "/api/section-context",
+      "seatBotCount": 7,
+      "importFormat": "openmaus.package/v2",
+      "skillsProvisioning": "separate-explicit-install",
+      "modelProvisioning": "workspace-default-until-human-configured",
+      "toolProvisioning": "least-privilege-explicit-admin-config"
+    },
+    "importablePackage": "editorial-department/openmaus.package.json"
+  }
+}
