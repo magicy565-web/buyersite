@@ -1,7 +1,9 @@
 // A strict, reproducible handoff from an editorial agent to the Astro renderer.
 import { createHash } from 'node:crypto';
 import { assertMagazineIssue } from './issue-contract.mjs';
-const pick = asset => ({id:asset.id,src:asset.src,kind:asset.kind,alt:asset.alt,credit:asset.credit});
+const MEDIA_FIELDS = ['id','src','kind','articleId','filename','sha256','sourceSha256','grantSha256',
+  'rightsSha256','assetId','promptSha256','generationModel','generationProvider','alt','credit','caption','reviewStatus'];
+const pick = asset => Object.fromEntries(MEDIA_FIELDS.filter(key=>asset[key]!==undefined).map(key=>[key,asset[key]]));
 export function acceptMagazineProposal({ proposal, approvedAssets }) {
   if (!Array.isArray(approvedAssets)) throw new TypeError('Approved asset inventory required');
   if (!proposal || typeof proposal!=='object') throw new TypeError('Magazine proposal required');
