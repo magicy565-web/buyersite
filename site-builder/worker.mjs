@@ -442,6 +442,9 @@ export async function createBuyerSiteWorker({
         if(mission.binding.tenantId!==enterpriseId)fail('EDITORIAL_MISSION_NOT_FOUND',404);
         const subpath=editorialMatch[2]||'';
         if(request.method==='GET'&&!subpath)return json(response,200,mission);
+        if(request.method==='GET'&&subpath==='team-map'){
+          return json(response,200,editorialRuntime.getTeamMapProjection(missionId,enterpriseId));
+        }
         const artifactMatch=subpath.match(/^artifacts\/([a-z][a-z0-9-]{1,63})$/);
         if(request.method==='GET'&&artifactMatch){
           const bytes=await editorialRuntime.readArtifactBytes(missionId,artifactMatch[1]);
