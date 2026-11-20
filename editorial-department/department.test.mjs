@@ -38,7 +38,7 @@ test('all seven seats map exactly once into the six logical work areas', () => {
   assert.throws(()=>assertDepartmentManifest(duplicate),/unknown or duplicated/);
 });
 
-test('OpenMausBot package provisions the seven seat profiles, Chief and portable Skills', () => {
+test('OpenMausBot package declares the seven seat profiles, Chief and portable Skills', () => {
   const pkg=openMausPackage.package;
   assert.equal(openMausPackage.format,'openmaus.package');
   assert.equal(openMausPackage.version,2);
