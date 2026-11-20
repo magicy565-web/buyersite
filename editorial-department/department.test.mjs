@@ -104,6 +104,10 @@ test('mission plan rejects changed tenant bindings and cyclic or altered task or
   const order = structuredClone(mission);
   order.taskOrder.reverse();
   assert.throws(() => assertMissionPlan(order), /task order/);
+
+  const blockers = structuredClone(mission);
+  blockers.blockers = [];
+  assert.throws(() => assertMissionPlan(blockers), /blocker summary/);
 });
 
 test('invalid tenant, job and source identities fail closed', () => {
