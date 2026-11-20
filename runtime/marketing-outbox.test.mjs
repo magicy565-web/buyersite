@@ -55,7 +55,7 @@ test('attributed enquiry outbox sends HMAC-signed minimal payload and marks deli
   const envWithConnection = { ...env, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/hooks/marketing/events/tenant-a', MAUSBOT_MARKETING_WEBHOOK_SECRET: secret };
   let calls = 0;
   const result = await dispatchMarketingOutbox(envWithConnection, config, {
-    now: Date.parse('2026-11-20T02:01:00.000Z'),
+    now: Date.now() + 1_000,
     fetchFn: async (url, init) => {
       calls++;
       assert.equal(url, envWithConnection.MAUSBOT_MARKETING_WEBHOOK_URL);
@@ -79,7 +79,7 @@ test('attributed enquiry outbox sends HMAC-signed minimal payload and marks deli
   assert.equal((await marketingOutboxStatus(envWithConnection, config)).delivered, 1);
 });
 
-test('transient failure is retried with backoff and an expired lease is recoverable', async (t) => {
+test('transient failure is retried with backoff', async (t) => {
   const { sqlite, env } = setup(t);
   await enqueueMarketingEvent(env, config, event());
   const connected = { ...env, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/marketing/events/tenant-a', MAUSBOT_MARKETING_WEBHOOK_SECRET: secret };
