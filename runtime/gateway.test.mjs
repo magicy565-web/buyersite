@@ -36,6 +36,7 @@ async function database(t) {
   let sqlite = new DatabaseSync(file);
   sqlite.exec(await readFile(new URL('../drizzle/0000_buyer_enquiries.sql', import.meta.url), 'utf8'));
   sqlite.exec(await readFile(new URL('../drizzle/0002_enquiry_context.sql', import.meta.url), 'utf8'));
+  sqlite.exec(await readFile(new URL('../drizzle/0003_marketing_outbox.sql', import.meta.url), 'utf8').then(sql => sql.replaceAll('--> statement-breakpoint', '')));
   t.after(async () => { sqlite.close(); await rm(directory, { recursive: true, force: true }); });
   return {
     get sqlite() { return sqlite; },
@@ -321,4 +322,43 @@ test('catalog question reordering does not change the canonical request digest o
   assert.equal(retry.status, 200);
   assert.equal((await retry.json()).receipt_id, id);
   assert.deepEqual(JSON.parse(db.sqlite.prepare('SELECT context_json FROM buyer_enquiries').get().context_json).questions, questions);
+});
+
+test('a persisted consented enquiry emits one minimal attributed event and retries do not duplicate it', async (t) => {
+  const db = await database(t);
+  const gateway = createGateway(config);
+  const campaign = 'cmp_12345678-1234-4234-8234-123456789abc';
+  const key = crypto.randomUUID();
+  const attributed = {
+    ...body,
+    landing_page_path: '/materials/wool',
+    attribution_opt_out: false,
+    attribution: { source: 'linkedin', medium: 'social', campaign },
+  };
+  const first = await gateway.fetch(request('/api/buyer/enquiries', attributed, { key }), { DB: db.binding });
+  assert.equal(first.status, 201);
+  const retry = await gateway.fetch(request('/api/buyer/enquiries', attributed, { key }), { DB: db.binding });
+  assert.equal(retry.status, 200);
+  const rows = db.sqlite.prepare('SELECT event_id, campaign_id, event_type, payload_json FROM buyer_marketing_outbox').all();
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].campaign_id, campaign);
+  assert.equal(rows[0].event_type, 'inquiry_submitted');
+  const payload = JSON.parse(rows[0].payload_json);
+  assert.match(payload.eventId, /:inquiry:/);
+  assert.equal(payload.inquiryId, (await first.json()).receipt_id);
+  assert.equal('email' in payload, false);
+  assert.equal('material' in payload, false);
+  assert.equal('application' in payload, false);
+});
+
+test('DNT/GPC enquiries remain functional but do not enter the marketing attribution outbox', async (t) => {
+  const db = await database(t);
+  const gateway = createGateway(config);
+  const attributed = {
+    ...body, landing_page_path: '/materials/wool', attribution_opt_out: false,
+    attribution: { source: 'linkedin', medium: 'social', campaign: 'cmp_12345678-1234-4234-8234-123456789abc' },
+  };
+  const response = await gateway.fetch(request('/api/buyer/enquiries', attributed, { headers: { DNT: '1' } }), { DB: db.binding });
+  assert.equal(response.status, 201);
+  assert.equal(db.sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_marketing_outbox').get().count, 0);
 });
