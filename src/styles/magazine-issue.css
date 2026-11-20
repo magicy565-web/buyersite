@@ -24,3 +24,10 @@
   .mi-evidence-item{grid-template-columns:25px minmax(0,1fr);gap:8px}
   .mi-evidence-item h3{font-size:21px}
 }
+
+.mi-gallery-images .mi-gallery-item:nth-child(2){transform:translateY(35px)}
+.mi-gallery-images .mi-gallery-item:nth-child(3){transform:translateY(-17px)}
+@media(max-width:640px){
+  .mi-gallery-images .mi-gallery-item:nth-child(2),
+  .mi-gallery-images .mi-gallery-item:nth-child(3){transform:none}
+}
