@@ -30,7 +30,7 @@ The issue route can now read \`magazine-issue.json\` from the existing \`BUYERSI
 
 The issue is rendered as a noindex private preview. The existing full-page visual reviewer now adds this route to desktop/mobile screenshot coverage and binds the exact issue JSON hash into the review source fingerprint. The Playwright route sweep also exercises the issue's local sourcing draft. The sourcing end page still creates an unsent local draft; it does not submit an RFQ or contact a supplier.
 
-## Required integration in the stacked PR #9 build
+## Integration in the stacked PR #9 build
 
 After \`materializeEditionMedia\` writes \`media-report.json\`, the build must:
 
