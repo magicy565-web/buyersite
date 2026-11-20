@@ -6,7 +6,7 @@ const reply = (status) => new Response(null, { status, headers: { 'Cache-Control
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function marketingType(name, path, landingPath) {
-  if (name === 'page_view' || name === 'article_opened') return path === landingPath ? 'landing_view' : 'page_view';
+  if (name === 'page_view') return path === landingPath ? 'landing_view' : 'page_view';
   if (name === 'enquiry_started' || name === 'assistant_opened') return 'cta_click';
   // enquiry_submitted is recorded from the server only after D1 accepts the enquiry.
   return null;
