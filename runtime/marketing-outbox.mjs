@@ -1,19 +1,19 @@
-const CAMPAIGN_ID = /^cmp_[0-9a-f-]{36}$/i;
+const CAMPAIGN_ID = /^cmp_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EVENT_TYPES = new Set(['page_view', 'landing_view', 'cta_click', 'inquiry_submitted', 'qualified_inquiry', 'inquiry_disqualified', 'sample_requested', 'order_created']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const encoder = new TextEncoder();
 
-function boundedLabel(value, max) {
+function boundedLabel(value, max, allowCampaignId = false) {
   if (typeof value !== 'string') return null;
   const text = value.trim();
-  return text && text.length <= max && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(text) && !/\d{6,}/.test(text) ? text : null;
+  return text && text.length <= max && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(text) && (allowCampaignId && CAMPAIGN_ID.test(text) || !/\d{6,}/.test(text)) ? text : null;
 }
 
 function campaignLabels(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   const source = boundedLabel(value.source, 32);
   const medium = boundedLabel(value.medium, 32);
-  const campaign = boundedLabel(value.campaign, 64);
+  const campaign = boundedLabel(value.campaign, 64, true);
   return { ...(source ? { source } : {}), ...(medium ? { medium } : {}), ...(campaign ? { campaign } : {}) };
 }
 
