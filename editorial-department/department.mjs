@@ -64,7 +64,7 @@ export function assertDepartmentManifest(value = manifest) {
       workspace.teamMapBinding?.collaborationSnapshot!=='GET /api/team-map' ||
       workspace.teamMapBinding?.departmentInstructions!=='/api/section-context' ||
       workspace.teamMapBinding?.seatBotCount!==value.seats.length ||
-      workspace.teamMapBinding?.importFormat!=='openmaus.team/v2' ||
+      workspace.teamMapBinding?.importFormat!=='openmaus.package/v2' ||
       workspace.teamMapBinding?.skillsProvisioning!=='separate-explicit-install' ||
       !Array.isArray(workspace.teamMapBinding.statusFields) ||
       !workspace.teamMapBinding.statusFields.includes('busy') ||
