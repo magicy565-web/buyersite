@@ -96,7 +96,8 @@ test('mission plan is deterministic, tenant-bound and explicitly non-dispatchabl
   assert.equal(first.publication.state, 'blocked');
   assert.equal(first.tasks.find((task) => task.id === 'capture-source').readiness, 'approval-required');
   assert.equal(first.tasks.find((task) => task.id === 'compile-enterprise').readiness, 'dependency-blocked');
-  assert.equal(first.tasks.find((task) => task.id === 'draft-editorial-copy').capabilityReadiness, 'not-implemented');
+  assert.equal(first.tasks.find((task) => task.id === 'draft-editorial-copy').capabilityReadiness, 'approval-required');
+  assert.equal(first.tasks.find((task) => task.id === 'human-brief-approval').capabilityReadiness, 'human-review');
   assert.equal(first.tasks.find((task) => task.id === 'human-release-approval').capabilityReadiness, 'human-review');
   assert.ok(first.blockers.some((blocker) => blocker.taskId === 'draft-editorial-copy'));
   assertMissionPlan(first);
@@ -109,9 +110,10 @@ test('zero selected products produces an explicit no-gallery task, never product
   assert.equal(mission.binding.selectedProductCount, 0);
 });
 
-test('selected products create a bounded product-story task', () => {
+test('selected products stay inside the single evidence-bound editorial copy task', () => {
   const mission = planIssueMission(input({ selectedProductCount: 12 }));
-  assert.ok(mission.tasks.some((task) => task.id === 'draft-product-stories'));
+  assert.ok(mission.tasks.some((task) => task.id === 'draft-editorial-copy'));
+  assert.ok(!mission.tasks.some((task) => task.id === 'draft-product-stories'));
   assert.ok(!mission.tasks.some((task) => task.id === 'skip-product-gallery'));
   assert.throws(() => planIssueMission(input({ selectedProductCount: 13 })), /invalid tenant\/job\/source\/issue binding/);
 });
