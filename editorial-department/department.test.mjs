@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import manifest from './department.json' with { type: 'json' };
+import openMausPackage from './openmaus.package.json' with { type: 'json' };
 import { assertDepartmentManifest, authorizeSeatCapability, getCapability, getSeat } from './department.mjs';
 import { assertMissionPlan, planIssueMission } from './mission.mjs';
 
@@ -35,6 +36,27 @@ test('all seven seats map exactly once into the six logical work areas', () => {
   const duplicate=structuredClone(manifest);
   duplicate.workspace.workAreas[1].seatIds.push('editor-in-chief');
   assert.throws(()=>assertDepartmentManifest(duplicate),/unknown or duplicated/);
+});
+
+test('OpenMausBot package provisions the seven seat profiles, Chief and portable Skills', () => {
+  const pkg=openMausPackage.package;
+  assert.equal(openMausPackage.format,'openmaus.package');
+  assert.equal(openMausPackage.version,2);
+  assert.equal(pkg.team.name,manifest.workspace.sectionName);
+  assert.equal(pkg.team.leader,manifest.workspace.chiefSeatId);
+  assert.equal(pkg.agents.length,7);
+  assert.equal(pkg.skills.entries.length,9);
+  assert.equal(pkg.connections,undefined);
+  assert.equal(pkg.routines,undefined);
+  for(const seat of manifest.seats){
+    const agent=pkg.agents.find((item)=>item.key===seat.id);
+    const roleSkill=seat.skillRef.split('/').at(-1).replace(/\.md$/,'');
+    assert.ok(agent);
+    assert.ok(agent.skills.includes('editorial-department'));
+    assert.ok(agent.skills.includes('buyer-magazine-site'));
+    assert.ok(agent.skills.includes(roleSkill));
+    assert.deepEqual(agent.tools.off,['meetings','data','pages','images','email']);
+  }
 });
 
 test('manifest rejects duplicate seats, missing capability references and executable forbidden tools', () => {
