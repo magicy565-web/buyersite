@@ -27,6 +27,7 @@ const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const JOB_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const ENTERPRISE_ID = /^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,199}$/;
 const SHA256 = /^[a-f0-9]{64}$/;
+const ISSUE_ID = /^[a-z0-9][a-z0-9-]{1,63}$/;
 const TOKEN = /^[A-Za-z0-9_-]{40,100}$/;
 const MIME = new Map([
   ['.css', 'text/css; charset=utf-8'],
@@ -390,9 +391,84 @@ export async function createBuyerSiteWorker({
 
   const handler = async (request, response) => {
     try {
-      const enterpriseId = authorize(request);
       const url = new URL(request.url || '/', 'http://127.0.0.1');
       const path = url.pathname;
+      if(path.startsWith('/mcp/')){
+        if(!editorialMcp) fail('EDITORIAL_MCP_NOT_CONFIGURED',503);
+        if(await editorialMcp.handle(request,response,url)) return;
+      }
+      const enterpriseId = authorize(request);
+
+      if(request.method==='POST'&&path==='/editorial-missions'){
+        if(!editorialMcp||!dispatcher)fail('EDITORIAL_RUNTIME_NOT_CONFIGURED',503);
+        const body=await bodyJson(request);
+        const payload={job:body?.job,sourceBytesBase64:body?.sourceBytesBase64};
+        const {job,sourceBytes}=validateRequest(payload,enterpriseId);
+        const snapshot=JSON.parse(sourceBytes.toString('utf8'));
+        if(job.input?.allowResearch!==true||snapshot.collectionAuthorized!==true||
+           snapshot.enterprise?.id!==enterpriseId||!Array.isArray(job.input?.productIds)||
+           job.input.productIds.length>12||new Set(job.input.productIds).size!==job.input.productIds.length||
+           typeof job.input?.url!=='string'||snapshot.website!==job.input.url) {
+          fail('EDITORIAL_SOURCE_AUTHORIZATION_REQUIRED',403);
+        }
+        const issueId=body.issueId===undefined?'issue-'+job.id.slice(0,12):body.issueId;
+        if(!ISSUE_ID.test(issueId||''))fail('EDITORIAL_ISSUE_ID_INVALID',400);
+        const plan=planIssueMission({
+          tenantId:enterpriseId,jobId:job.id,sourceHash:job.sourceHash,
+          issueId,selectedProductCount:job.input.productIds.length,
+        });
+        const approvals=['websiteResearchAuthorized'];
+        if(job.input.allowAiReview===true&&snapshot.aiReviewAuthorized===true)approvals.push('aiReviewAuthorized');
+        const company=snapshot.enterprise.company;
+        const selected=new Set(job.input.productIds);
+        const sourceBinding={
+          jobId:job.id,enterpriseId,sourceSha256:job.sourceHash,
+          companyRevision:company.revision,
+          productRevisions:(snapshot.products||[]).filter(product=>selected.has(product.id))
+            .map(({id,revision})=>({id,revision})),
+          websiteUrl:job.input.url,
+        };
+        const mission=await editorialRuntime.createMission({plan,job,sourceBytes,approvals,sourceBinding});
+        let dispatch;
+        try{dispatch=await dispatcher.dispatch(plan.id);}
+        catch(error){dispatch={missionId:plan.id,dispatched:[],pending:[{code:error.code||'OPENMAUSBOT_DISPATCH_FAILED'}]};}
+        return json(response,202,{mission,dispatch});
+      }
+
+      const editorialMatch=path.match(/^\/editorial-missions\/(mission-[a-f0-9]{24})(?:\/(.*))?$/);
+      if(editorialMatch){
+        const missionId=editorialMatch[1];
+        const mission=editorialRuntime.getMission(missionId);
+        if(mission.binding.tenantId!==enterpriseId)fail('EDITORIAL_MISSION_NOT_FOUND',404);
+        const subpath=editorialMatch[2]||'';
+        if(request.method==='GET'&&!subpath)return json(response,200,mission);
+        const artifactMatch=subpath.match(/^artifacts\/([a-z][a-z0-9-]{1,63})$/);
+        if(request.method==='GET'&&artifactMatch){
+          const bytes=await editorialRuntime.readArtifactBytes(missionId,artifactMatch[1]);
+          return json(response,200,JSON.parse(bytes.toString('utf8')));
+        }
+        if(request.method==='POST'&&subpath==='dispatch'){
+          if(!dispatcher)fail('OPENMAUSBOT_DISPATCH_NOT_CONFIGURED',503);
+          return json(response,200,await dispatcher.dispatch(missionId));
+        }
+        if(request.method==='POST'&&subpath==='approvals'){
+          const body=await bodyJson(request);
+          const approved=await editorialRuntime.approveHumanTask({
+            missionId,taskId:body.taskId,approvedBy:body.approvedBy,
+            approvedArtifactSha256:body.approvedArtifactSha256,
+          });
+          const dispatch=dispatcher?await dispatcher.dispatch(missionId):null;
+          return json(response,200,{mission:approved,dispatch});
+        }
+        const retryMatch=subpath.match(/^tasks\/([a-z][a-z0-9-]{1,63})\/retry$/);
+        if(request.method==='POST'&&retryMatch){
+          const updated=await editorialRuntime.retryTask({missionId,taskId:retryMatch[1]});
+          const dispatch=dispatcher?await dispatcher.dispatch(missionId):null;
+          return json(response,200,{mission:updated,dispatch});
+        }
+        fail('EDITORIAL_MISSION_ROUTE_NOT_FOUND',404);
+      }
+
       if (request.method === 'POST' && path === '/site-jobs') {
         const { job, sourceBytes } = validateRequest(await bodyJson(request), enterpriseId);
         const existing = records.get(job.id);
