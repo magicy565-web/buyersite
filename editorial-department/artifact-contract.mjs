@@ -119,7 +119,7 @@ export function applyEditorialDraft(compiled,draft){
 export function assertArtDirection(direction,compiled){
   assertCompiledEnterprise(compiled);
   if(!object(direction)||direction.schemaVersion!=='art-direction/v1'||
-     !text(direction.visualDNA,1200)||!Array.isArray(direction.spreads)||
+     !text(direction.visualDNA,1200)||/https?:\/\/|data:|file:|<\/?(?:script|svg)|\b(?:actual|real) supplier product\b|\bphotograph of (?:a )?(?:product|factory)\b|\bfactory interior\b|\bcertification seal\b/i.test(direction.visualDNA)||!Array.isArray(direction.spreads)||
      direction.spreads.length<3||direction.spreads.length>14)fail('art direction must provide a bounded visual DNA and spread plan');
   const sourceIds=new Set(compiled.articles.map(article=>article.slug));
   const seen=new Set();
