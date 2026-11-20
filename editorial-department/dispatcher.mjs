@@ -1,13 +1,21 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import manifest from './department.json' with { type: 'json' };
+import { assertSeatBindings } from './seat-bindings.mjs';
 
 const fail=(code,status=503)=>{const error=new Error(code);error.code=code;error.status=status;throw error;};
 const safe=(value,max=200)=>typeof value==='string'?value.slice(0,max):'';
 const titleFor=(task,missionId)=>'BuyerSite · '+task.id+' · '+missionId.slice(-8);
 
-function seatBotFor(seatId,bots){
+function seatBotFor(seatId,bots,bindings){
   const seat=manifest.seats.find(item=>item.id===seatId);
   if(!seat)fail('EDITORIAL_SEAT_UNKNOWN',404);
+  const bound=bindings?.seats?.[seatId];
+  if(bound){
+    const bot=bots.find(item=>item?.id===bound.botId);
+    if(!bot||bot.hidden||bot.section!==manifest.workspace.sectionName||bot.name!==seat.title||
+       (seatId==='editor-in-chief'&&!bot.chiefOfStaff))fail('OPENMAUSBOT_SEAT_BINDING_MISMATCH',409);
+    return bot;
+  }
   const matches=bots.filter(bot=>bot&&bot.name===seat.title&&
     bot.section===manifest.workspace.sectionName&&!bot.hidden);
   if(matches.length!==1)fail(matches.length?'OPENMAUSBOT_SEAT_AMBIGUOUS':'OPENMAUSBOT_SEAT_NOT_FOUND',409);
@@ -66,11 +74,13 @@ export function buildSeatTaskPrompt({missionId,task,context,taskAccessToken}={})
   return prompt;
 }
 
-export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date.now()}={}){
+export function createEditorialDispatcher({runtime,openMausClient,bindings=null,clock=()=>Date.now()}={}){
   if(!runtime||!openMausClient||typeof openMausClient.listBots!=='function'||
      typeof openMausClient.createTask!=='function'||typeof openMausClient.sendGoal!=='function') {
     fail('EDITORIAL_DISPATCHER_DEPENDENCIES_REQUIRED',500);
   }
+  const seatBindings=bindings?assertSeatBindings(bindings):null;
+  if(seatBindings&&(seatBindings.section!==manifest.workspace.sectionName||seatBindings.chiefSeatId!==manifest.workspace.chiefSeatId))fail('EDITORIAL_BINDING_MANIFEST_MISMATCH',409);
   let tail=Promise.resolve();
   const dispatch=missionId=>{
     const run=tail.then(()=>dispatchNow(missionId),()=>dispatchNow(missionId));
@@ -78,8 +88,10 @@ export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date
     return run;
   };
   async function dispatchNow(missionId){
-    const queued=runtime.getQueuedTasks(missionId);
-    if(!queued.length)return {missionId,dispatched:[],pending:[]};
+    const allQueued=runtime.getQueuedTasks(missionId);
+    const queued=allQueued.filter(entry=>entry.task.executor==='openmaus-seat');
+    const localPending=allQueued.filter(entry=>entry.task.executor==='buyersite-local').map(entry=>entry.task.id);
+    if(!queued.length)return {missionId,dispatched:[],pending:[],localPending};
     const bots=await openMausClient.listBots();
     if(!Array.isArray(bots))fail('OPENMAUSBOT_BOT_LIST_INVALID',502);
     const dispatched=[],pending=[];
@@ -87,7 +99,7 @@ export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date
     for(const entry of queued.slice(0,limit)){
       const task=entry.task;
       try{
-        const bot=seatBotFor(task.seatId,bots);
+        const bot=seatBotFor(task.seatId,bots,seatBindings);
         let dispatch=entry.state.dispatch;
         if(dispatch&&dispatch.botId!==bot.id)fail('OPENMAUSBOT_SEAT_BINDING_CHANGED',409);
         if(!dispatch){
@@ -112,7 +124,7 @@ export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date
         pending.push({taskId:task.id,code:error.code||'DISPATCH_FAILED'});
       }
     }
-    return {missionId,dispatched,pending,remaining:Math.max(0,queued.length-dispatched.length-pending.length)};
+    return {missionId,dispatched,pending,localPending,remaining:Math.max(0,queued.length-dispatched.length-pending.length)};
   }
   return Object.freeze({dispatch});
 }
