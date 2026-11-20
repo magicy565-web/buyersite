@@ -143,7 +143,8 @@ test('stdio MCP tool schemas require and forward the per-task access token',asyn
   for(const name of ['buyersite_mission_get','buyersite_task_claim','buyersite_task_complete','buyersite_task_fail','buyersite_artifact_get']){
     const start=source.indexOf("{name:'"+name+"'");
     assert.notEqual(start,-1,'missing tool '+name);
-    const end=source.indexOf('\n  },',start);
+    const nextTool=source.indexOf('\n  {name:',start+1);
+    const end=nextTool===-1?source.indexOf('\n];',start):nextTool;
     const definition=source.slice(start,end);
     assert.match(definition,/taskAccessToken/,'tool schema must require task token: '+name);
   }
