@@ -50,7 +50,7 @@ const hiddenGroups=['meetings','data','pages','images','email'];
 for(const seat of department.seats) {
   const agent=packageAgents.get(seat.id);
   const roleSkill=seat.skillRef.split('/').at(-1).replace(/\.md$/,'');
-  if(!agent || !agent.skills.includes('editorial-department') ||
+  if(!agent || agent.approval!=='ask' || !agent.skills.includes('editorial-department') ||
      !agent.skills.includes('buyersite-production') || !agent.skills.includes(roleSkill) ||
      !Array.isArray(agent.tools?.off) || hiddenGroups.some(group=>!agent.tools.off.includes(group))) {
     throw new Error('EDITORIAL_DEPARTMENT: OpenMausBot agent profile does not match seat '+seat.id);
