@@ -21,6 +21,10 @@ export function acceptMagazineProposal({ proposal, approvedAssets, approvedSourc
   if(candidate.publicationStatus==='private-review'){
     if(!approvedSourceIssue) throw new TypeError('Trusted source issue binding required');
     assertMagazineIssue(approvedSourceIssue);
+    const sourceAssets=new Map((approvedSourceIssue.assets||[]).map(asset=>[asset.id,JSON.stringify(pick(asset))]));
+    if(sourceAssets.size!==registry.size || [...registry].some(([id,descriptor])=>sourceAssets.get(id)!==descriptor)) {
+      throw new TypeError('Approved media registry differs from the trusted source issue');
+    }
     const immutable=['id','brand','publicationStatus','sourceFingerprint','outlineSha256','mediaPlanSha256','mediaReportSha256'];
     for(const key of immutable){
       if(JSON.stringify(candidate[key])!==JSON.stringify(approvedSourceIssue[key])) {
