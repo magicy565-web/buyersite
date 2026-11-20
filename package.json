@@ -31,7 +31,7 @@
     "test:runtime": "node --test runtime/*.test.mjs",
     "test:knowledge": "node --test scripts/public-knowledge.test.mjs",
     "check:release": "node scripts/check-release.mjs",
-    "test:department": "node --test editorial-department/*.test.mjs && node editorial-department/check.mjs",
+    "test:department": "node --test editorial-department/*.test.mjs",
     "check:department": "node editorial-department/check.mjs"
   },
   "dependencies": {
