@@ -59,8 +59,11 @@ test('mission plan is deterministic, tenant-bound and explicitly non-dispatchabl
   assert.equal(first.execution.dispatchable, false);
   assert.equal(first.execution.mode, 'plan-only');
   assert.equal(first.publication.state, 'blocked');
-  assert.equal(first.tasks.find((task) => task.id === 'draft-editorial-copy').readiness, 'not-implemented');
-  assert.equal(first.tasks.find((task) => task.id === 'human-release-approval').readiness, 'human-review');
+  assert.equal(first.tasks.find((task) => task.id === 'capture-source').readiness, 'approval-required');
+  assert.equal(first.tasks.find((task) => task.id === 'compile-enterprise').readiness, 'dependency-blocked');
+  assert.equal(first.tasks.find((task) => task.id === 'draft-editorial-copy').capabilityReadiness, 'not-implemented');
+  assert.equal(first.tasks.find((task) => task.id === 'human-release-approval').capabilityReadiness, 'human-review');
+  assert.ok(first.blockers.some((blocker) => blocker.taskId === 'draft-editorial-copy'));
   assertMissionPlan(first);
 });
 
@@ -82,7 +85,7 @@ test('mission plan rejects changed tenant bindings and cyclic or altered task or
   const mission = planIssueMission(input());
   const wrongBinding = structuredClone(mission);
   wrongBinding.binding.sourceSha256 = 'b'.repeat(64);
-  assert.doesNotThrow(() => assertMissionPlan(wrongBinding)); // a new source hash is a new immutable mission binding
+  assert.throws(() => assertMissionPlan(wrongBinding), /immutable source binding/);
 
   const cycle = structuredClone(mission);
   cycle.tasks[0].dependsOn = ['build-private-preview'];
