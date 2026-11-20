@@ -73,7 +73,7 @@ test('attributed enquiry outbox sends HMAC-signed minimal payload and marks deli
       return Response.json({ accepted: true, duplicate: false }, { status: 202 });
     },
   });
-  assert.deepEqual(result, { status: 'connected', claimed: 1, delivered: 1, retried: 0, dead: 0 });
+  assert.deepEqual(result, { status: 'configured', claimed: 1, delivered: 1, retried: 0, dead: 0 });
   assert.equal(calls, 1);
   assert.equal(sqlite.prepare('SELECT status FROM buyer_marketing_outbox').get().status, 'delivered');
   assert.equal((await marketingOutboxStatus(envWithConnection, config)).delivered, 1);
@@ -87,7 +87,7 @@ test('transient failure is retried with backoff and an expired lease is recovera
   const failed = await dispatchMarketingOutbox(connected, config, { now: firstAt, fetchFn: async () => new Response('down', { status: 503 }) });
   assert.equal(failed.retried, 1);
   const pending = sqlite.prepare('SELECT status, attempts, next_attempt_at FROM buyer_marketing_outbox').get();
-  assert.equal(pending.status, 'retry');
+  assert.equal(pending.status, 'pending');
   assert.equal(pending.attempts, 1);
   const retried = await dispatchMarketingOutbox(connected, config, { now: pending.next_attempt_at + 1, fetchFn: async () => Response.json({ accepted: true }, { status: 202 }) });
   assert.equal(retried.delivered, 1);
@@ -97,6 +97,6 @@ test('transient failure is retried with backoff and an expired lease is recovera
 test('invalid or non-canonical Campaign ids are not attributed and cannot trigger an outbound event', async (t) => {
   const { sqlite, env } = setup(t);
   assert.equal(await enqueueMarketingEvent(env, config, event({ campaignId: 'random-campaign', utm: { source: 'linkedin', campaign: 'random-campaign' } })), false);
-  assert.equal(await enqueueMarketingEvent(env, config, event({ utm: { source: 'linkedin', campaign: 'cmp_12345678-1234-4234-8234-123456789abc', private: 'x' } })), true);
+  assert.equal(await enqueueMarketingEvent(env, config, event({ utm: { source: 'linkedin', medium: 'social', campaign: campaignId, private: 'x' } })), false);
   assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_marketing_outbox').get().count, 0);
 });
