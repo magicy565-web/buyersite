@@ -112,8 +112,12 @@ test('source media bytes must match their SHA-256 before rendering',async()=>{
 test('agent may reorder editorial copy but cannot replace a source media descriptor',()=>{
   const issue=compileMagazineIssueFromEnterprise(fixture());
   const registry=structuredClone(issue.assets);
-  assert.equal(acceptMagazineProposal({proposal:issue,approvedAssets:registry}).spreads.length,7);
+  assert.equal(acceptMagazineProposal({proposal:issue,approvedAssets:registry,approvedSourceIssue:issue}).spreads.length,7);
   const changed=structuredClone(issue);
   changed.assets[0].grantSha256=sha('9');
-  assert.throws(()=>acceptMagazineProposal({proposal:changed,approvedAssets:registry}),/provenance descriptor/);
+  assert.throws(()=>acceptMagazineProposal({proposal:changed,approvedAssets:registry,approvedSourceIssue:issue}),/provenance descriptor/);
+  const changedEvidence=structuredClone(issue);changedEvidence.evidence[0].value='Invented company claim';
+  assert.throws(()=>acceptMagazineProposal({proposal:changedEvidence,approvedAssets:registry,approvedSourceIssue:issue}),/cannot rewrite source evidence/);
+  const changedBinding=structuredClone(issue);changedBinding.sourceFingerprint=sha('8');
+  assert.throws(()=>acceptMagazineProposal({proposal:changedBinding,approvedAssets:registry,approvedSourceIssue:issue}),/Source issue binding changed/);
 });
