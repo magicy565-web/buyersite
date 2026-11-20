@@ -1,31 +1,52 @@
-# Next phase after PR #8: source-bound magazine outline
+# Magazine production path after PR #8
 
-This stacked PR introduces the **first production-input contract**, not another website or a free-form HTML generator.
+This stacked change connects the enterprise source compiler to the Astro magazine issue renderer. It does not add another CMS, website system or public publishing API.
 
-## Actual data path
-OpenMausBot Studio frozen company/product source → existing \`createSiteFromStudio\` → \`compileEnterpriseSite\` → \`planMagazineOutline\` → private \`magazine-outline.json\` in the existing edition pack.
+## Current private build path
 
-The outline is deterministic, evidence-ID bound, and deliberately lacks:
-- invented interviews, supplier quotes, certifications, MOQ or delivery claims;
-- unapproved product, factory or process images;
-- permission to publish or send a supplier enquiry.
+OpenMausBot Studio frozen company/product source
+→ existing \`createSiteFromStudio\`
+→ \`compileEnterpriseSite\`
+→ \`planMagazineOutline\`
+→ existing tenant-scoped media planner and renderer
+→ \`compileMagazineIssueFromEnterprise\`
+→ \`assertIssueMediaFiles\`
+→ private \`magazine-issue.json\`
+→ Astro \`/issues/<issue-id>/\`
+→ desktop/mobile visual review and Playwright route sweep.
 
-If the enterprise has no selected product records, no product gallery is proposed. No 'craft' section is proposed unless a future editor can cite actual craft-process source material. An agent may propose editorial narrative and a visual plan after this stage, but its result must pass the existing citation/media-review policies and an IssueSpec schema before Astro render.
+The generated issue binds the exact company-source fingerprint, outline hash, media-plan hash, media-report hash, article IDs and evidence IDs. Image descriptors are bound to exact normalized image bytes. Licensed photos retain source/grant/rights hashes; AI-generated images retain prompt/provider/model provenance and concept disclosure; abstract fallbacks remain visibly conceptual.
 
-## Next engineering gates
-1. Map source-backed outline sections to PR #8 IssueSpec with per-spread evidence and image rights receipts.
-2. Bind media through the existing tenant-specific media registry and actual \`media-report.json\`, **never** through a model-supplied image URL.
-3. Render issue-scoped Astro routes from \`BUYERSITE_BUILD_ROOT\`; allow the static default magazine to remain unchanged.
-4. Reuse existing BuyerBrief, cited source guide, EnquiryForm and D1 receipts for contextual zero-form sourcing; never treat a local draft as a submitted RFQ.
-5. Capture Playwright desktop and 360/390px screenshots. The visual reviewer assesses both spread quality and overall editorial rhythm. Block public release until exact-source checks pass.
+The full magazine route is included in the existing screenshot reviewer. Its exact issue hash is included in the review source fingerprint, so changing the issue after review invalidates that review. The Playwright route sweep exercises the issue's local sourcing draft as well as every standard route.
+
+## Editorial rules
+
+- The cover, contents, source story, product gallery (only when selected product records exist), source notebook, buyer questions and sourcing close are assembled from existing records.
+- No craft/process story is invented without source material.
+- Source facts and source article records are immutable across the agent editing handoff. The agent may propose editorial composition and wording, but cannot rewrite evidence, tenant identity, source fingerprints or media provenance.
+- Every private spread declares its evidence-reference list. This does not itself prove every generated sentence is true; an editorial fact review is still a required gate.
+- The issue remains private and noindex. The sourcing page prepares a local unsent brief; it does not submit an RFQ or contact a supplier.
+
+## Next gates
+
+1. Run the full Node 24 test suite, Astro check/build/output verification and Playwright on a real checkout.
+2. Inspect the complete generated issue at 1440px, 390px and 360px, including source notebook and sourcing end.
+3. Run the existing AI image and page review with actual authorized configuration; fixture assessments cannot pass release.
+4. Bind the real OpenMausBot Studio job to this worker and persist the issue revision, source binding and review receipts on the same job.
+5. Only then review a real enterprise's content and image rights for public publication.
 
 ## Reproduction
+
 \`\`\`sh
+node --test src/magazine/issue-contract.test.mjs
+node --test src/magazine/compose-issue.test.mjs
+node --test src/magazine/issue-from-enterprise.test.mjs
 node --test site-builder/magazine-outline.test.mjs
 pnpm test:site-builder
 pnpm check
 pnpm build
 pnpm verify:output
+pnpm test:browser
 \`\`\`
 
-The added output is a private JSON planning artifact. It is not a publicly accessible magazine, nor an OpenMausBot production integration. Hosted CI failure before runner allocation is not evidence of a passing or failing test.
+A GitHub Actions failure before runner allocation (runner_id=0) is not a test result. Do not claim complete acceptance until the commands above execute in a real checkout.
