@@ -40,7 +40,52 @@ test('injected captures cover every page and preserve full-height mobile readabi
     await mkdir(join(root, 'articles'));
     const images = articles.map(({ slug }) => ({ page_id: slug, kind: 'ai-generated', filename: 'hero-' + slug + '.png', sha256: mediaHash(bytes), prompt: 'Synthetic test prompt', prompt_sha256: mediaHash('Synthetic test prompt'), generation_model: 'synthetic-fixture', generation_provider: 'synthetic-fixture', alt: 'Synthetic image', caption: 'Conceptual artwork. Not a depiction of any supplier product.', credit: 'AI-generated synthetic fixture' }));
     for (const image of images) await writeFile(join(root, 'articles', image.filename), bytes);
-    await writeFile(join(root, 'media-report.json'), JSON.stringify({ images, plan_sha256: plan.plan_sha256 }));
+    const mediaReport = { images, plan_sha256: plan.plan_sha256 };
+    await writeFile(join(root, 'media-report.json'), JSON.stringify(mediaReport));
+    const sourceFingerprint = 'f'.repeat(64);
+    const outlineBody = { schema_version: '1.0.0', kind: 'source-bound-magazine-outline',
+      publication_status: 'private-review', source_fingerprint: sourceFingerprint,
+      site_slug: 'synthetic-magazine', brand: 'Synthetic Magazine', design_direction: 'editorial',
+      chapters: [], media_policy: 'bind-after-rights-check', approval_required: [] };
+    const outlineSha256 = mediaHash(JSON.stringify(outlineBody));
+    await writeFile(join(root, 'receipt.json'), JSON.stringify({ fingerprint: sourceFingerprint, enterprise_id: 'synthetic-enterprise' }));
+    await writeFile(join(root, 'magazine-outline.json'), JSON.stringify({ ...outlineBody, outline_sha256: outlineSha256 }));
+    const sourceArticles = articles.map(({slug}) => ({
+      id: slug, pageType: slug === 'guide' ? 'buyer-guide' : slug === 'supplier' ? 'supplier-profile' : 'product-editorial',
+      title: slug, deck: 'Synthetic source-backed article.', evidenceRefs: slug === 'supplier' ? ['website-fact'] : [],
+    }));
+    const issue = {
+      schemaVersion: '1.0.0', id: 'synthetic-issue', brand: 'Synthetic Magazine',
+      title: 'Synthetic Magazine Issue', deck: 'Private visual-review fixture.',
+      publicationStatus: 'private-review', visualProfile: 'editorial',
+      sourceFingerprint, outlineSha256, mediaPlanSha256: plan.plan_sha256,
+      mediaReportSha256: mediaHash(JSON.stringify(mediaReport)), sourceArticles,
+      evidence: [{ id: 'website-fact', claim: 'Website statement', value: 'Synthetic source text.',
+        status: 'supplier-stated', permission: 'public-source-review-only',
+        sourceUrl: 'https://example.test/about', capturedAt: '2026-11-20T00:00:00.000Z' }],
+      assets: images.map(image => ({
+        id: image.page_id, articleId: image.page_id, filename: image.filename, sha256: image.sha256,
+        kind: image.kind, promptSha256: image.prompt_sha256, generationModel: image.generation_model,
+        generationProvider: image.generation_provider, alt: image.alt, credit: image.credit,
+        caption: image.caption, reviewStatus: 'required',
+      })),
+      spreads: [
+        { id: 'cover', kind: 'cover', kicker: 'PRIVATE ISSUE', title: 'Synthetic Magazine',
+          deck: 'A private visual review.', assetIds: ['supplier'], evidenceRefs: ['website-fact'] },
+        { id: 'contents', kind: 'contents', kicker: 'THE ISSUE', title: 'Contents',
+          deck: 'A short reading path.', assetIds: [], evidenceRefs: [],
+          chapters: [{number:'01',title:'Story',target:'story'},{number:'02',title:'Source notes',target:'notes'},{number:'03',title:'Sourcing',target:'sourcing'}] },
+        { id: 'story', kind: 'story', kicker: '01 · STORY', title: 'Supplier story',
+          deck: 'Source-bound story.', assetIds: [], articleId: 'supplier', evidenceRefs: ['website-fact'],
+          sections: [{heading:'What is stated',body:'Synthetic source text.'}] },
+        { id: 'notes', kind: 'notes', kicker: '02 · NOTES', title: 'Buyer notes',
+          deck: 'A record of source facts.', assetIds: [], evidenceRefs: ['website-fact'],
+          questions: [{title:'Verification',body:'Confirm this statement directly.'}] },
+        { id: 'sourcing', kind: 'sourcing', kicker: '03 · NEXT STEP', title: 'Prepare an enquiry',
+          deck: 'Prepare a local draft.', assetIds: ['guide'], articleId: 'guide', evidenceRefs: [] },
+      ],
+    };
+    await writeFile(join(root, 'magazine-issue.json'), JSON.stringify(issue));
     const mobile = await sharp({ create: { width: 390, height: 5200, channels: 3, background: '#b9b6ac' } }).png().toBuffer();
     const reviewed = [];
     const result = await reviewBuiltSite({
@@ -58,13 +103,20 @@ test('injected captures cover every page and preserve full-height mobile readabi
     });
     assert.equal(result.status, 'PASS_RECOMMENDED');
     assert.equal(result.publication, 'BLOCKED');
-    assert.equal(result.pages.length, 5);
+    assert.equal(result.pages.length, 6);
     assert.equal(result.pages[0].screenshots.length, 5);
     assert.equal(result.evidence_type, 'fixture');
     await assert.rejects(() => assertEditionVisualReview({ review: result, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir }), /EDITION_REVIEW_REQUIRED/);
     // This copied observation is solely a synthetic contract fixture, never saved as production approval.
     const observedFixture = { ...result, evidence_type: 'observed', review_method: 'interactive-vision' };
     assert.equal((await assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir })).media_review_complete, true);
+    const outlineFile = join(root, 'magazine-outline.json');
+    const originalOutline = await readFile(outlineFile, 'utf8');
+    const changedOutline = JSON.parse(originalOutline);
+    changedOutline.brand = 'Tampered outline';
+    await writeFile(outlineFile, JSON.stringify(changedOutline));
+    await assert.rejects(() => assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir }), /EDITION_REVIEW_STALE/);
+    await writeFile(outlineFile, originalOutline);
     const reportFile = join(root, 'media-report.json');
     const originalReport = await readFile(reportFile, 'utf8');
     const changed = JSON.parse(originalReport);
@@ -72,8 +124,8 @@ test('injected captures cover every page and preserve full-height mobile readabi
     await writeFile(reportFile, JSON.stringify(changed));
     await assert.rejects(() => assertEditionVisualReview({ review: observedFixture, sourceRoot: root, artifactSha256: 'c'.repeat(64), jobDir: dir }), /EDITION_REVIEW_STALE/);
     await writeFile(reportFile, originalReport);
-    assert.deepEqual(reviewed, ['home', 'sample', 'second', 'guide', 'supplier']);
-    assert.deepEqual(result.coverage, { expected_pages: 5, reviewed_pages: 5, complete: true });
+    assert.deepEqual(reviewed, ['home', 'sample', 'second', 'guide', 'supplier', 'magazine-issue']);
+    assert.deepEqual(result.coverage, { expected_pages: 6, reviewed_pages: 6, complete: true });
     const failed = await reviewBuiltSite({
       authorized: true, apiKey: 'synthetic-test', artifactDir: dir, jobDir: dir,
       sourceRoot: root, artifactSha256: 'c'.repeat(64),
