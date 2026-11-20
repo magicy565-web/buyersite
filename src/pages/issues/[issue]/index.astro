@@ -1,13 +1,32 @@
 ---
+import { readFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import MagazineConceptLayout from '../../../layouts/MagazineConceptLayout.astro';
 import Issue from '../../../components/magazine/Issue.astro';
 import chongker from '../../../data/magazine-issues/chongker-concept.json';
 import { assertMagazineIssue } from '../../../magazine/issue-contract.mjs';
-export function getStaticPaths(){
-  return process.env.BUYERSITE_MAGAZINE_CONCEPT_PREVIEW === '1'
-    ? [{params:{issue:'chongker-concept'}}]
-    : [];
+
+export async function getStaticPaths(){
+  const paths=[];
+  if(process.env.BUYERSITE_MAGAZINE_CONCEPT_PREVIEW==='1'){
+    paths.push({params:{issue:'chongker-concept'},props:{issue:chongker}});
+  }
+  const buildRoot=process.env.BUYERSITE_BUILD_ROOT;
+  if(buildRoot){
+    try{
+      const issue=JSON.parse(await readFile(join(resolve(buildRoot),'magazine-issue.json'),'utf8'));
+      assertMagazineIssue(issue);
+      if(paths.some(path=>path.params.issue===issue.id)) throw new Error('Duplicate magazine issue route');
+      paths.push({params:{issue:issue.id},props:{issue}});
+    }catch(error){
+      if(error?.code!=='ENOENT') throw error;
+    }
+  }
+  return paths;
 }
-const issue=assertMagazineIssue(chongker);
+const issue=assertMagazineIssue(Astro.props.issue||chongker);
+const previewLabel=issue.publicationStatus==='concept-private'?'concept':'private preview';
 ---
-<MagazineConceptLayout title={issue.brand+' — '+issue.title+' (concept)'} description={issue.deck}><Issue issue={issue}/></MagazineConceptLayout>
+<MagazineConceptLayout title={issue.brand+' — '+issue.title+' ('+previewLabel+')'} description={issue.deck}>
+  <Issue issue={issue}/>
+</MagazineConceptLayout>
