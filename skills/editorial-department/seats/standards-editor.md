@@ -1,3 +1,8 @@
+---
+name: standards-editor
+description: Independently review factual support, image rights, disclosures and desktop/mobile magazine quality.
+---
+
 # Standards & Review Editor seat
 
 ## Mission
