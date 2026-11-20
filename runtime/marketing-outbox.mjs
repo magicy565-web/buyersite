@@ -10,7 +10,7 @@ function boundedLabel(value, max, allowCampaignId = false) {
 }
 
 function campaignLabels(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => !['source','medium','campaign'].includes(key))) return {};
   const source = boundedLabel(value.source, 32);
   const medium = boundedLabel(value.medium, 32);
   const campaign = boundedLabel(value.campaign, 64, true);
@@ -46,13 +46,19 @@ export async function enqueueMarketingEvent(env, config, input) {
       if (parsed.protocol === 'https:' && !parsed.username && !parsed.password && !parsed.search && !parsed.hash) landingUrl = parsed.toString();
     } catch {}
   }
-  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && input.pagePath.length <= 240
-    ? input.pagePath.replace(/[?#].*$/, '') : '/';
+  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#\\\\\\u0000-\\u0020]/.test(input.pagePath)
+    ? input.pagePath : '/';
+  const rawMetadata = input?.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {};
+  const metadata = {
+    ...(typeof rawMetadata.browserEventName === 'string' && ['page_view','article_opened','enquiry_started','assistant_opened'].includes(rawMetadata.browserEventName) ? { browserEventName: rawMetadata.browserEventName } : {}),
+    ...(rawMetadata.destination === 'buyersite-editorial-inbox' ? { destination: rawMetadata.destination } : {}),
+    ...(typeof rawMetadata.attributionMethod === 'string' && ['reported-session','reported-campaign','withheld'].includes(rawMetadata.attributionMethod) ? { attributionMethod: rawMetadata.attributionMethod } : {}),
+  };
   const payload = {
     eventId, campaignId, type, occurredAt, landingUrl, pagePath,
     utm,
     ...(typeof input?.inquiryId === 'string' && UUID.test(input.inquiryId) ? { inquiryId: input.inquiryId } : {}),
-    ...(input?.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? { metadata: input.metadata } : {}),
+    ...(Object.keys(metadata).length ? { metadata } : {}),
   };
   const now = Date.now();
   await env.DB.prepare('INSERT INTO buyer_marketing_outbox ' +
@@ -86,7 +92,7 @@ export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, no
   const rows = claimed?.results ?? [];
   let delivered = 0, retried = 0, dead = 0;
   for (const row of rows) {
-    let status = 'retry', httpStatus = null, errorCode = 'network_error', deliveredAt = null;
+    let outcome = 'retry', httpStatus = null, errorCode = 'network_error', deliveredAt = null;
     try {
       const raw = row.payload_json;
       const timestamp = String(now);
@@ -100,24 +106,25 @@ export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, no
       let body = null;
       try { body = await response.json(); } catch {}
       if ((response.status === 200 || response.status === 202) && body?.accepted === true) {
-        status = 'delivered'; deliveredAt = new Date(now).toISOString(); errorCode = null;
+        outcome = 'delivered'; deliveredAt = new Date(now).toISOString(); errorCode = null;
       } else if (response.status >= 500 || [408, 409, 425, 429].includes(response.status)) {
-        status = 'retry'; errorCode = 'http_' + response.status;
+        outcome = 'retry'; errorCode = 'http_' + response.status;
       } else {
-        status = 'dead'; errorCode = 'http_' + response.status;
+        outcome = 'dead'; errorCode = 'http_' + response.status;
       }
     } catch {
-      status = 'retry'; errorCode = 'network_error';
+      outcome = 'retry'; errorCode = 'network_error';
     }
     const attempts = Number(row.attempts) || 1;
-    if (status === 'retry' && attempts >= 10) { status = 'dead'; errorCode = 'retry_limit'; }
+    if (outcome === 'retry' && attempts >= 10) { outcome = 'dead'; errorCode = 'retry_limit'; }
+    const status = outcome === 'retry' ? 'pending' : outcome;
     const delay = Math.min(6 * 60 * 60_000, 60_000 * (2 ** Math.min(8, Math.max(0, attempts - 1))));
     await env.DB.prepare('UPDATE buyer_marketing_outbox ' +
       'SET status=?, next_attempt_at=?, lease_until=NULL, updated_at=?, delivered_at=?, last_http_status=?, last_error=? ' +
       "WHERE id=? AND status='sending'")
       .bind(status, now + delay, new Date(now).toISOString(), deliveredAt, httpStatus, errorCode, row.id).run();
-    if (status === 'delivered') delivered++;
-    else if (status === 'retry') retried++;
+    if (outcome === 'delivered') delivered++;
+    else if (outcome === 'retry') retried++;
     else dead++;
   }
   return { status: 'connected', claimed: rows.length, delivered, retried, dead };
