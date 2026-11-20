@@ -93,6 +93,7 @@ export function assertMagazineIssue(issue) {
     if (!hasText(spread.title,170) || !hasText(spread.kicker,120) || !hasText(spread.deck,600)) fail('spread title/kicker/deck required');
     if (!Array.isArray(spread.assetIds) || spread.assetIds.length>6 || !spread.assetIds.every(id=>assets.has(id))) fail('missing/unapproved media');
     if (['cover','craft','gallery','sourcing'].includes(spread.kind) && spread.assetIds.length===0) fail('visual spread requires media');
+    if (issue.publicationStatus==='private-review' && !Array.isArray(spread.evidenceRefs)) fail('every source-bound spread must declare its evidence references');
     if (spread.articleId && !articleIds.has(spread.articleId)) fail('spread references unknown source article');
     if (spread.kind==='contents' && (!Array.isArray(spread.chapters) || spread.chapters.length<3)) fail('contents requires chapters');
     if (spread.kind==='notes' && !((Array.isArray(spread.questions)&&spread.questions.length) || (Array.isArray(spread.evidenceRefs)&&spread.evidenceRefs.length))) fail('notes requires questions or evidence references');
