@@ -201,11 +201,17 @@ export async function buildStudioSite({
   jobDir,
   projectRoot = PROJECT_ROOT,
   capture,
+  websiteSnapshot,
+  editorialDraft,
+  artDirection,
 }) {
   const sourceDir = join(jobDir, 'source-pack');
   const built = await createSiteFromStudio(job, sourceBytes, {
     outputBase: sourceDir,
     ...(capture ? { capture } : {}),
+    ...(websiteSnapshot ? { websiteSnapshot } : {}),
+    ...(editorialDraft ? { editorialDraft } : {}),
+    ...(artDirection ? { artDirection } : {}),
   });
   const environment = {
     ...process.env,
