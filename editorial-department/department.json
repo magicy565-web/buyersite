@@ -6,7 +6,7 @@
   "description": "An on-demand virtual editorial team that researches, commissions, produces, reviews and prepares buyer-facing digital magazine issues.",
   "operatingModel": "on-demand-seats",
   "tenantBoundary": "one-enterprise-per-mission",
-  "baseSkill": "skills/buyer-magazine-site/SKILL.md",
+  "baseSkill": "skills/editorial-department/SKILL.md",
   "runtime": {
     "provider": "OpenMausBot",
     "bindingStatus": "unbound",
@@ -574,5 +574,57 @@
     ],
     "noMockEvidence": true,
     "noSyntheticPresence": true
+  },
+  "sharedProductionSkill": "skills/buyer-magazine-site/SKILL.md",
+  "workspace": {
+    "target": "openmausbot-team-map",
+    "view": "isometric-editorial-office",
+    "presenceFrom": "durable-mission-task-state",
+    "idleAnimations": "cosmetic-only-when-no-active-job",
+    "zones": [
+      {
+        "id": "editorial-room",
+        "label": "Editorial Room",
+        "seatIds": [
+          "editor-in-chief",
+          "editorial-editor"
+        ]
+      },
+      {
+        "id": "research-library",
+        "label": "Research Library",
+        "seatIds": [
+          "research-editor"
+        ]
+      },
+      {
+        "id": "creative-studio",
+        "label": "Creative Studio",
+        "seatIds": [
+          "art-director"
+        ]
+      },
+      {
+        "id": "production-floor",
+        "label": "Production Floor",
+        "seatIds": [
+          "production-editor"
+        ]
+      },
+      {
+        "id": "standards-desk",
+        "label": "Standards Desk",
+        "seatIds": [
+          "standards-editor"
+        ]
+      },
+      {
+        "id": "audience-room",
+        "label": "Audience & Growth",
+        "seatIds": [
+          "audience-editor"
+        ]
+      }
+    ]
   }
 }
