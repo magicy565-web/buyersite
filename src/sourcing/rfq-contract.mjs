@@ -67,7 +67,7 @@ export function assertRFQDraft(rfq) {
   const canonical = JSON.stringify(rfq.snapshot);
   if (sha256(canonical) !== rfq.snapshotHash) fail("RFQ snapshot hash mismatch");
   if (!rfq.snapshot.source?.articlePath || !rfq.snapshot.source.issueId ||
-      !rfq.snapshot.sourceSessionId || rfq.snapshotSessionRevision === 0) fail("missing source lineage");
+      !rfq.snapshot.sourceSessionId || !Number.isSafeInteger(rfq.snapshot.sourceSessionRevision) || rfq.snapshot.sourceSessionRevision < 1) fail("missing source lineage");
   for (const field of REQUIRED) {
     if (!rfq.snapshot.requirements?.[field]) fail(`missing required RFQ field: ${field}`);
   }
