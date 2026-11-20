@@ -15,7 +15,7 @@ async function verifyExport(capability) {
   if (implementation?.kind !== 'module-export') return;
   const source=await readFile(resolve(implementation.path),'utf8');
   const name=implementation.export.replaceAll('$','\\$').replaceAll('.','\\.');
-  const pattern=new RegExp('export\\s+(?:async\\s+)?(?:function|const|class)\\s+'+name+'\\b');
+  const pattern=new RegExp('export\s+(?:async\s+)?(?:function|const|class)\s+'+name+'\\b');
   if(!pattern.test(source)) throw new Error('EDITORIAL_DEPARTMENT: missing export '+implementation.path+'#'+implementation.export);
 }
 assertDepartmentManifest(department);
@@ -57,7 +57,7 @@ for(const seat of department.seats) {
   for(const name of agent.skills) {
     const skill=packageSkills.get(name);
     if(!skill) throw new Error('EDITORIAL_DEPARTMENT: package is missing skill '+name);
-    const frontmatter=skill.instructions.match(/^---\\r?\\nname:\\s*([a-z0-9-]+)\\r?\\ndescription:\\s*(.+)\\r?\\n---\\r?\\n/);
+    const frontmatter=skill.instructions.match(/^---\r?\nname:\s*([a-z0-9-]+)\r?\ndescription:\s*(.+)\r?\n---\r?\n/);
     if(!frontmatter || frontmatter[1]!==name || frontmatter[2]!==skill.description) {
       throw new Error('EDITORIAL_DEPARTMENT: portable Skill frontmatter does not match '+name);
     }
