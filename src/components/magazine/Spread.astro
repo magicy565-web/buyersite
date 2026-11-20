@@ -12,7 +12,9 @@ const media=(spread.assetIds||[]).map((id:string)=>assets[id]).filter(Boolean);
 const cited=(spread.evidenceRefs||[]).map((id:string)=>evidence[id]).filter(Boolean);
 const galleryItems=new Map((spread.items||[]).map((item:any)=>[item.articleId,item]));
 ---
-<section id={spread.id} class:list={['mi-spread','mi-'+spread.kind]} data-layout={spread.kind}>
+<section id={spread.id} class:list={['mi-spread','mi-'+spread.kind,
+  spread.kind==='contents' && media.length===0 && 'mi-contents-text-only',
+  spread.kind==='story' && media.length===0 && 'mi-story-text-only']} data-layout={spread.kind}>
   {spread.kind==='cover' && <>
     <div class="mi-cover-copy"><p class="mi-kicker">{spread.kicker}</p><strong class="mi-brand-large">{brand}</strong><h1>{spread.title}</h1><p class="mi-deck">{spread.deck}</p><a class="mi-link" href="#contents">Open the issue ↗</a></div>
     <Media asset={media[0]} className="mi-cover-image" />
