@@ -39,6 +39,7 @@ if(openMausPackage.format!=='openmaus.package' || openMausPackage.version!==2 ||
   throw new Error('EDITORIAL_DEPARTMENT: OpenMausBot package identity/leader does not match department manifest');
 }
 if(!Array.isArray(pkg.agents) || pkg.agents.length!==department.seats.length ||
+   !Array.isArray(pkg.skills?.entries) || pkg.skills.entries.length!==9 ||
    pkg.connections!==undefined || pkg.routines!==undefined ||
    pkg.requirements?.apps?.length!==0 || pkg.requirements?.capabilities?.length!==0) {
   throw new Error('EDITORIAL_DEPARTMENT: package must contain only the seven role Bots and no app, connector or routine provisioning');
