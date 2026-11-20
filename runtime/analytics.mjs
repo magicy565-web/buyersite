@@ -1,5 +1,5 @@
 import { sanitizeCampaign, normalizeKnownPath } from '../src/lib/buyer-journey.mjs';
-import { enqueueMarketingEvent, dispatchMarketingOutbox } from './marketing-outbox.mjs';
+import { enqueueMarketingEvent } from './marketing-outbox.mjs';
 
 const events = new Set(['page_view','article_opened','enquiry_started','enquiry_submitted','assistant_opened','search_used','source_opened']);
 const reply = (status) => new Response(null, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -12,7 +12,7 @@ function marketingType(name, path, landingPath) {
   return null;
 }
 
-export async function handleAnalytics(request, env, config, { executionContext } = {}) {
+export async function handleAnalytics(request, env, config) {
   if (request.method !== 'POST') return reply(405);
   const origin = new URL(request.url).origin;
   if (request.headers.get('origin') !== origin || request.headers.get('sec-fetch-site') === 'cross-site') return reply(403);
@@ -59,7 +59,7 @@ export async function handleAnalytics(request, env, config, { executionContext }
         occurredAt: new Date(now).toISOString(), landingUrl: new URL(landingPath, request.url).href,
         pagePath: path, utm: campaign, metadata: { source: 'buyersite', pageType: path.startsWith('/materials/') ? 'article' : path.startsWith('/products/') ? 'product' : path.startsWith('/suppliers/') ? 'supplier' : path.startsWith('/guides/') ? 'guide' : 'other', ...(body.name === 'assistant_opened' || body.name === 'enquiry_started' ? { ctaId: body.name } : {}) },
       });
-      if (queued && executionContext?.waitUntil) executionContext.waitUntil(dispatchMarketingOutbox(env, config));
+      // Browser events are batched by the scheduled outbox drain; only a persisted enquiry triggers immediate delivery.
     }
     await env.DB.prepare('INSERT INTO buyer_event_daily(site_slug,day,event,path,count) VALUES(?,?,?,?,1) ON CONFLICT(site_slug,day,event,path) DO UPDATE SET count=count+1')
       .bind(config.siteSlug, new Date(now).toISOString().slice(0, 10), body.name, path).run();
