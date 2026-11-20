@@ -31,3 +31,7 @@
   .mi-gallery-images .mi-gallery-item:nth-child(2),
   .mi-gallery-images .mi-gallery-item:nth-child(3){transform:none}
 }
+
+.mi-contents-text-only{grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)}
+.mi-story-text-only{grid-template-columns:minmax(0,1fr)}
+.mi-story-text-only .mi-head{max-width:70ch}
