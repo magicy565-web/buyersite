@@ -32,8 +32,8 @@ export function assertCompiledEnterprise(compiled){
   }
   for(const article of compiled.articles){
     if(!object(article)||!ID.test(article.slug||'')||articleIds.has(article.slug)||
-       !text(article.title,170)||!text(article.deck,600)||!Array.isArray(article.refs)||
-       article.refs.length<1||article.refs.some(ref=>!evidenceIds.has(ref))||
+       !text(article.title,170)||!text(article.deck,600)||!Array.isArray(article.refs)||(article.pageType!=='buyer-guide'&&article.refs.length<1)||
+       article.refs.some(ref=>!evidenceIds.has(ref))||
        !Array.isArray(article.sections)||article.sections.length<1||article.sections.length>20||
        article.sections.some(section=>!Array.isArray(section)||section.length!==2||
          !text(section[0],180)||!text(section[1],2000)))fail('compiled source article is invalid or ungrounded');
@@ -88,7 +88,8 @@ export function assertEditorialDraft(draft,compiled){
     seen.add(article.id);
     for(const section of article.sections){
       if(!object(section)||!text(section.heading,180)||!text(section.body,2000))fail('editorial section is invalid');
-      sourceRefsFor(section,knownEvidence);
+      if(source.pageType==='buyer-guide'&&section.evidenceRefs.length===0){/* generic buyer guidance may be source-neutral */}
+      else sourceRefsFor(section,knownEvidence);
       if(section.evidenceRefs.some(ref=>!source.refs.includes(ref)))fail('editorial section cannot cite evidence outside its source article');
     }
   }
@@ -168,6 +169,10 @@ export function validateTaskArtifact(taskId,artifact,context={}){
       return artifact;
     case 'art-direction':
       assertArtDirection(artifact,context.compiled);
+      return artifact;
+    case 'skip-product-gallery':
+      if(artifact.status!=='SKIPPED'||artifact.selectedProductCount!==0||
+         artifact.reason!=='NO_SELECTED_PRODUCTS')fail('no-gallery confirmation is invalid');
       return artifact;
     case 'prepare-media':
       if(!SHA.test(artifact.planSha256||'')||!SHA.test(artifact.reportSha256||'')||
