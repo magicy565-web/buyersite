@@ -53,25 +53,27 @@ export function assertDepartmentManifest(value = manifest) {
   }
 
   const workspace=value.workspace;
-  if(workspace?.target!=='openmausbot-team-map' || workspace?.view!=='isometric-editorial-office' ||
+  if(workspace?.target!=='openmausbot-team-map' || workspace?.view!=='existing-section-based-team-map' ||
       workspace?.presenceFrom!=='durable-mission-task-state' ||
       workspace?.idleAnimations!=='cosmetic-only-when-no-active-job' ||
-      !Array.isArray(workspace.zones) || workspace.zones.length<1 || workspace.zones.length>12) {
-    fail('workspace must bind to the existing event-driven OpenMausBot team map');
+      !SAFE_ID.test(workspace.chiefSeatId || '') || !seatById.has(workspace.chiefSeatId) ||
+      typeof workspace.sectionName!=='string' || !workspace.sectionName.trim() ||
+      !Array.isArray(workspace.workAreas) || workspace.workAreas.length<1 || workspace.workAreas.length>12) {
+    fail('workspace must bind to the existing section-based OpenMausBot team map');
   }
   const mappedSeats=new Set();
   const zoneIds=new Set();
-  for(const zone of workspace.zones) {
+  for(const zone of workspace.workAreas) {
     if(!zone || !SAFE_ID.test(zone.id || '') || zoneIds.has(zone.id) ||
         typeof zone.label!=='string' || !zone.label.trim() ||
-        !Array.isArray(zone.seatIds) || zone.seatIds.length<1) fail('invalid team-map zone');
+        !Array.isArray(zone.seatIds) || zone.seatIds.length<1) fail('invalid editorial work area');
     zoneIds.add(zone.id);
     for(const seatId of zone.seatIds) {
-      if(!seatById.has(seatId) || mappedSeats.has(seatId)) fail('team-map seat assignment is unknown or duplicated');
+      if(!seatById.has(seatId) || mappedSeats.has(seatId)) fail('work-area seat assignment is unknown or duplicated');
       mappedSeats.add(seatId);
     }
   }
-  if(mappedSeats.size!==seatById.size) fail('every department seat must map to exactly one team-map zone');
+  if(mappedSeats.size!==seatById.size) fail('every department seat must map to exactly one editorial work area');
 
   const requiredDenied = ['contact-supplier','submit-buyer-enquiry','place-order','read-other-tenant-data','read-runtime-secrets','publish-without-human-approval'];
   if (value.securityPolicy?.noMockEvidence !== true ||
