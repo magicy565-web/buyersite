@@ -89,6 +89,22 @@ Do not point every Bot at one shared unrestricted MCP server. Configure each Bot
 
 The Team Map should consume the durable mission/task state and OpenMausBot's real Bot task/activity state. Do not synthesize "working" status from a planned DAG node. On restart, the runtime reloads persisted mission/task state and the dispatcher may resume eligible queued work. Expired task leases may be reclaimed under the bounded retry policy.
 
+## Team Map projection
+
+The existing OpenMausBot Team Map remains the visual host. The dispatcher creates a real task thread for the bound Bot and sends a goal through the host API; the host's own Bot busy/activity state remains the source of the live working animation. BuyerSite does not synthesize Bot presence.
+
+For durable desk/file state, the worker exposes an authenticated, tenant-bound projection:
+
+```http
+GET /editorial-missions/mission-<24-hex>/team-map
+x-magazine-bridge: <BUYERSITE_BRIDGE_TOKEN>
+x-enterprise-id: <enterprise-id>
+```
+
+The response uses `buyersite-team-map/v1` and contains exactly the seven department seats, each seat's real Bot/thread binding when dispatched, task counts, current durable task state, and a file-pile projection made only from completed artifact hashes. It does not expose source snapshots, artifact contents, task access tokens, lease tokens or filesystem paths. A seat is `working` only while a durable task is `running`; queued/blocked/failed work is represented as waiting, and an empty/completed seat is idle. A zero file count means no validated artifact has been completed—never a decorative placeholder.
+
+The endpoint is a read-only projection, not a replacement Team Map API. The host UI should poll it alongside `GET /api/team-map` and its normal Bot list, join by the verified Bot ID, and render file piles from `filePileCount`/ `files`. Native Bot busy/activity continues to drive the character animation; BuyerSite task state supplies the job label and validated file count. If the projection is unavailable, the Team Map must fall back to native Bot state and must not invent a mission or files.
+
 ## Verification and release gates
 
 Run in a Node 24 checkout:
