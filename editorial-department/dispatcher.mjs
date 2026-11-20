@@ -89,6 +89,7 @@ export function createEditorialDispatcher({runtime,openMausClient,clock=()=>Date
       try{
         const bot=seatBotFor(task.seatId,bots);
         let dispatch=entry.state.dispatch;
+        if(dispatch&&dispatch.botId!==bot.id)fail('OPENMAUSBOT_SEAT_BINDING_CHANGED',409);
         if(!dispatch){
           const title=titleFor(task,missionId);
           const existing=Array.isArray(bot.tasks)?bot.tasks.find(item=>item?.title===title&&
