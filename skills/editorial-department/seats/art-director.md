@@ -1,3 +1,8 @@
+---
+name: art-director
+description: Plan distinctive responsive magazine art direction and rights-aware editorial media.
+---
+
 # Art & Photo Director seat
 
 ## Mission
