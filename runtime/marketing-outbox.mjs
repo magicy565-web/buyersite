@@ -46,7 +46,7 @@ export async function enqueueMarketingEvent(env, config, input) {
       if (parsed.protocol === 'https:' && !parsed.username && !parsed.password && !parsed.search && !parsed.hash) landingUrl = parsed.toString();
     } catch {}
   }
-  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#\\\\\\u0000-\\u0020]/.test(input.pagePath)
+  const pagePath = typeof input?.pagePath === 'string' && input.pagePath.startsWith('/') && !input.pagePath.startsWith('//') && input.pagePath.length <= 240 && !/[?#\\\\\x00-\x20]/.test(input.pagePath)
     ? input.pagePath : '/';
   const rawMetadata = input?.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {};
   const metadata = {
@@ -109,7 +109,7 @@ export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, no
       try { body = await response.json(); } catch {}
       if ((response.status === 200 || response.status === 202) && body?.accepted === true) {
         outcome = 'delivered'; deliveredAt = new Date(now).toISOString(); errorCode = null;
-      } else if (response.status >= 500 || [408, 409, 425, 429].includes(response.status)) {
+      } else if (response.status >= 500 || [408, 425, 429].includes(response.status)) {
         outcome = 'retry'; errorCode = 'http_' + response.status;
       } else {
         outcome = 'dead'; errorCode = 'http_' + response.status;
