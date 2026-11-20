@@ -109,7 +109,7 @@ export function createOpenMausBotClient({
       if(!SAFE_BOT.test(botId)||!Array.isArray(names)||names.length>20||
          names.some(name=>typeof name!=='string'||!/^[a-z][a-z0-9_-]{0,31}$/.test(name))) throw new TypeError('Invalid Bot MCP assignment');
       return request('/api/bots/'+encodeURIComponent(botId),{method:'PATCH',body:{
-        mcpServers:names,computer:'off',browser:false,composio:false,autoApprove:false,approvalMode:'ask',
+        mcpServers:names,computer:'off',browser:false,toolsOff:['meetings','data','pages','images','email'],
       }});
     },
     async getBot(botId) {
