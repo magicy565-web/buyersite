@@ -195,6 +195,18 @@ export function validateTaskArtifact(taskId,artifact,context={}){
     case 'review-media':
     case 'review-visuals':
       return assertReviewArtifact(artifact);
+    case 'prepare-distribution': {
+      if(artifact.schemaVersion!=='distribution-draft/v1'||!Array.isArray(artifact.items)||
+         artifact.items.length<1||artifact.items.length>12)fail('distribution draft must contain 1–12 reviewed items');
+      for(const item of artifact.items) {
+        if(!object(item)||!['search','reddit','linkedin','tiktok','newsletter'].includes(item.channel)||
+           !text(item.title,180)||!text(item.copy,2000)||
+           typeof item.canonicalPath!=='string'||!/^\/[a-z0-9-]+\/[a-z0-9-]+\/$/.test(item.canonicalPath)||
+           item.publish!==false)fail('distribution draft must be channel-specific, canonical and explicitly unpublished');
+      }
+      boundedJson(artifact,60_000);
+      return artifact;
+    }
     case 'verify-output':
       if(artifact.status!=='PASS'||artifact.publication!=='BLOCKED'||
          !SHA.test(artifact.artifactSha256||'')||!Number.isInteger(artifact.fileCount)||
