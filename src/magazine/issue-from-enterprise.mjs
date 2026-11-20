@@ -112,7 +112,7 @@ export function compileMagazineIssueFromEnterprise({compiled,outline,mediaPlan,m
     title:brand,deck:plain(compiled.site.description,600),assetIds:[coverArticle.slug],
     articleId:coverArticle.slug,evidenceRefs:unique(coverArticle.refs),folio:'01'});
   push('contents',{kind:'contents',kicker:'THE ISSUE',title:'Inside this issue',
-    deck:'A source-bound reading path through this enterprise edition.',assetIds:[],folio:'02–03',
+    deck:'A source-bound reading path through this enterprise edition.',assetIds:[],evidenceRefs:[],folio:'02–03',
     chapters:[]});
 
   const storyChapter=outlineChapter('company-story');
