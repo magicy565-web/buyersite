@@ -278,6 +278,7 @@ export async function buildStudioSite({
   });
   return {
     artifactDir,
+    sourceRoot: built.root,
     artifactHash: manifest.digest,
     files: manifest.rows,
     fingerprint: built.fingerprint,
