@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { compileMagazineIssueFromEnterprise } from './issue-from-enterprise.mjs';
+import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { compileMagazineIssueFromEnterprise, assertIssueMediaFiles } from './issue-from-enterprise.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const sha=char=>char.repeat(64);
 function fixture(withProduct=true){
@@ -41,8 +44,7 @@ function fixture(withProduct=true){
   return {compiled,outline,mediaPlan,mediaReport};
 }
 test('enterprise source pack becomes a private source-bound issue',()=>{
-  const input=fixture();
-  const issue=compileMagazineIssueFromEnterprise(input);
+  const issue=compileMagazineIssueFromEnterprise(fixture());
   assert.equal(issue.publicationStatus,'private-review');
   assert.equal(issue.brand,'Example Company');
   assert.deepEqual(issue.spreads.map(s=>s.kind),['cover','contents','story','gallery','notes','notes','sourcing']);
@@ -67,11 +69,11 @@ test('tampered outline is rejected',()=>{
   const x=fixture();x.outline.chapters[0].purpose='inject';
   assert.throws(()=>compileMagazineIssueFromEnterprise(x),/outline hash mismatch/);
 });
-test('media plan or report drift is rejected',()=>{
-  const x=fixture();x.mediaReport.images[0].sha256=sha('8');
-  assert.throws(()=>compileMagazineIssueFromEnterprise(x),/media plan\/report|invalid source media|media plan/i);
+test('media plan/report drift is rejected',()=>{
+  const x=fixture();x.mediaReport.images[0].filename='unexpected.png';
+  assert.throws(()=>compileMagazineIssueFromEnterprise(x),/invalid or duplicate media/);
   const y=fixture();y.mediaPlan.selections[0].grant_sha256=sha('7');
-  assert.throws(()=>compileMagazineIssueFromEnterprise(y),/media plan\/report|licensed media/);
+  assert.throws(()=>compileMagazineIssueFromEnterprise(y),/media plan\/report/);
 });
 test('licensed photo must match rights fingerprints',()=>{
   const x=fixture();x.mediaReport.images[0].grant_sha256=sha('9');
@@ -88,4 +90,20 @@ test('unknown media kinds and missing image hashes fail closed',()=>{
   assert.throws(()=>compileMagazineIssueFromEnterprise(x),/unsupported media kind/);
   const y=fixture();y.mediaReport.images[0].sha256='bad';
   assert.throws(()=>compileMagazineIssueFromEnterprise(y),/invalid or duplicate media/);
+});
+test('source media bytes must match their SHA-256 before rendering',async()=>{
+  const x=fixture();
+  const bytesBySlug=new Map();
+  for(const image of x.mediaReport.images){
+    const bytes=Buffer.from('normalized-image:'+image.page_id);
+    image.sha256=hash(bytes);bytesBySlug.set(image.filename,bytes);
+  }
+  const issue=compileMagazineIssueFromEnterprise(x);
+  const root=await mkdtemp(join(tmpdir(),'buyersite-issue-media-'));
+  try{
+    for(const [filename,bytes] of bytesBySlug) await writeFile(join(root,filename),bytes);
+    assert.equal(await assertIssueMediaFiles({issue,articlesDir:root}),true);
+    await writeFile(join(root,'hero-supplier-profile.png'),Buffer.from('tampered'));
+    await assert.rejects(()=>assertIssueMediaFiles({issue,articlesDir:root}),/bytes do not match/);
+  }finally{await rm(root,{recursive:true,force:true});}
 });
