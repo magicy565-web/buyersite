@@ -83,7 +83,7 @@ test('transient failure is retried with backoff and an expired lease is recovera
   const { sqlite, env } = setup(t);
   await enqueueMarketingEvent(env, config, event());
   const connected = { ...env, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/marketing/events/tenant-a', MAUSBOT_MARKETING_WEBHOOK_SECRET: secret };
-  const firstAt = Date.parse('2026-11-20T02:01:00.000Z');
+  const firstAt = Date.now() + 1_000;
   const failed = await dispatchMarketingOutbox(connected, config, { now: firstAt, fetchFn: async () => new Response('down', { status: 503 }) });
   assert.equal(failed.retried, 1);
   const pending = sqlite.prepare('SELECT status, attempts, next_attempt_at FROM buyer_marketing_outbox').get();
