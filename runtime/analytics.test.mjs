@@ -10,7 +10,7 @@ const config = { siteSlug: 'material-notes', analyticsEnabled: true, allowedPath
 function setup(t) {
   const sqlite = new DatabaseSync(':memory:');
   t.after(() => sqlite.close());
-  for (const file of ['0000_buyer_enquiries.sql', '0001_buyer_events.sql']) sqlite.exec(readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'));
+  for (const file of ['0000_buyer_enquiries.sql', '0001_buyer_events.sql', '0003_marketing_outbox.sql']) sqlite.exec(readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'));
   return {
     sqlite,
     DB: {
@@ -67,4 +67,32 @@ test('analytics excludes PII payloads, foreign origins, unknown paths, tracking 
   for (const [req, expected] of cases) assert.equal((await handleAnalytics(req, { DB }, config)).status, expected);
   assert.equal((await handleAnalytics(request(valid), { DB }, { ...config, analyticsEnabled: false })).status, 204);
   assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_event_daily').get().count, 0);
+});
+
+test('campaign-attributed page views are queued with bounded labels and no visitor identifiers', async (t) => {
+  const { sqlite, DB } = setup(t);
+  const campaign = 'cmp_12345678-1234-4234-8234-123456789abc';
+  const eventId = crypto.randomUUID();
+  const response = await handleAnalytics(request({
+    name: 'page_view', path: '/materials/wool', eventId,
+    campaign: { source: 'linkedin', medium: 'social', campaign },
+    landingPath: '/materials/wool',
+  }), { DB }, config);
+  assert.equal(response.status, 204);
+  const row = sqlite.prepare('SELECT campaign_id, event_type, payload_json FROM buyer_marketing_outbox').get();
+  assert.equal(row.campaign_id, campaign);
+  assert.equal(row.event_type, 'landing_view');
+  const payload = JSON.parse(row.payload_json);
+  assert.equal(payload.eventId, eventId);
+  assert.equal(payload.utm.campaign, campaign);
+  assert.equal('visitorId' in payload, false);
+  assert.equal('email' in payload, false);
+  assert.equal('referrer' in payload, false);
+});
+
+test('unattributed and opted-out analytics never enqueue a MausBot event', async (t) => {
+  const { sqlite, DB } = setup(t);
+  await handleAnalytics(request({ name: 'page_view', path: '/' }), { DB }, config);
+  await handleAnalytics(request({ name: 'page_view', path: '/', campaign: { source: 'linkedin', medium: 'social', campaign: 'cmp_12345678-1234-4234-8234-123456789abc' } }, { DNT: '1' }), { DB }, config);
+  assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_marketing_outbox').get().count, 0);
 });

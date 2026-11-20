@@ -6,7 +6,7 @@ This is the conversion and feedback layer of the [three-stage site architecture]
 
 ## Bindings and build configuration
 
-- `DB`: a D1 binding with the committed migrations `0000_buyer_enquiries`, `0001_buyer_events` and `0002_enquiry_context` applied in order before deployment. Never run schema changes in a request handler. Migration 0002 adds nullable context/landing fields and an origin index; it does not invent a historical article or campaign for older enquiries.
+- `DB`: a D1 binding with the committed migrations `0000_buyer_enquiries`, `0001_buyer_events`, `0002_enquiry_context` and `0003_marketing_outbox` applied in order before deployment. Never run schema changes in a request handler. Migration 0002 adds nullable context/landing fields and an origin index; it does not invent a historical article or campaign for older enquiries.
 - `ASSETS`: the static Astro build.
 - `config.siteSlug`: server-owned edition identifier. `allowedPaths` is the build's public route inventory. `enquiriesEnabled` is false for synthetic/private enterprise preview editions unless explicitly enabled by the release configuration.
 - `config.buyerBriefs` and `config.knowledgeRevision`: the same published article catalog and revision used for `/buyer-data.json`, source-backed brief preparation and article links. Each brief includes `page_path`, `title`, `summary`, `product_name`, nullable public product/supplier/source identifiers, `evidence_ids`, `unconfirmed: [{id,label,detail}]` and `questions: [{id,label,prompt}]`. These public build records, not browser assertions, determine saved context.
@@ -52,6 +52,33 @@ Only grouped columns are selected: no email, name, company, free-text brief, ups
 The sourcing dialog offers a working source-fact search when live AI is not configured. `POST /api/buyer/source-guide` accepts a query of at most 200 characters, the current `site_slug` and an optional known `page_path` to scope results to the chosen article. It performs bounded keyword matching over `config.sourceRecords`, which the release builder must derive exclusively from evidence already published in this edition. Each record has `id`, `title`, `claim`, `value`, `source_url`, `page_path`, `status` and `captured_at`.
 
 Results copy up to five matching facts verbatim from that approved record set and link both the article and the original source. Unknown prices, certifications or commercial terms produce no inferred answer. The response and interface explicitly identify keyword source search, not AI generation. Queries are not persisted or sent to a model. Extra internal fields are excluded from responses, and records outside the allowed route inventory or without an HTTPS citation are not returned. The capability remains useful without model credentials; unavailable source configuration falls back to edition search and reading links.
+
+
+## MausBot Growth Marketing attribution bridge
+
+The Buyer Site can forward **campaign-attributed aggregate events** to the existing OpenMausBot Growth Marketing Department. This is a server-to-server bridge, not a new CRM, analytics vendor or supplier messaging service.
+
+### Connection
+
+1. In the MausBot workspace, the owner calls `POST /api/marketing/webhook/rotate` while the public webhook ingress is reachable over HTTPS. The response returns the exact `/marketing/events/{tenantId}` endpoint and a one-time HMAC secret. Store the secret securely; it is not retrievable after the response.
+2. Configure these server-only Worker secrets:
+   - `MAUSBOT_MARKETING_WEBHOOK_URL`: the exact HTTPS endpoint returned by MausBot.
+   - `MAUSBOT_MARKETING_WEBHOOK_SECRET`: the one-time secret returned by MausBot (minimum 32 characters).
+3. Apply migration `0003_marketing_outbox` to the same D1 database used by this edition.
+4. Configure a Cloudflare Worker Cron Trigger such as `*/5 * * * *` so the exported `scheduled` handler retries pending deliveries. Immediate delivery is attempted with `ctx.waitUntil`; the durable outbox and scheduled trigger recover transient failures, worker restarts and timeouts.
+
+The owner-only `GET /api/buyer/admin/feedback?days=30` response includes `marketing_delivery` with `connection`, `pending`, `sending`, `delivered` and `dead` counts. `needs_connection` means no valid endpoint/secret pair is configured. Pending does not mean delivered.
+
+### Event and privacy contract
+
+- A browser-reported event is forwarded only when the session's bounded `utm_campaign` equals a canonical MausBot Campaign ID (`cmp_<uuid>). The campaign ID is carried with `utm_source` and `utm_medium` in first-party session storage; it is not inferred from a free-text label.
+- `page_view` becomes `landing_view` on the original tagged landing path and `page_view` on later pages. `assistant_opened` and `enquiry_started` become `cta_click`. The browser's `enquiry_submitted` event is **not** trusted for conversion counting.
+- `inquiry_submitted` is enqueued only after D1 has durably accepted the consented enquiry. The outbox includes the opaque enquiry receipt ID, campaign, timestamps, bounded source labels and page paths only. It never sends email, name, company, product requirements, free-text application, chat transcript, raw IP, session ID or visitor ID.
+- DNT/GPC and the buyer's explicit attribution opt-out suppress marketing attribution while leaving the enquiry flow available. Organic/unattributed visits are not silently assigned to a paid campaign.
+- Each outbox item is signed as HMAC-SHA256 over `timestamp + "." + rawBody`, sent in `X-Maus-Timestamp` and `X-Maus-Signature`. MausBot acknowledges durable persistence with HTTP 202. Retries reuse the same event ID; MausBot deduplicates them. A mismatched replay payload is rejected rather than reassigned.
+- The outbox never claims supplier contact, quote delivery, an order or revenue. The Buyer Site's existing enquiry receipt still states `supplier_sent:false`; routing buyer contact details to the virtual Sales/Sourcing department is a separate, consented integration.
+
+If the endpoint is missing, malformed or not HTTPS, the outbox remains pending and the status is `needs_connection`; it never reports a successful handoff. If a provider returns a permanent 4xx, the item moves to `dead` for owner review rather than being retried forever.
 
 ## Build and deployment
 

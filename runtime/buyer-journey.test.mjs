@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BRIEF_HANDOFF_KEY, captureJourney, readJourney, clearJourney, privacyOptOut, saveBriefHandoff, readBriefHandoff, normalizeKnownPath } from '../src/lib/buyer-journey.mjs';
+import { BRIEF_HANDOFF_KEY, captureJourney, readJourney, clearJourney, privacyOptOut, saveBriefHandoff, readBriefHandoff, normalizeKnownPath, sanitizeCampaign } from '../src/lib/buyer-journey.mjs';
 
 function session() {
   const values = new Map();
@@ -75,4 +75,10 @@ test('receipt storage retains only a bounded same-edition reference and rejects 
   saveReceipt(storage, siteSlug, receipt);
   clearReceipt(storage, siteSlug);
   assert.equal(readReceipt(storage, siteSlug), null);
+});
+
+test('canonical MausBot Campaign ids survive bounded campaign-label validation', () => {
+  const id = 'cmp_12345678-1234-4234-8234-123456789abc';
+  assert.deepEqual(sanitizeCampaign({ source: 'linkedin', medium: 'social', campaign: id }, { strict: true }), { source: 'linkedin', medium: 'social', campaign: id });
+  assert.throws(() => sanitizeCampaign({ campaign: '12345678-1234-4234-8234-123456789abc' }, { strict: true }));
 });
