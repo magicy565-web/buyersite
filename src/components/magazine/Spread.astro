@@ -63,7 +63,7 @@ const galleryItems=new Map((spread.items||[]).map((item:any)=>[item.articleId,it
       <label for="mi-brief">What would you like to source?</label>
       <textarea id="mi-brief" rows="4" maxlength="500" placeholder="Describe your product idea or sourcing question"></textarea>
       <button id="mi-prepare" type="button">Prepare a local brief ↗</button><output id="mi-result" hidden></output>
-      <button class="mi-open-assistant" type="button" data-assistant-open data-source-article={articlePath(spread.articleId)}>Ask about this edition ↗</button>
+      {publicationStatus==='private-review' && spread.articleId && <button class="mi-open-assistant" type="button" data-assistant-open data-source-article={articlePath(spread.articleId)}>Ask about this edition ↗</button>}
       <p class="mi-disclaimer">The sourcing assistant uses this edition\u0027s approved article context. Preparing a brief does not submit an enquiry.</p>
     </div>
     <Media asset={media[0]} className="mi-tall"/>
