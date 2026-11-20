@@ -1,7 +1,14 @@
 ---
+// The edition front. Its composition is not fixed: the layout plan (src/lib/layout-plan.ts)
+// chooses the cover and the order of blocks from what this edition actually has -- products,
+// evidence density, usable media. Every block is fed by the same records as the article pages.
 import Base from '../layouts/Base.astro';
-import EditionCover from '../components/editorial/EditionCover.astro';
-import SupplierFeature from '../components/editorial/SupplierFeature.astro';
+import Cover from '../components/magazine/Cover.astro';
+import EditionIndex from '../components/magazine/EditionIndex.astro';
+import FactLedger from '../components/magazine/FactLedger.astro';
+import SupplierPortrait from '../components/magazine/SupplierPortrait.astro';
+import CatalogIndex from '../components/magazine/CatalogIndex.astro';
+import TrustColophon from '../components/magazine/TrustColophon.astro';
 import ProductStory from '../components/editorial/ProductStory.astro';
 import BuyingChecklist from '../components/editorial/BuyingChecklist.astro';
 import Rundown from '../components/article/Rundown.astro';
@@ -9,51 +16,89 @@ import { site } from '../config';
 import { getArticles, presentAll } from '../lib/content';
 import { loadEvidence, resolveEvidence } from '../lib/evidence';
 import { getBuyerBrief } from '../lib/buyer-brief';
+import { editionFacts } from '../lib/edition';
+import { loadLayoutPlan } from '../lib/layout-plan';
 import { t } from '../i18n';
 
+const plan = loadLayoutPlan();
 const items = await presentAll(await getArticles());
-const lead = items.find((item) => item.data.featured) ?? items[0];
 const supplierEntry = items.find((item) => item.data.pageType === 'supplier-profile');
-const supplier = supplierEntry?.id !== lead?.id ? supplierEntry : undefined;
 const guide = items.find((item) => item.data.pageType === 'buyer-guide');
 const products = items.filter((item) => item.data.pageType === 'product-editorial');
-const featuredProducts = products.filter((item) => item.id !== lead?.id).slice(0, 3);
-const displayed = new Set([lead?.id, supplier?.id, guide?.id, ...featuredProducts.map((item) => item.id)]);
-const furtherReading = items.filter((item) => !displayed.has(item.id));
+// The lead is the featured piece; with no products, the supplier profile leads the edition.
+const lead = items.find((item) => item.data.featured) ?? products[0] ?? supplierEntry ?? items[0];
+const supplier = supplierEntry?.id !== lead?.id ? supplierEntry : undefined;
+const otherProducts = products.filter((item) => item.id !== lead?.id);
 const evidence = loadEvidence();
+const facts = editionFacts(evidence);
 const notesFor = (item: (typeof items)[number]) => resolveEvidence(item.data.evidenceRefs, evidence);
 const briefFor = (item: (typeof items)[number]) => getBuyerBrief(item.href);
 const ui = t(Astro.currentLocale ?? site.locale);
+const conceptImages = items.some((item) => /AI-generated|concept|illustration|abstract/i.test(item.data.heroCredit + ' ' + (item.data.heroCaption ?? '')));
+const leadBrief = lead ? briefFor(lead) : null;
+const leadPlan = lead ? plan.pages[lead.id] : null;
+const blocks = plan.home.blocks;
+
+const index = [
+  products[0] && { item: products[0], label: ui.magazine.pathMaterial, note: ui.magazine.pathMaterialNote },
+  supplierEntry && { item: supplierEntry, label: ui.magazine.pathSupplier, note: ui.magazine.pathSupplierNote },
+  guide && { item: guide, label: ui.magazine.pathGuide, note: ui.magazine.pathGuideNote },
+].filter(Boolean) as { item: (typeof items)[number]; label: string; note: string }[];
+const shown = new Set<string | undefined>([lead?.id, supplier?.id, guide?.id]);
+if (blocks.includes('products') || blocks.includes('catalog')) products.forEach((item) => shown.add(item.id));
+const furtherReading = items.filter((item) => !shown.has(item.id));
 ---
 
 <Base nameplate={false} description={site.description} image={lead?.data.hero}>
-  {lead && <EditionCover title={site.name} description={ui.editorial.homePurpose} lead={lead} context={lead.desk.data.name} brief={briefFor(lead)} />}
-  <div class="editorial-container">
-    <nav class="editorial-reading-route" aria-label={ui.editorial.readingRoute}>
-      <p>{ui.editorial.readingRoute}</p>
-      <ul>
-        {products[0] && <li><a href={products[0].href}>{ui.editorial.materialRoute}</a></li>}
-        {supplierEntry && <li><a href={supplierEntry.href}>{ui.editorial.supplierRoute}</a></li>}
-        {guide && <li><a href={guide.href}>{ui.editorial.guideRoute}</a></li>}
-      </ul>
-    </nav>
-    {lead?.data.pageType === 'product-editorial' && (
-      <ProductStory item={lead} notes={notesFor(lead)} brief={briefFor(lead)} heroAlreadyShown />
+  <div data-design-family={plan.design_family} data-layout-plan={plan.plan_sha256.slice(0, 12)}>
+    {lead && (
+      <Cover title={site.name} description={site.description} lead={lead} brief={leadBrief} facts={facts} layout={plan.home.cover} />
     )}
-    {supplier && <SupplierFeature item={supplier} notes={notesFor(supplier)} brief={briefFor(supplier)} />}
-    {featuredProducts.length > 0 && (
-      <div class="editorial-archive-heading">
-        <h2>{ui.editorial.moreProducts}</h2>
-        <a href={'/' + featuredProducts[0].desk.id}>{ui.editorial.browseDesk}</a>
-      </div>
-    )}
-    {featuredProducts.map((item) => <ProductStory item={item} notes={notesFor(item)} brief={briefFor(item)} />)}
-    <BuyingChecklist guide={guide} brief={guide ? briefFor(guide) : null} />
-    {furtherReading.length > 0 && (
-      <section class="editorial-section" aria-labelledby="more-reading">
-        <div class="editorial-archive-heading"><h2 id="more-reading">{ui.editorial.moreReading}</h2></div>
-        <Rundown items={furtherReading} />
-      </section>
-    )}
+    {blocks.map((block) => {
+      if (block === 'index') return <EditionIndex entries={index} />;
+      if (block === 'lead-ledger' && lead)
+        return (
+          <div class="mag-container mag-band">
+            <FactLedger
+              id="lead-ledger"
+              items={notesFor(lead)}
+              brief={leadBrief}
+              variant={leadPlan?.ledger ?? 'table'}
+              title={lead.data.pageType === 'product-editorial' ? ui.editorial.specificationTitle : lead.data.pageType === 'supplier-profile' ? ui.magazine.supplierLedgerTitle : lead.data.title}
+              localSources={false}
+              limitOpen={4}
+            />
+          </div>
+        );
+      if (block === 'supplier' && supplier)
+        return <SupplierPortrait item={supplier} notes={notesFor(supplier)} brief={briefFor(supplier)} media={plan.home.show_media} />;
+      if (block === 'products' && otherProducts.length > 0)
+        return (
+          <div class="mag-container">
+            <div class="editorial-archive-heading">
+              <h2>{ui.editorial.moreProducts}</h2>
+              <a href={'/' + otherProducts[0].desk.id}>{ui.editorial.browseDesk}</a>
+            </div>
+            {otherProducts.slice(0, 3).map((item) => <ProductStory item={item} notes={notesFor(item)} brief={briefFor(item)} media={plan.pages[item.id]?.show_media ?? true} />)}
+          </div>
+        );
+      if (block === 'catalog' && products.length > 0)
+        return <CatalogIndex rows={products.map((item) => ({ item, facts: notesFor(item).length, brief: briefFor(item) }))} />;
+      if (block === 'questions')
+        return (
+          <div class="mag-container">
+            <BuyingChecklist guide={guide} brief={guide ? briefFor(guide) : null} />
+          </div>
+        );
+      if (block === 'reading' && furtherReading.length > 0)
+        return (
+          <section class="mag-container editorial-section" aria-labelledby="more-reading">
+            <div class="editorial-archive-heading"><h2 id="more-reading">{ui.editorial.moreReading}</h2></div>
+            <Rundown items={furtherReading} />
+          </section>
+        );
+      if (block === 'trust') return <TrustColophon facts={facts} conceptImages={conceptImages} />;
+      return null;
+    })}
   </div>
 </Base>

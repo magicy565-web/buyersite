@@ -1,0 +1,34 @@
+$ node --test runtime/*.test.mjs
+✔ real SQLite event counters aggregate repeated actions by site/day/path without raw addresses or visitor identities (22.0205ms)
+✔ analytics excludes PII payloads, foreign origins, unknown paths, tracking opt-outs and malformed objects (1.5398ms)
+✔ session preserves original landing/campaign across internal navigation and retains latest published article (0.9015ms)
+✔ privacy opt-outs clear navigation storage; malformed state and personal campaign values are discarded (4.8352ms)
+✔ explicit brief handoff is bounded, catalog-scoped, strips unrelated fields and is consumed once (0.3387ms)
+✔ receipt storage retains only a bounded same-edition reference and rejects malformed or cross-edition records (4.8743ms)
+✔ feedback uses real SQL aggregates, separates submitted events from persisted intent, and excludes contacts/free text (22.8907ms)
+✔ feedback requires owner auth, bounds calendar windows to 90 days and handles empty data without inventing evidence (3.3237ms)
+✔ context report distinguishes selected article, reported landing and bounded campaign while suppressing unsafe legacy labels (2.1466ms)
+✔ real SQLite persistence survives reopening and receipt retries do not duplicate enquiries (61.8112ms)
+✔ validation rejects cross-origin, absent consent, wrong edition, oversize and unsupported source pages before storing (39.8027ms)
+✔ D1-compatible atomic rate limits survive process restarts and do not store raw addresses (34.4338ms)
+✔ only authenticated owner can read or qualify enquiries and storage stays tenant-bound (33.1387ms)
+✔ unconfigured and synthetic editions expose honest capabilities and do not invent AI replies (30.1029ms)
+✔ owner cursor retains enquiries received in the same millisecond (38.9952ms)
+✔ mock upstream contract: server binds the provider session to this site and never forwards client product assertions (32.1278ms)
+✔ context is server-resolved and durable; idempotent retries retain the original catalog snapshot (32.6733ms)
+✔ tampered article, identifiers, questions and invalid campaign values never create an enquiry (30.6149ms)
+✔ DNT, GPC and explicit removal withhold visit attribution while preserving deliberately selected article context (37.1786ms)
+✔ legacy persisted receipt hashes remain replayable after the additive migration (28.8352ms)
+✔ mock connected provider receives published context and evidence only, with browser product assertions ignored (33.1309ms)
+✔ catalog question reordering does not change the canonical request digest or the saved context snapshot (32.2ms)
+✔ source guide returns exact cited facts and never invents an answer when evidence is absent (1.6679ms)
+✔ selected-article lookup cannot blend another product and unknown terms remain explicit (0.2511ms)
+✔ source guide endpoint works without model keys and rejects foreign-origin and cross-edition searches (14.7549ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1186.0859

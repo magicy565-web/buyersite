@@ -1,0 +1,64 @@
+---
+// The supplier, as a portrait feature: the stated facts large, and the qualification gaps set
+// directly under them as "what this profile does not establish". No capability is implied by
+// the composition; the picture, where there is one, is captioned with its provenance.
+import { Image } from 'astro:assets';
+import type { Item } from '../../lib/content';
+import type { EvidenceItem } from '../../lib/evidence';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
+import { formatDay, sourceHost } from '../../lib/edition';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/magazine.css';
+
+interface Props { item: Item; notes?: EvidenceItem[]; brief?: BuyerBrief | null; media?: boolean }
+const { item, notes = [], brief, media = true } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const headingId = `supplier-${item.id}`;
+---
+
+<section class:list={['mag-container', 'portrait', !media && 'portrait--no-media']} data-editorial-block="supplier" aria-labelledby={headingId}>
+  {media && (
+    <figure class="portrait-media">
+      <Image src={item.data.hero} alt={item.data.heroAlt} widths={[480, 800, 1200]} format="avif"
+        sizes="(min-width: 64rem) 34vw, 100vw" loading="lazy"
+        style={`object-position: ${item.data.heroFocus} center`} />
+      <figcaption class="mag-caption">
+        {item.data.heroCaption && <span>{item.data.heroCaption} </span>}
+        <span>{item.data.heroCredit}</span>
+      </figcaption>
+    </figure>
+  )}
+  <div class="portrait-copy">
+    <p class="mag-kicker">{ui.magazine.supplierLabel}</p>
+    <h2 id={headingId} class="portrait-title"><a href={item.href}>{item.data.title}</a></h2>
+    <p class="portrait-deck">{item.data.deck}</p>
+    {notes.length > 0 && (
+      <dl class="portrait-facts">
+        {notes.slice(0, 3).map((note) => (
+          <div>
+            <dt>{note.claim}</dt>
+            <dd class:list={['portrait-fact-value', note.value.length > 48 && 'portrait-fact-value--text']}>{note.value}</dd>
+            <dd class="portrait-fact-source">
+              <a href={'/sources/#' + note.evidence_id}>
+                {note.status === 'supplier-stated' ? ui.editorial.supplierStatement : note.status}
+                {sourceHost(note.source_url) && ' · ' + sourceHost(note.source_url)}
+                {note.captured_at && ' · ' + formatDay(note.captured_at.slice(0, 10))}
+              </a>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    )}
+    {brief && brief.unconfirmed.length > 0 && (
+      <div class="portrait-gaps">
+        <h3 class="mag-section-label">{ui.magazine.notEstablished}</h3>
+        <ul>{brief.unconfirmed.map((gap) => <li>{gap.label}</li>)}</ul>
+      </div>
+    )}
+    <div class="portrait-actions">
+      <a class="mag-text-link" href={item.href}>{ui.magazine.readProfile}</a>
+      {brief && <a class="mag-text-link" href={buyerEnquiryHref(brief)} data-buyer-context={brief.page_path}>{ui.prepareEnquiry}</a>}
+    </div>
+  </div>
+</section>

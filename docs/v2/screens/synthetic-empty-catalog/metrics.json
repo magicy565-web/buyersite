@@ -1,0 +1,162 @@
+[
+  {
+    "route": "/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 3836,
+    "h1": "Synthetic Empty Catalog | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-empty-catalog/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4363,
+    "h1": "Synthetic Empty Catalog: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4003,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1707,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1233,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4038,
+    "h1": "Synthetic Empty Catalog | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-empty-catalog/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4720,
+    "h1": "Synthetic Empty Catalog: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4046,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1791,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1157,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5085,
+    "h1": "Synthetic Empty Catalog | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-empty-catalog/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5485,
+    "h1": "Synthetic Empty Catalog: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 390,
+    "overflowX": false,
+    "height": 4699,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1994,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1498,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5280,
+    "h1": "Synthetic Empty Catalog | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-empty-catalog/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5800,
+    "h1": "Synthetic Empty Catalog: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5005,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 360,
+    "overflowX": false,
+    "height": 2061,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 360,
+    "overflowX": false,
+    "height": 1531,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  }
+]

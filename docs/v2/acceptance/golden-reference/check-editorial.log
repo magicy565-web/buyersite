@@ -1,0 +1,4 @@
+$ node scripts/check-editorial-profiles.mjs
+atelier: contrast pairs PASS
+industrial: contrast pairs PASS
+editorial: contrast pairs PASS

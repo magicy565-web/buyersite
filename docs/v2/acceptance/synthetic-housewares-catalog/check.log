@@ -1,0 +1,20 @@
+$ astro check
+[2m12:14:40[22m [34m[content][39m Syncing content
+[2m12:14:40[22m [34m[content][39m Synced content
+[2m12:14:40[22m [34m[types][39m Generated [2m335ms[22m
+[2m12:14:40[22m [34m[check][39m Getting diagnostics for Astro files in Y:\buyersite-main...
+[96msite-builder/capture.mjs[0m:[93m61[0m:[93m14[0m - [93mwarning[0m[90m ts(6133): [0m'host' is declared but its value is never read.
+
+[7m61[0m       lookup(host, opts, done) {
+[7m  [0m [93m             ~~~~[0m
+
+[96msite-builder/compile.mjs[0m:[93m48[0m:[93m21[0m - [93mwarning[0m[90m ts(6133): [0m'page' is declared but its value is never read.
+
+[7m48[0m const websiteRef = (page, index) => 'website-' + (index + 1);
+[7m  [0m [93m                    ~~~~[0m
+
+Result (119 files): 
+- 0 errors
+- 0 warnings
+- 2 hints
+

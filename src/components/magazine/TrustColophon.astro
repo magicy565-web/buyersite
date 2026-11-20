@@ -1,0 +1,34 @@
+---
+// The edition's standing promise, set once at the foot of the home page: what the sources
+// are, what the pictures are, what an enquiry does and does not do. Every line is a fact
+// about this edition, derived from its records -- not marketing copy.
+import { site } from '../../config';
+import { t } from '../../i18n';
+import { formatDay } from '../../lib/edition';
+import '../../styles/magazine.css';
+
+interface Props { facts: { facts: number; sources: number; latest: string | null }; conceptImages: boolean }
+const { facts, conceptImages } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const checked = formatDay(facts.latest, site.locale);
+---
+
+<section class="mag-container trust" aria-labelledby="trust-title" data-editorial-block="trust">
+  <h2 id="trust-title" class="trust-title">{ui.magazine.trustTitle}</h2>
+  <dl class="trust-list">
+    <div>
+      <dt>{ui.magazine.sources}</dt>
+      <dd>{ui.magazine.trustSources}{checked && ' ' + ui.magazine.sourcesChecked(checked) + '.'}</dd>
+    </div>
+    {conceptImages && (
+      <div><dt>{ui.magazine.trustImagesLabel}</dt><dd>{ui.magazine.trustImages}</dd></div>
+    )}
+    <div><dt>{ui.enquiryNav}</dt><dd>{ui.magazine.trustEnquiry}</dd></div>
+    <div><dt>{ui.magazine.trustIndependentLabel}</dt><dd>{ui.magazine.trustIndependent}</dd></div>
+  </dl>
+  <p class="trust-links">
+    <a href="/sources/">{ui.magazine.sourceNotebook}</a>
+    <a href="/colophon/">{ui.magazine.editorialScope}</a>
+    <a href="/privacy/">{ui.magazine.privacy}</a>
+  </p>
+</section>

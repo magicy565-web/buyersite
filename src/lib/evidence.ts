@@ -11,6 +11,7 @@ export interface EvidenceItem {
   status: string;
   captured_at?: string;
   publication_permission: string;
+  verified_by?: string | null;
 }
 export function loadEvidence(): EvidenceItem[] {
   const edition = process.env.BUYERSITE_BUILD_ROOT;

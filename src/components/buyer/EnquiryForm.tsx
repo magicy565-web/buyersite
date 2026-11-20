@@ -230,12 +230,17 @@ export default function EnquiryForm({ publishedContexts, allowedPaths, siteSlug,
         </fieldset>
         {enabled && <fieldset disabled={sending || Boolean(receipt)} className="enquiry-referral">
           <legend>{copy.referralTitle}</legend>
+          {/* Shown on request: the desk's attribution data is the buyer's to inspect and remove,
+              but it is not part of what they are asking for. */}
+          <details className="enquiry-referral-details">
+            <summary>{withheld ? copy.referralWithheldShort : journey ? copy.referralShow : copy.referralNone}</summary>
           {withheld ? <p className="conversion-note">{copy.referralWithheld}</p> : journey ? <>
             <p className="conversion-note">{copy.referralDescription}</p>
             <dl><div><dt>{copy.referralLanding}</dt><dd><a href={journey.landing_path}>{journey.landing_path}</a></dd></div>
               {Object.keys(journey.campaign).length > 0 && <div><dt>{copy.referralCampaign}</dt><dd>{Object.entries(journey.campaign).map(([key, value]) => `${key}: ${value}`).join(' · ')}</dd></div>}</dl>
             <button type="button" className="conversion-secondary" onClick={removeVisit}>{copy.referralRemove}</button>
           </> : <p className="conversion-note">{copy.referralUnavailable}</p>}
+          </details>
         </fieldset>}
         {inbox === 'connected' && <fieldset disabled={sending || Boolean(receipt)}>
           <legend>{copy.contactLegend}</legend>

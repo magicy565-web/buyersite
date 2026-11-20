@@ -1,0 +1,51 @@
+{
+  "schema_version": "2.0.0",
+  "design_family": "technical-dossier",
+  "signals": {
+    "product_count": 1,
+    "article_count": 3,
+    "evidence_count": 3,
+    "facts_per_product": 2,
+    "numeric_fact_ratio": 0,
+    "media_strength_max": 0,
+    "media_strength_min": 0,
+    "name_length": 58,
+    "category_direction": "industrial"
+  },
+  "rationale": [
+    "Technical category or dense numeric specifications: specification-first pages, tabular ledgers, type-led cover.",
+    "Only abstract fallback artwork is available: no picture leads a cover or a page.",
+    "Long publication name: the masthead steps down a size."
+  ],
+  "home": {
+    "cover": "typographic",
+    "blocks": [
+      "lead-ledger",
+      "index",
+      "products",
+      "supplier",
+      "questions",
+      "reading",
+      "trust"
+    ],
+    "show_media": false
+  },
+  "pages": {
+    "ultraprecisionmanufacturinginternational-component": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "precision-pump-valve-a": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "buyer-enquiry-guide": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    }
+  },
+  "plan_sha256": "e5be3300e7a772cd270c05f2b1f673e394676b30e3dffb75385001bca3d73326"
+}

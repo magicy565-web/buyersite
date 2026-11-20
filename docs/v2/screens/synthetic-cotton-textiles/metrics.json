@@ -1,0 +1,226 @@
+[
+  {
+    "route": "/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 5817,
+    "h1": "Synthetic Cotton Textiles | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-cotton-textiles/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4431,
+    "h1": "Synthetic Cotton Textiles: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-canvas/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4431,
+    "h1": "Cotton Canvas: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/soft-knit-fabric/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4431,
+    "h1": "Soft Knit Fabric: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4046,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1707,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1233,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 768,
+    "overflowX": false,
+    "height": 5839,
+    "h1": "Synthetic Cotton Textiles | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-cotton-textiles/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4773,
+    "h1": "Synthetic Cotton Textiles: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-canvas/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4871,
+    "h1": "Cotton Canvas: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/soft-knit-fabric/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4871,
+    "h1": "Soft Knit Fabric: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4049,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1791,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1157,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 390,
+    "overflowX": false,
+    "height": 7264,
+    "h1": "Synthetic Cotton Textiles | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-cotton-textiles/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5536,
+    "h1": "Synthetic Cotton Textiles: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-canvas/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5610,
+    "h1": "Cotton Canvas: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/soft-knit-fabric/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5606,
+    "h1": "Soft Knit Fabric: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 390,
+    "overflowX": false,
+    "height": 4703,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1994,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1498,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 360,
+    "overflowX": false,
+    "height": 7557,
+    "h1": "Synthetic Cotton Textiles | Buyer Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/synthetic-cotton-textiles/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5851,
+    "h1": "Synthetic Cotton Textiles: supplier profile",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/cotton-canvas/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6029,
+    "h1": "Cotton Canvas: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/products/soft-knit-fabric/",
+    "width": 360,
+    "overflowX": false,
+    "height": 6000,
+    "h1": "Soft Knit Fabric: buyer review",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/buyer-enquiry-guide/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5007,
+    "h1": "Prepare a supplier enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 360,
+    "overflowX": false,
+    "height": 2061,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 360,
+    "overflowX": false,
+    "height": 1531,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  }
+]

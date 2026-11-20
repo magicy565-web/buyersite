@@ -1,0 +1,48 @@
+{
+  "start": "p. 01 / 05",
+  "results": [
+    {
+      "from": "/",
+      "to": "/materials/silver-wool-fabric/",
+      "expected": "/materials/silver-wool-fabric/",
+      "folio": "p. 02 / 05",
+      "turn": "forward",
+      "swap": "true:visible"
+    },
+    {
+      "from": "/materials/silver-wool-fabric/",
+      "to": "/suppliers/burel-factory/",
+      "expected": "/suppliers/burel-factory/",
+      "folio": "p. 03 / 05",
+      "turn": "forward",
+      "swap": "true:visible"
+    },
+    {
+      "from": "/suppliers/burel-factory/",
+      "to": "/guides/burel-project-brief/",
+      "expected": "/guides/burel-project-brief/",
+      "folio": "p. 04 / 05",
+      "turn": "forward",
+      "swap": "true:visible"
+    },
+    {
+      "from": "/guides/burel-project-brief/",
+      "to": "/sources/",
+      "expected": "/sources/",
+      "folio": "p. 05 / 05",
+      "turn": "forward",
+      "swap": "true:visible"
+    },
+    {
+      "from": "/sources/",
+      "to": "/guides/burel-project-brief/",
+      "expected": "prev link",
+      "folio": "p. 04 / 05",
+      "turn": "back"
+    },
+    {
+      "check": "arrow key inside a form field",
+      "stayed": true
+    }
+  ]
+}

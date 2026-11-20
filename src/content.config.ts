@@ -1,10 +1,13 @@
 import { defineCollection, reference } from 'astro:content';
-import { resolve } from 'node:path';
+import { relative, resolve, sep } from 'node:path';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const buyerEdition = process.env.BUYERSITE_BUILD_ROOT;
-const editionFile = (filename: string) => buyerEdition ? resolve(buyerEdition, filename) : './src/content/' + filename;
+// Loaders take project-relative POSIX paths. An absolute Windows path ("Y:\...") is read by
+// Astro's loaders as a URL whose scheme is the drive letter.
+const fromProject = (path: string) => './' + relative(process.cwd(), path).split(sep).join('/');
+const editionFile = (filename: string) => buyerEdition ? fromProject(resolve(buyerEdition, filename)) : './src/content/' + filename;
 
 // One row per desk. The id in desks.json IS the route segment (/world) and the value articles
 // put in `desk`, so there is no second slug field to fall out of sync with it.
@@ -19,7 +22,7 @@ const desks = defineCollection({
 
 // One file per article. The filename is the slug: /<desk>/<filename>.
 const articles = defineCollection({
-  loader: glob({ base: buyerEdition ? resolve(buyerEdition, 'articles') : './src/content/articles', pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: buyerEdition ? fromProject(resolve(buyerEdition, 'articles')) : './src/content/articles', pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
       evidenceRefs: z.array(z.string()).default([]),

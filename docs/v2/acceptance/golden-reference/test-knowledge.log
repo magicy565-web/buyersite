@@ -1,0 +1,12 @@
+$ node --test scripts/public-knowledge.test.mjs
+✔ public knowledge preserves source boundaries, unknowns and a reproducible content revision (1.2311ms)
+✔ unapproved, unsourced or unsafe source facts cannot leak through their brief (0.3691ms)
+✔ normalized duplicate paths fail closed and plain guides do not become products (0.2758ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 221.3448

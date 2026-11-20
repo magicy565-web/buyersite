@@ -27,6 +27,13 @@ if (editionRoot) {
       visualPlan.images.length !== pages.length - 1) {
     throw Error('Missing or inconsistent editorial design plan');
   }
+  {
+    // The layout plan must be exactly what the planner derives from this pack's own records.
+    const { planEditionLayout, validateLayoutPlan, layoutInputsFromPack } = await import('../site-builder/layout-planner.mjs');
+    const layoutPlan = validateLayoutPlan(await load(root('layout-plan.json')), pages.filter((p) => p.page_type !== 'home').map((p) => p.page_id));
+    const replanned = planEditionLayout(layoutInputsFromPack({ pages, evidence, mediaReport, site, visualPlan }));
+    if (replanned.plan_sha256 !== layoutPlan.plan_sha256) throw Error('LAYOUT_PLAN_DRIFT: layout-plan.json does not match the planner output for this pack');
+  }
   const mediaFiles = new Map();
   if (!Array.isArray(mediaPlan.selections) || !Array.isArray(mediaReport.images) ||
       !/^[a-f0-9]{64}$/.test(mediaPlan.plan_sha256 || '') ||

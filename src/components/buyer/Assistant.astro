@@ -7,9 +7,11 @@ import '../../styles/conversion.css';
 import '../../styles/sourcing-desk.css';
 import { loadBuyerBriefs } from '../../lib/buyer-brief';
 const ui = t(Astro.currentLocale);
+// The header carries the opener on every page. A page may print a second, in-flow opener.
+const { opener = false } = Astro.props as { opener?: boolean };
 const briefs = loadBuyerBriefs();
 ---
-<button type="button" data-assistant-open class="buyer-action">{ui.askSourcing}</button>
+{opener && <button type="button" data-assistant-open class="buyer-action">{ui.askSourcing}</button>}
 <dialog id="buyer-assistant" class="buyer-dialog sourcing-dialog" aria-labelledby="assistant-title" data-site-slug={site.slug}>
   <div class="sourcing-dialog-heading">
     <h2 id="assistant-title">{conversion.assistantTitle}</h2>

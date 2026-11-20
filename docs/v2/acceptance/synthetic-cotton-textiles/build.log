@@ -1,0 +1,82 @@
+$ pnpm prepare:media && pnpm validate:content && pnpm check:editorial
+$ node scripts/prepare-media.mjs
+Enterprise media is resolved by the tenant-bound media pipeline.
+$ node scripts/validate-content.mjs
+Validated private edition: 5 page contracts, 4 evidence, 1 captured sources.
+$ node scripts/check-editorial-profiles.mjs
+atelier: contrast pairs PASS
+industrial: contrast pairs PASS
+editorial: contrast pairs PASS
+$ astro build && node scripts/finalize-site.mjs
+[2m12:09:38[22m [34m[content][39m Syncing content
+[2m12:09:38[22m [34m[content][39m Synced content
+[2m12:09:38[22m [34m[types][39m Generated [2m263ms[22m
+[2m12:09:38[22m [34m[build][39m output: [34m"static"[39m
+[2m12:09:38[22m [34m[build][39m mode: [34m"static"[39m
+[2m12:09:38[22m [34m[build][39m directory: [34mY:\buyersite-main\dist\[39m
+[2m12:09:38[22m [34m[build][39m Collecting build info...
+[2m12:09:38[22m [34m[build][39m [32m✓ Completed in 309ms.[39m
+[2m12:09:38[22m [34m[build][39m Building static entrypoints...
+[2m12:09:38[22m [34m[astro-icon][39m Loaded icons from src/icons, lucide
+[2m12:09:38[22m [34m[assets][39m Copying fonts (11 files)...
+[2m12:09:38[22m [34m[vite][39m [32m✓ built in 685ms[39m
+[33m[1m12:09:39[22m [WARN] [vite][39m [33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[2m12:09:39[22m [34m[vite][39m [32m✓ built in 239ms[39m
+[2m12:09:39[22m [34m[build][39m Rearranging server assets...
+
+[42m[30m generating static routes [39m[49m
+[2m12:09:40[22m   [34m├─[39m [2m/404.html[22m [2m(+19ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/buyer-data.json[22m [2m(+3ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/colophon/index.html[22m [2m(+7ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/enquiry/index.html[22m [2m(+9ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/privacy/index.html[22m [2m(+5ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/robots.txt[22m [2m(+2ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/rss.xml[22m [2m(+47ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/search/index.html[22m [2m(+6ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/sources/index.html[22m [2m(+9ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/guides/buyer-enquiry-guide/index.html[22m [2m(+8ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/products/cotton-canvas/index.html[22m [2m(+6ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/products/soft-knit-fabric/index.html[22m [2m(+6ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/suppliers/synthetic-cotton-textiles/index.html[22m [2m(+5ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/products/index.html[22m [2m(+4ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/suppliers/index.html[22m [2m(+3ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/guides/index.html[22m [2m(+3ms)[22m 
+[2m12:09:40[22m   [34m├─[39m [2m/index.html[22m [2m(+9ms)[22m 
+[2m12:09:40[22m [32m✓ Completed in 1.50s.
+[39m
+[42m[30m generating optimized images [39m[49m
+[2m12:09:40[22m   [32m▶[39m /_astro/cover.-e0Crzpr_Z19VeQq.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(1/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_AGeIM.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(2/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_Z1DRuVY.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(3/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-cotton-canvas.D7JZ5WRA_2kCd4F.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(4/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-synthetic-cotton-textiles.B0nmWp2__1BCpxv.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(5/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_Z23A3hV.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(6/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-cotton-canvas.D7JZ5WRA_G2dxq.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(7/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-cotton-canvas.D7JZ5WRA_Z1H4QSo.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(8/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-synthetic-cotton-textiles.B0nmWp2__o3AgC.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(9/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_1WnmaS.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(10/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_ZxCjK.avif [2m(reused cache entry)[22m [2m(+13ms)[22m [2m(11/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-synthetic-cotton-textiles.B0nmWp2__1kCDUB.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(12/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-cotton-canvas.D7JZ5WRA_ANNjp.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(13/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_eYMAm.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(14/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-synthetic-cotton-textiles.B0nmWp2__ZXohUX.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(15/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_ZJc5Mi.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(16/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-cotton-canvas.D7JZ5WRA_Z6STLw.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(17/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_ZGuH2T.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(18/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-synthetic-cotton-textiles.B0nmWp2__NI99m.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(19/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_1SaKuH.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(20/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_1Yha31.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(21/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_s9BWG.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(22/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_Z100jqt.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(23/24)[22m
+[2m12:09:40[22m   [32m▶[39m /_astro/hero-soft-knit-fabric.BmFxHMiF_1ll8mv.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(24/24)[22m
+[2m12:09:40[22m [32m✓ Completed in 39ms.
+[39m
+[2m12:09:40[22m [34m[build][39m [32m✓ Completed in 2.49s.[39m
+[2m12:09:40[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m12:09:40[22m [34m[build][39m 14 page(s) built in [1m2.82s[22m
+[2m12:09:40[22m [34m[build][39m [1mComplete![22m
+Finalized private edition with isolated local search.

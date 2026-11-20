@@ -12,8 +12,10 @@ interface Props {
   notes?: EvidenceItem[];
   heroAlreadyShown?: boolean;
   brief?: BuyerBrief | null;
+  /** False when the layout plan finds no picture worth showing for this product. */
+  media?: boolean;
 }
-const { item, notes = [], heroAlreadyShown = false, brief } = Astro.props;
+const { item, notes = [], heroAlreadyShown = false, brief, media = true } = Astro.props;
 const ui = t(Astro.currentLocale ?? site.locale);
 const headingId = `product-story-${item.id}`;
 ---
@@ -26,7 +28,7 @@ const headingId = `product-story-${item.id}`;
     <p class="editorial-deck">{brief?.summary ?? (heroAlreadyShown ? ui.editorial.specificationScope : item.data.deck)}</p>
     <a class="editorial-text-link" href={item.href + '#source-notes'}>{ui.editorial.readSpecification}</a>
   </div>
-  {!heroAlreadyShown && (
+  {!heroAlreadyShown && media && (
     <figure class="product-story-media">
       <Image src={item.data.hero} alt={item.data.heroAlt} widths={[480, 800, 1200]} format="avif"
         sizes="(min-width: 900px) 52vw, 100vw" loading="lazy"

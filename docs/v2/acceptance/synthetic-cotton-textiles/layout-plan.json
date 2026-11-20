@@ -1,0 +1,56 @@
+{
+  "schema_version": "2.0.0",
+  "design_family": "editorial-journal",
+  "signals": {
+    "product_count": 2,
+    "article_count": 4,
+    "evidence_count": 4,
+    "facts_per_product": 2,
+    "numeric_fact_ratio": 0,
+    "media_strength_max": 0,
+    "media_strength_min": 0,
+    "name_length": 39,
+    "category_direction": "atelier"
+  },
+  "rationale": [
+    "Material-led category without usable pictures: a typographic journal; artwork kept marginal.",
+    "Only abstract fallback artwork is available: no picture leads a cover or a page.",
+    "Long publication name: the masthead steps down a size."
+  ],
+  "home": {
+    "cover": "typographic",
+    "blocks": [
+      "index",
+      "lead-ledger",
+      "products",
+      "supplier",
+      "questions",
+      "reading",
+      "trust"
+    ],
+    "show_media": false
+  },
+  "pages": {
+    "synthetic-cotton-textiles": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "cotton-canvas": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "soft-knit-fabric": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    },
+    "buyer-enquiry-guide": {
+      "hero": "marginal",
+      "ledger": "table",
+      "show_media": false
+    }
+  },
+  "plan_sha256": "16414de46687d42c1844417e40b0eeff524fd1e29e841cfbb8f3f40c1dc52238"
+}

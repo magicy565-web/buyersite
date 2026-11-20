@@ -1,0 +1,107 @@
+---
+// The Fact Ledger: the signature of the v2 edition. What the source states is set as large
+// figures, each with its status, source and capture date; what is not yet confirmed is set
+// beside it as open, empty-boxed lines of equal weight. A buyer sees both halves at once, so
+// a page cannot look more certain than its evidence.
+import type { EvidenceItem } from '../../lib/evidence';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
+import { formatDay, sourceHost, splitFigure } from '../../lib/edition';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/magazine.css';
+
+interface Props {
+  items: EvidenceItem[];
+  brief?: BuyerBrief | null;
+  /** `figures`: measured values set large. `table`: a dense row list for many or long values. */
+  variant?: 'figures' | 'table';
+  id?: string;
+  title?: string;
+  intro?: string;
+  /** Heading level of the ledger title. */
+  level?: 2 | 3;
+  action?: boolean;
+  /** Link facts to the page's own source notes rather than the edition notebook. */
+  localSources?: boolean;
+  limitOpen?: number;
+}
+const {
+  items,
+  brief,
+  variant = 'figures',
+  id = 'buyer-summary',
+  title,
+  intro,
+  level = 2,
+  action = true,
+  localSources = true,
+  limitOpen,
+} = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const Heading = level === 2 ? 'h2' : 'h3';
+const Sub = level === 2 ? 'h3' : 'h4';
+const open = brief ? (limitOpen ? brief.unconfirmed.slice(0, limitOpen) : brief.unconfirmed) : [];
+const hiddenOpen = brief ? brief.unconfirmed.length - open.length : 0;
+const statusLabel = (item: EvidenceItem) =>
+  item.status === 'supplier-stated' ? ui.editorial.supplierStatement : item.status === 'verified' ? ui.magazine.verified : item.status;
+const sourceHref = (item: EvidenceItem) => (localSources ? '#source-' + item.evidence_id : '/sources/#' + item.evidence_id);
+---
+
+<section id={id} class:list={['ledger', 'ledger--' + variant, items.length < 2 && 'ledger--sparse']} data-editorial-block="fact-ledger" aria-labelledby={id + '-title'}>
+  <header class="ledger-head">
+    <Heading id={id + '-title'} class="ledger-title">{title ?? ui.editorial.briefSummary}</Heading>
+    {(intro ?? brief?.summary) && <p class="ledger-intro">{intro ?? brief?.summary}</p>}
+  </header>
+  <div class="ledger-columns">
+    <div class="ledger-known" aria-labelledby={id + '-known'}>
+      <Sub id={id + '-known'} class="ledger-label">{ui.editorial.knownHeading}<span class="ledger-count">{items.length}</span></Sub>
+      {items.length > 0 ? (
+        <dl class="ledger-facts">
+          {items.map((item) => {
+            const figure = splitFigure(item.value);
+            const day = formatDay(item.captured_at?.slice(0, 10) ?? null);
+            return (
+              <div class="ledger-fact" data-evidence-id={item.evidence_id}>
+                <dt>{item.claim}</dt>
+                <dd class:list={['ledger-value', variant === 'figures' && figure.numeric && 'ledger-value--figure', item.value.length > 48 && 'ledger-value--text']}>
+                  {variant === 'figures' && figure.numeric ? (
+                    <><span class="ledger-figure">{figure.head}</span><span class="ledger-tail">{figure.tail}</span></>
+                  ) : item.value}
+                </dd>
+                <dd class="ledger-source">
+                  <a href={sourceHref(item)}>
+                    <span>{statusLabel(item)}</span>
+                    {sourceHost(item.source_url) && <span>{sourceHost(item.source_url)}</span>}
+                    {day && <span><time datetime={item.captured_at}>{day}</time></span>}
+                  </a>
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      ) : (
+        <p class="ledger-empty">{ui.editorial.noEvidence}</p>
+      )}
+    </div>
+    {brief && brief.unconfirmed.length > 0 && (
+      <div class="ledger-open" aria-labelledby={id + '-open'}>
+        <Sub id={id + '-open'} class="ledger-label">{ui.editorial.openHeading}<span class="ledger-count">{brief.unconfirmed.length}</span></Sub>
+        <dl class="ledger-gaps">
+          {open.map((gap) => (
+            <div class="ledger-gap" data-unconfirmed={gap.id}>
+              <dt>{gap.label}</dt>
+              <dd>{gap.detail}</dd>
+            </div>
+          ))}
+        </dl>
+        {hiddenOpen > 0 && <p class="ledger-more">{ui.magazine.moreOpen(hiddenOpen)}</p>}
+      </div>
+    )}
+  </div>
+  {action && (
+    <div class="ledger-actions">
+      <a class="mag-button" href={buyerEnquiryHref(brief)} data-buyer-context={brief?.page_path}>{ui.magazine.enquireWithContext}</a>
+      <span class="ledger-promise">{ui.magazine.savedNotSent}</span>
+    </div>
+  )}
+</section>

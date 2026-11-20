@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { compileEnterpriseSite } from './compile.mjs';
 import { materializeEditionMedia } from './media-render.mjs';
 import { createHash } from 'node:crypto';
+import { planEditionLayout, layoutInputsFromPack } from './layout-planner.mjs';
 
 const json = (value) => JSON.stringify(value, null, 2) + '\n';
 const inline = (value) => JSON.stringify(value);
@@ -104,6 +105,12 @@ export async function writeSitePreview(input, baseDir = '.generated/company-site
     enterpriseId: input.enterprise.id,
   });
   await writeFile(join(root, 'media-report.json'), json(mediaReport), { mode: 0o600 });
+  // The layout plan depends on what media actually materialized, so it is planned here, from the
+  // pack's own records. validate-content re-plans from the same files and rejects any drift.
+  const layoutPlan = planEditionLayout(layoutInputsFromPack({
+    pages: result.pages, evidence: result.evidence, mediaReport, site: result.site, visualPlan: result.visualPlan,
+  }));
+  await writeFile(join(root, 'layout-plan.json'), json(layoutPlan));
   const dateString = new Date(input.exported_at).toISOString().slice(0, 10);
   for (const item of result.articles) {
     const media = mediaReport.images.find((image) => image.page_id === item.slug);

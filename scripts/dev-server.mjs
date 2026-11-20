@@ -1,7 +1,7 @@
 // Development adapter only. Production uses the bundled Worker and hosted D1.
 import { createServer } from 'node:http';
 import { readFile, mkdir, readdir, stat } from 'node:fs/promises';
-import { resolve, join, extname } from 'node:path';
+import { resolve, join, extname, sep } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 const edition=process.env.BUYERSITE_BUILD_ROOT;
 let worker,DB;
@@ -27,10 +27,10 @@ if(!edition){
   }};
 }
 const staticRoot=resolve(edition?'dist':'dist/client');
-const MIME={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.wasm':'application/wasm','.xml':'application/xml','.txt':'text/plain'};
+const MIME={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.avif':'image/avif','.ico':'image/x-icon','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.wasm':'application/wasm','.xml':'application/xml','.txt':'text/plain'};
 const ASSETS={async fetch(request){
   let pathname;try{pathname=decodeURIComponent(new URL(request.url).pathname);}catch{return new Response('Bad path',{status:400});}
-  const target=resolve(staticRoot,'.'+pathname);if(target!==staticRoot&&!target.startsWith(staticRoot+'/'))return new Response('Not found',{status:404});
+  const target=resolve(staticRoot,'.'+pathname);if(target!==staticRoot&&!target.startsWith(staticRoot+sep))return new Response('Not found',{status:404});
   let file=target;const info=await stat(file).catch(()=>null);if(info?.isDirectory())file=join(file,'index.html');
   try{return new Response(await readFile(file),{headers:{'Content-Type':MIME[extname(file)]||'application/octet-stream'}});}catch{return new Response(await readFile(join(staticRoot,'404.html')).catch(()=>'Not found'),{status:404,headers:{'Content-Type':'text/html; charset=utf-8'}});}
 }};

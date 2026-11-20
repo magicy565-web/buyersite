@@ -1,0 +1,136 @@
+$ pnpm prepare:media && pnpm validate:content && pnpm check:editorial
+$ node scripts/prepare-media.mjs
+Enterprise media is resolved by the tenant-bound media pipeline.
+$ node scripts/validate-content.mjs
+Validated private edition: 10 page contracts, 9 evidence, 1 captured sources.
+$ node scripts/check-editorial-profiles.mjs
+atelier: contrast pairs PASS
+industrial: contrast pairs PASS
+editorial: contrast pairs PASS
+$ astro build && node scripts/finalize-site.mjs
+[2m12:14:53[22m [34m[content][39m Syncing content
+[2m12:14:53[22m [34m[content][39m Synced content
+[2m12:14:53[22m [34m[types][39m Generated [2m271ms[22m
+[2m12:14:53[22m [34m[build][39m output: [34m"static"[39m
+[2m12:14:53[22m [34m[build][39m mode: [34m"static"[39m
+[2m12:14:53[22m [34m[build][39m directory: [34mY:\buyersite-main\dist\[39m
+[2m12:14:53[22m [34m[build][39m Collecting build info...
+[2m12:14:53[22m [34m[build][39m [32m✓ Completed in 322ms.[39m
+[2m12:14:53[22m [34m[build][39m Building static entrypoints...
+[2m12:14:54[22m [34m[astro-icon][39m Loaded icons from src/icons, lucide
+[2m12:14:54[22m [34m[assets][39m Copying fonts (11 files)...
+[2m12:14:54[22m [34m[vite][39m [32m✓ built in 675ms[39m
+[33m[1m12:14:54[22m [WARN] [vite][39m [33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[2m12:14:54[22m [34m[vite][39m [32m✓ built in 233ms[39m
+[2m12:14:54[22m [34m[build][39m Rearranging server assets...
+
+[42m[30m generating static routes [39m[49m
+[2m12:14:55[22m   [34m├─[39m [2m/404.html[22m [2m(+19ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/buyer-data.json[22m [2m(+3ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/colophon/index.html[22m [2m(+6ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/enquiry/index.html[22m [2m(+7ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/privacy/index.html[22m [2m(+5ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/robots.txt[22m [2m(+1ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/rss.xml[22m [2m(+46ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/search/index.html[22m [2m(+5ms)[22m 
+[2m12:14:55[22m   [34m├─[39m [2m/sources/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/guides/buyer-enquiry-guide/index.html[22m [2m(+7ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/ceramic-mug-set/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/cotton-table-runner/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/enamel-storage-canister/index.html[22m [2m(+6ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/glass-carafe/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/linen-tea-towel/index.html[22m [2m(+4ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/oak-cutting-board/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/stoneware-serving-bowl/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/suppliers/synthetic-housewares-trading/index.html[22m [2m(+4ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/index.html[22m [2m(+5ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/products/2/index.html[22m [2m(+4ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/suppliers/index.html[22m [2m(+3ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/guides/index.html[22m [2m(+3ms)[22m 
+[2m12:14:56[22m   [34m├─[39m [2m/index.html[22m [2m(+10ms)[22m 
+[2m12:14:56[22m [32m✓ Completed in 1.42s.
+[39m
+[42m[30m generating optimized images [39m[49m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-ceramic-mug-set.9AF4yy12_23fL1y.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(1/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_ZflnKp.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(2/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/cover.-e0Crzpr_Z19VeQq.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(3/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_AGeIM.jpeg [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(4/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_Z1NBLcg.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(5/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_ZmyMut.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(6/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_xj8tP.jpeg [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(7/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-synthetic-housewares-trading.DLGKn51b_Z1e97uj.jpeg [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(8/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_Z1hGO9x.jpeg [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(9/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_ZhgNQL.jpeg [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(10/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-ceramic-mug-set.9AF4yy12_Zoczgx.avif [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(11/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_1CmAdc.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(12/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_1GfAfQ.avif [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(13/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_2trUPJ.avif [2m(reused cache entry)[22m [2m(+5ms)[22m [2m(14/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_Z23A3hV.avif [2m(reused cache entry)[22m [2m(+15ms)[22m [2m(15/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_Z2hWa0r.avif [2m(reused cache entry)[22m [2m(+15ms)[22m [2m(16/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-synthetic-housewares-trading.DLGKn51b_DYNCW.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(17/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_kLK6r.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(18/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_gd8LR.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(19/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-ceramic-mug-set.9AF4yy12_1Hp3ms.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(20/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_ALHTn.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(21/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_ZlsfYJ.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(22/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_1TkI5G.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(23/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_1WnmaS.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(24/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_Z1jfWCh.avif [2m(reused cache entry)[22m [2m(+20ms)[22m [2m(25/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-synthetic-housewares-trading.DLGKn51b_CnaWD.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(26/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_ZIqXeF.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(27/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-ceramic-mug-set.9AF4yy12_ZHT25t.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(28/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_ZQMssc.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(29/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_1sCh9.avif [2m(reused cache entry)[22m [2m(+11ms)[22m [2m(30/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_11Pm13.jpeg [2m(reused cache entry)[22m [2m(+18ms)[22m [2m(31/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_1Hi7Mv.jpeg [2m(reused cache entry)[22m [2m(+18ms)[22m [2m(32/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_eYMAm.avif [2m(reused cache entry)[22m [2m(+18ms)[22m [2m(33/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_Z1JDmJh.jpeg [2m(reused cache entry)[22m [2m(+28ms)[22m [2m(34/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-synthetic-housewares-trading.DLGKn51b_Z2tEKgj.avif [2m(reused cache entry)[22m [2m(+19ms)[22m [2m(35/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_Z1DoghX.avif [2m(reused cache entry)[22m [2m(+18ms)[22m [2m(36/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_Z1Jl6Ef.avif [2m(reused cache entry)[22m [2m(+18ms)[22m [2m(37/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-ceramic-mug-set.9AF4yy12_Z1CKg2P.avif [2m(reused cache entry)[22m [2m(+18ms)[22m [2m(38/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-buyer-enquiry-guide.CBaoRNEl_ZGuH2T.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(39/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_1clBeK.avif [2m(reused cache entry)[22m [2m(+33ms)[22m [2m(40/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_ZH94OF.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(41/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_ZJ8J4A.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(42/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_Z1EIDvi.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(43/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-synthetic-housewares-trading.DLGKn51b_Zr3mPt.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(44/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_XOgrU.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(45/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_2uimRH.avif [2m(reused cache entry)[22m [2m(+16ms)[22m [2m(46/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_1RTpYn.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(47/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_20BhQU.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(48/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_qRY7H.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(49/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_23WDVs.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(50/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_1z9r5Y.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(51/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_2e8kxT.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(52/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_Z2nX3PO.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(53/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_o1shJ.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(54/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-enamel-storage-canister.Be1GqZcO_ZsONFA.avif [2m(reused cache entry)[22m [2m(+30ms)[22m [2m(55/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_Zagnom.avif [2m(reused cache entry)[22m [2m(+30ms)[22m [2m(56/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_Z1ACRAq.avif [2m(reused cache entry)[22m [2m(+31ms)[22m [2m(57/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_ynWWC.avif [2m(reused cache entry)[22m [2m(+31ms)[22m [2m(58/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_1CQu34.avif [2m(reused cache entry)[22m [2m(+30ms)[22m [2m(59/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_2hHhPN.avif [2m(reused cache entry)[22m [2m(+30ms)[22m [2m(60/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-cotton-table-runner.CD_bZVIz_1dM89B.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(61/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_Eu4aG.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(62/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_Z2pks8b.avif [2m(reused cache entry)[22m [2m(+9ms)[22m [2m(63/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_15xXvQ.avif [2m(reused cache entry)[22m [2m(+9ms)[22m [2m(64/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_Z1R477d.avif [2m(reused cache entry)[22m [2m(+9ms)[22m [2m(65/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_Z1pLCf9.avif [2m(reused cache entry)[22m [2m(+10ms)[22m [2m(66/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_ZhEPzb.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(67/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-stoneware-serving-bowl.Ckp-C7FJ_19Psi4.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(68/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_11oTWD.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(69/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-oak-cutting-board.BAomXz86_Z1MxCQ0.avif [2m(reused cache entry)[22m [2m(+1ms)[22m [2m(70/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-linen-tea-towel.2h-YOPgl_ZuG5Hd.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(71/72)[22m
+[2m12:14:56[22m   [32m▶[39m /_astro/hero-glass-carafe.B7_4wsHn_1eAlOV.avif [2m(reused cache entry)[22m [2m(+12ms)[22m [2m(72/72)[22m
+[2m12:14:56[22m [32m✓ Completed in 127ms.
+[39m
+[2m12:14:56[22m [34m[build][39m [32m✓ Completed in 2.49s.[39m
+[2m12:14:56[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m12:14:56[22m [34m[build][39m 20 page(s) built in [1m2.83s[22m
+[2m12:14:56[22m [34m[build][39m [1mComplete![22m
+Finalized private edition with isolated local search.

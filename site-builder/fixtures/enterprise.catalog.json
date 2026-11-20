@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "site_slug": "synthetic-housewares-catalog",
+  "exported_at": "2026-11-13T00:00:00Z",
+  "enterprise": {
+    "id": "synthetic-catalog-only",
+    "revision": 1,
+    "company": {
+      "displayName": "Synthetic Housewares Trading",
+      "description": "Synthetic multi-SKU catalogue fixture used to test how a buyer edition handles many products. No real company, product or commercial term is represented.",
+      "website": "https://example.net"
+    },
+    "products": [
+      { "id": "hw-01", "name": "Stoneware Serving Bowl", "category": "Housewares", "description": "Synthetic record for a stoneware serving bowl. Dimensions, glaze, MOQ, price and lead time are not supplied." },
+      { "id": "hw-02", "name": "Enamel Storage Canister", "category": "Housewares", "description": "Synthetic record for an enamel storage canister. Capacity, finish options and food-contact documents are not supplied." },
+      { "id": "hw-03", "name": "Oak Cutting Board", "category": "Housewares", "description": "Synthetic record for an oak cutting board. Timber source, dimensions and finish are not supplied." },
+      { "id": "hw-04", "name": "Linen Tea Towel", "category": "Home textiles", "description": "Synthetic record for a linen tea towel. Fibre content, size and care instructions are not supplied." },
+      { "id": "hw-05", "name": "Glass Carafe", "category": "Housewares", "description": "Synthetic record for a glass carafe. Capacity, glass type and packaging are not supplied." },
+      { "id": "hw-06", "name": "Cotton Table Runner", "category": "Home textiles", "description": "Synthetic record for a cotton table runner. Length, weave and colourways are not supplied." },
+      { "id": "hw-07", "name": "Ceramic Mug Set", "category": "Housewares", "description": "Synthetic record for a ceramic mug set. Set size, capacity and dishwasher suitability are not supplied." }
+    ]
+  },
+  "website_pages": [
+    {
+      "url": "https://example.net/catalogue",
+      "title": "Synthetic housewares catalogue",
+      "captured_at": "2026-11-13T00:00:00Z",
+      "body_text": "Synthetic Housewares Trading lists a Stoneware Serving Bowl, an Enamel Storage Canister, an Oak Cutting Board and a Glass Carafe in this illustrative catalogue. This text is a software acceptance fixture, not a real website capture or verified supplier information."
+    }
+  ]
+}

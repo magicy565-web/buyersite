@@ -1,0 +1,1242 @@
+/*
+  magazine.css -- the v2 edition blocks (src/components/magazine/).
+
+  Art direction, in one paragraph: a buyer's review should read like a serious trade magazine,
+  not a landing page. Hierarchy comes from scale contrast -- a large serif masthead and
+  headlines against small mono source tags -- and from the Fact Ledger, where what a source
+  states is set as large figures and what it does not state is set beside it as open boxes of
+  equal weight. Pictures are shown uncovered; type is never laid over an image unless the band
+  under it is solid. Rules, not cards. One spot colour, used for kickers and actions.
+
+  Every colour is a token from tokens.css/theme.css, so `pnpm check:contrast` and
+  `pnpm check:editorial` cover these blocks in all editorial profiles.
+*/
+
+/* The display face is a family decision, not a palette one. Editorial families set headlines in
+   the serif; the dossier and the catalogue set them in the grotesque, tighter and heavier, so a
+   technical edition reads as a reference document rather than a feature magazine. */
+:root {
+  --mag-display: var(--font-body);
+  --mag-display-weight: 600;
+}
+html[data-design-family='technical-dossier'],
+html[data-design-family='catalog-index'] {
+  --mag-display: var(--font-heading);
+  --mag-display-weight: 800;
+}
+html[data-design-family='technical-dossier'] :is(.cover-wordmark, .cover-headline, .article-hero-title, .ledger-title, .portrait-title, .catalog-title, .trust-title),
+html[data-design-family='catalog-index'] :is(.cover-wordmark, .cover-headline, .article-hero-title, .ledger-title, .portrait-title, .catalog-title, .trust-title) {
+  font-weight: var(--mag-display-weight);
+  letter-spacing: -0.04em;
+}
+html[data-design-family='technical-dossier'] .ledger {
+  border-top-width: 6px;
+  background: transparent;
+  outline: 1px solid var(--border);
+}
+
+.mag-container {
+  width: 100%;
+  max-width: var(--wide-width);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+.mag-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.mag-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mag-caption {
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.mag-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.65rem 1.1rem;
+  border: 2px solid var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+.mag-button:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.mag-button--quiet {
+  background: transparent;
+  color: var(--foreground);
+}
+.mag-text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  text-underline-offset: 0.25em;
+}
+
+/* ---------------------------------------------------------------- Cover */
+.cover {
+  padding-top: clamp(1rem, 3vw, 2.25rem);
+}
+.cover-masthead {
+  display: grid;
+  gap: 0.9rem 3rem;
+  align-items: end;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid var(--foreground);
+}
+.cover-wordmark {
+  max-width: 100%;
+  font-family: var(--mag-display);
+  font-size: clamp(3rem, 12.5vw, 9.75rem);
+  font-weight: 600;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+.cover--long-name .cover-wordmark {
+  font-size: clamp(2.3rem, 7.2vw, 6.25rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+}
+.cover-description {
+  max-width: 34rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.cover-dateline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.cover-stage {
+  display: grid;
+  gap: 1.5rem 3.5rem;
+  width: 100%;
+  max-width: var(--wide-width);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 0;
+}
+.cover-media {
+  min-width: 0;
+  margin: 0;
+}
+.cover-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.cover-story {
+  min-width: 0;
+}
+.cover-headline {
+  margin-top: 0.75rem;
+  font-family: var(--mag-display);
+  font-size: clamp(2rem, 4.1vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.cover-headline a {
+  color: inherit;
+  text-decoration: none;
+}
+.cover-headline a:hover {
+  color: var(--primary);
+}
+.cover-deck {
+  max-width: 40ch;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+.cover-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 64rem) {
+  .cover--long-word .cover-wordmark {
+    font-size: min(5rem, calc((100vw - 32rem) / (0.68 * var(--longest-word))));
+  }
+  .cover-masthead {
+    grid-template-columns: minmax(0, auto) minmax(16rem, 24rem);
+    justify-content: space-between;
+  }
+  .cover-meta {
+    padding-bottom: 0.4rem;
+  }
+  /* split: the story column on the left, the picture large on the right and uncovered. */
+  .cover--split .cover-stage {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: end;
+  }
+  .cover--split .cover-story {
+    order: -1;
+    padding-bottom: 2.25rem;
+  }
+  .cover--split .cover-media img {
+    aspect-ratio: 5 / 4;
+  }
+}
+
+/* immersive: the picture full-bleed; the story on a solid panel overlapping its foot, so the
+   image is never darkened and the type always sits on paper. */
+.cover--immersive .cover-stage {
+  max-width: none;
+  padding-inline: 0;
+}
+.cover--immersive .cover-media img {
+  aspect-ratio: 4 / 3;
+}
+.cover--immersive .cover-media .mag-caption {
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+.cover--immersive .cover-story {
+  width: 100%;
+  max-width: var(--wide-width);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+@media (min-width: 48rem) {
+  .cover--immersive .cover-media img {
+    aspect-ratio: 21 / 9;
+  }
+  .cover--immersive .cover-stage {
+    position: relative;
+  }
+  .cover--immersive .cover-story {
+    position: relative;
+    margin-top: -9rem;
+  }
+  .cover--immersive .cover-story > * {
+    max-width: 40rem;
+  }
+  .cover--immersive .cover-story {
+    background: linear-gradient(var(--background), var(--background)) no-repeat left top / min(44rem, 100%) 100%;
+    padding-top: 1.5rem;
+  }
+  .cover--immersive .cover-story > * {
+    padding-inline-end: 2rem;
+  }
+}
+
+/* typographic: no cover picture. The headline is the cover. */
+.cover--typographic .cover-stage {
+  padding-top: clamp(2rem, 6vw, 5rem);
+}
+.cover--typographic .cover-headline {
+  max-width: 20ch;
+  font-size: clamp(2.4rem, 7vw, 6.5rem);
+  line-height: 0.98;
+}
+.cover--typographic .cover-deck {
+  max-width: 48ch;
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+}
+
+/* ---------------------------------------------------------------- Contents */
+.edition-index {
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+}
+.edition-index ol {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 2px solid var(--foreground);
+}
+.edition-index a {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 0.15rem 0.75rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+}
+.edition-index-number {
+  grid-row: span 3;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+.edition-index-path {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.edition-index-title {
+  font-family: var(--mag-display);
+  font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+  line-height: 1.25;
+}
+.edition-index-note {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.edition-index a:hover .edition-index-title {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+@media (min-width: 64rem) {
+  .edition-index a {
+    grid-template-columns: 3.5rem 13rem minmax(0, 1fr) minmax(0, 20rem);
+    align-items: baseline;
+    gap: 1.5rem;
+    padding-block: 1.15rem;
+  }
+  .edition-index-number {
+    grid-row: auto;
+  }
+}
+
+/* ---------------------------------------------------------------- Fact Ledger */
+.mag-band {
+  margin-top: clamp(3rem, 7vw, 6rem);
+}
+.ledger {
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border-top: 3px solid var(--foreground);
+  background: var(--surface);
+  scroll-margin-top: 7rem;
+}
+.ledger-title {
+  max-width: 26ch;
+  font-family: var(--mag-display);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.ledger-intro {
+  max-width: 62ch;
+  margin-top: 0.75rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.ledger-columns {
+  display: grid;
+  gap: 2.25rem 3.5rem;
+  margin-top: 2rem;
+}
+.ledger-columns > * {
+  min-width: 0;
+}
+@media (min-width: 56rem) {
+  .ledger-columns {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+.ledger-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.ledger-count {
+  padding-inline: 0.35rem;
+  border: 1px solid currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.ledger-fact {
+  min-width: 0;
+  padding-block: 1rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+.ledger-fact dt {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.ledger-value {
+  margin-top: 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.ledger-figure {
+  display: block;
+  font-family: var(--mag-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.ledger-tail {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.ledger-source a {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.6rem;
+  margin-top: 0.65rem;
+  padding-block: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--muted);
+  text-underline-offset: 0.2em;
+}
+.ledger-source a:hover {
+  color: var(--foreground);
+}
+@media (min-width: 40rem) {
+  .ledger--figures .ledger-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+    column-gap: 2rem;
+  }
+}
+.ledger--table .ledger-fact {
+  display: grid;
+  gap: 0.2rem 1.5rem;
+}
+@media (min-width: 40rem) {
+  .ledger--table .ledger-fact {
+    grid-template-columns: minmax(8rem, 2fr) minmax(0, 3fr);
+  }
+  .ledger--table .ledger-value,
+  .ledger--table .ledger-source {
+    grid-column: 2;
+  }
+  .ledger--table .ledger-fact dt {
+    grid-row: span 2;
+  }
+  .ledger--table .ledger-value {
+    margin-top: 0;
+  }
+}
+.ledger-gap {
+  position: relative;
+  padding: 1rem 0 1rem 2rem;
+  border-bottom: 1px dashed var(--muted);
+}
+/* The open box: a fact that has a place in the ledger but no value yet. */
+.ledger-gap::before {
+  content: '';
+  position: absolute;
+  top: 1.15rem;
+  left: 0;
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px dashed var(--foreground);
+}
+.ledger-gap dt {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.ledger-gap dd {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.ledger-more,
+.ledger-empty {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.ledger-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 2rem;
+}
+.ledger-promise {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- Supplier portrait */
+.portrait {
+  display: grid;
+  gap: 2rem 4.5rem;
+  align-items: start;
+  margin-top: clamp(3.5rem, 8vw, 7rem);
+}
+.portrait > * {
+  min-width: 0;
+}
+.portrait-media {
+  margin: 0;
+}
+.portrait-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+@media (min-width: 64rem) {
+  .portrait {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+  .portrait-media img {
+    aspect-ratio: 4 / 5;
+  }
+  .portrait-copy {
+    padding-top: 2.5rem;
+  }
+}
+.portrait--no-media {
+  grid-template-columns: minmax(0, 52rem);
+}
+.portrait-title {
+  margin-top: 0.75rem;
+  font-family: var(--mag-display);
+  font-size: clamp(1.9rem, 3.6vw, 3rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.portrait-title a {
+  color: inherit;
+  text-decoration: none;
+}
+.portrait-title a:hover {
+  color: var(--primary);
+}
+.portrait-deck {
+  max-width: 52ch;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+.portrait-facts {
+  margin-top: 1.75rem;
+  border-top: 2px solid var(--foreground);
+}
+.portrait-facts > div {
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+.portrait-facts dt {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.portrait-fact-value {
+  margin-top: 0.2rem;
+  font-family: var(--mag-display);
+  font-size: clamp(1.75rem, 3.4vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.portrait-fact-source a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding-block: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+.portrait-gaps {
+  margin-top: 1.75rem;
+}
+.portrait-gaps ul {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.portrait-gaps li {
+  position: relative;
+  padding: 0.5rem 0 0.5rem 1.6rem;
+  border-bottom: 1px dashed var(--border);
+}
+.portrait-gaps li::before {
+  content: '';
+  position: absolute;
+  top: 0.8rem;
+  left: 0;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 1.5px dashed var(--foreground);
+}
+.portrait-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+  margin-top: 1.25rem;
+}
+
+/* ---------------------------------------------------------------- Trust colophon */
+.trust {
+  margin-top: clamp(4rem, 9vw, 8rem);
+  padding-top: 1.5rem;
+  border-top: 3px solid var(--foreground);
+}
+.trust-title {
+  font-family: var(--mag-display);
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+.trust-list {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 48rem) {
+  .trust-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 80rem) {
+  .trust-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.trust-list dt {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.trust-list dd {
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.trust-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+  margin-top: 1.25rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+.trust-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* ---------------------------------------------------------------- Header bar */
+.preview-bar {
+  padding: 0.35rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--muted);
+}
+.preview-bar a {
+  color: var(--foreground);
+}
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid var(--foreground);
+  background: var(--background);
+}
+.bar-inner {
+  display: grid;
+  grid-template-areas: 'brand actions' 'desks desks';
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 1rem;
+  width: 100%;
+  max-width: var(--wide-width);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+.bar-wordmark {
+  grid-area: brand;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  min-width: 0;
+  font-family: var(--mag-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-desks {
+  grid-area: desks;
+  display: flex;
+  gap: 1.25rem;
+  margin-inline: calc(-1 * clamp(1rem, 3vw, 2rem));
+  padding-inline: clamp(1rem, 3vw, 2rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+}
+.bar-desks::-webkit-scrollbar {
+  display: none;
+}
+.bar-desks a {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 2px solid transparent;
+  color: var(--foreground);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bar-desks a:hover,
+.bar-desks a[aria-current='page'] {
+  border-bottom-color: var(--primary);
+  color: var(--primary);
+}
+.bar-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.bar-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.4rem 0.75rem;
+  border: 1.5px solid var(--foreground);
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bar-action--primary {
+  background: var(--foreground);
+  color: var(--background);
+}
+.bar-action:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.header-label-short {
+  display: none;
+}
+@media (max-width: 47.99rem) {
+  .header-label-full {
+    display: none;
+  }
+  .header-label-short {
+    display: inline;
+  }
+}
+@media (min-width: 64rem) {
+  .bar-inner {
+    grid-template-areas: 'brand desks actions';
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: 2rem;
+  }
+  .bar-desks {
+    justify-content: flex-end;
+    margin-inline: 0;
+    padding-inline: 0;
+    border-top: 0;
+  }
+}
+/* The home cover prints the masthead as the page's H1; a second wordmark in the bar would
+   only repeat it. The link stays in the document for keyboard and screen-reader users. */
+.bar-wordmark--quiet {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.bar-wordmark--quiet:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+}
+
+/* ---------------------------------------------------------------- Article hero */
+.article-hero {
+  display: grid;
+  gap: 1.5rem 4rem;
+  padding-top: clamp(1.5rem, 4vw, 3.5rem);
+}
+.article-hero > * {
+  min-width: 0;
+}
+.article-hero-title {
+  margin-top: 0.85rem;
+  font-family: var(--mag-display);
+  font-size: clamp(2.1rem, 5vw, 4.25rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.article-hero-standfirst {
+  max-width: 46ch;
+  margin-top: 1.1rem;
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  line-height: 1.55;
+}
+.article-hero-meta {
+  margin-top: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.article-hero-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+}
+.article-hero-jump a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-underline-offset: 0.25em;
+}
+.article-hero-media {
+  margin: 0;
+}
+.article-hero-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+/* Narrow screens: headline and standfirst first, then the picture, then the ledger. The jump
+   links are dropped here; the ledger is directly below and the page is one column anyway. */
+@media (max-width: 47.99rem) {
+  .article-hero-jump {
+    display: none;
+  }
+}
+@media (min-width: 64rem) {
+  .article-hero--split,
+  .article-hero--split-reverse {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: end;
+  }
+  .article-hero--split-reverse {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  }
+  .article-hero--split-reverse .article-hero-media {
+    order: -1;
+  }
+  .article-hero--split .article-hero-media img,
+  .article-hero--split-reverse .article-hero-media img {
+    aspect-ratio: 4 / 3;
+  }
+  .article-hero--text-led .article-hero-title {
+    max-width: 22ch;
+    font-size: clamp(2.6rem, 5.6vw, 5rem);
+  }
+  .article-hero--text-led .article-hero-media img {
+    aspect-ratio: 21 / 8;
+  }
+}
+.article-ledger {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+.article-layout {
+  display: grid;
+  column-gap: 4rem;
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+.article-layout > .article-body {
+  max-width: var(--content-width);
+}
+@media (min-width: 64rem) {
+  .article-layout--rail {
+    grid-template-columns: minmax(0, var(--content-width)) var(--rail-width);
+    justify-content: space-between;
+  }
+}
+.article-related {
+  margin-top: clamp(4rem, 8vw, 6rem);
+}
+.article-related > * {
+  max-width: var(--content-width);
+}
+
+/* The enquiry hand-off beside the body, where no rail runs. Desktop only: on a narrow screen the
+   ledger above already ends in the same action. */
+.enquiry-aside {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .enquiry-aside {
+    display: block;
+  }
+  .enquiry-aside-inner {
+    position: sticky;
+    top: 6rem;
+    padding-top: 0.75rem;
+    border-top: 3px solid var(--foreground);
+  }
+}
+.enquiry-aside-list {
+  margin: 0.75rem 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.enquiry-aside-list li {
+  padding-block: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.enquiry-aside-list span {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+.enquiry-aside .ledger-promise {
+  margin-top: 0.75rem;
+}
+
+/* The older section blocks below the body take the edition's display face. */
+.buying-checklist.editorial-section h2,
+.buyer-evidence h2,
+.article-related h2 {
+  font-family: var(--mag-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+.buyer-evidence h2 {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  line-height: 1.1;
+}
+
+/* One stated fact against several open points: balance the columns and let the single value
+   carry the weight a row of figures would. */
+@media (min-width: 56rem) {
+  .ledger--sparse .ledger-columns {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+.ledger--sparse .ledger-fact {
+  display: block;
+}
+.ledger--sparse .ledger-value {
+  margin-top: 0.4rem;
+  font-family: var(--mag-display);
+  font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+/* ---------------------------------------------------------------- Enquiry */
+.enquiry-layout {
+  display: grid;
+  gap: 2rem 4rem;
+  padding-block: clamp(1.5rem, 4vw, 3.5rem);
+}
+.enquiry-layout > * {
+  min-width: 0;
+}
+.enquiry-main {
+  max-width: 44rem;
+}
+@media (min-width: 64rem) {
+  .enquiry-layout {
+    grid-template-columns: minmax(0, 44rem) minmax(16rem, 22rem);
+    justify-content: space-between;
+  }
+  .enquiry-head {
+    grid-column: 1 / -1;
+  }
+  .enquiry-next {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+  }
+}
+.enquiry-next {
+  padding-top: 0.75rem;
+  border-top: 3px solid var(--foreground);
+}
+.enquiry-next ol {
+  margin: 0.75rem 0 1rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: next;
+}
+.enquiry-next li {
+  position: relative;
+  padding: 0.75rem 0 0.75rem 2rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  counter-increment: next;
+}
+.enquiry-next li::before {
+  content: counter(next, decimal-leading-zero);
+  position: absolute;
+  top: 0.85rem;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+.enquiry-next strong {
+  display: block;
+  font-family: var(--font-heading);
+}
+.enquiry-referral-details > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+/* marginal: the page has no picture worth leading with (abstract fallback art). The headline
+   leads; the artwork stays on the page, small and captioned, because its provenance label is
+   part of the record -- but it no longer pretends to be the subject. */
+.article-hero--marginal .article-hero-media {
+  max-width: 18rem;
+}
+.article-hero--marginal .article-hero-media img {
+  aspect-ratio: 1 / 1;
+}
+@media (max-width: 47.99rem) {
+  .article-hero--marginal .article-hero-media {
+    max-width: 11rem;
+  }
+}
+@media (min-width: 64rem) {
+  .article-hero--marginal {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    align-items: start;
+  }
+  .article-hero--marginal .article-hero-title {
+    max-width: 20ch;
+  }
+  .article-hero--marginal .article-hero-media {
+    margin-top: 2.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------- Catalogue index */
+.catalog {
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+}
+.catalog-title {
+  font-family: var(--mag-display);
+  font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.catalog-intro {
+  max-width: 60ch;
+  margin-top: 0.6rem;
+  color: var(--muted);
+}
+.catalog-table {
+  width: 100%;
+  margin-top: 1.5rem;
+  border-collapse: collapse;
+  border-top: 2px solid var(--foreground);
+}
+.catalog-table thead th {
+  padding: 0.6rem 0.5rem 0.6rem 0;
+  border-bottom: 1px solid var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-align: start;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.catalog-table tbody th,
+.catalog-table td {
+  padding: 0.9rem 0.75rem 0.9rem 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: baseline;
+  text-align: start;
+}
+.catalog-table tbody th {
+  font-family: var(--mag-display);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.catalog-table tbody th a {
+  text-decoration: none;
+}
+.catalog-table tbody th a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.catalog-number {
+  display: inline-block;
+  min-width: 2.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--primary);
+}
+.catalog-num {
+  width: 6.5rem;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.catalog-action {
+  width: 6rem;
+  text-align: end;
+}
+.catalog-action a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+/* Narrow: each row becomes a short record, the counts labelled inline. */
+@media (max-width: 47.99rem) {
+  .catalog-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .catalog-table tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .catalog-table tbody th,
+  .catalog-table td {
+    padding: 0.15rem 0;
+    border: 0;
+  }
+  .catalog-table tbody th {
+    grid-column: 1 / -1;
+  }
+  .catalog-num {
+    width: auto;
+    font-size: 0.8125rem;
+  }
+  .catalog-num::before {
+    content: attr(data-label) ' ';
+    color: var(--muted);
+  }
+  .catalog-action {
+    grid-column: 1 / -1;
+    width: auto;
+    text-align: start;
+  }
+}
+
+/* Size the masthead so its longest word fits the column: about 0.56em per character. */
+.cover--long-word .cover-wordmark {
+  font-size: max(1.5rem, min(5rem, calc((100vw - 2.5rem) / (0.68 * var(--longest-word)))));
+  overflow-wrap: anywhere;
+  line-height: 0.98;
+  overflow-wrap: break-word;
+  hyphens: manual;
+}
+.portrait-fact-value--text,
+.ledger--sparse .ledger-value--text {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+/* Company and product names can be one long unbroken word (the synthetic industrial fixture has
+   a 40-character one). Every span that prints a name may break inside it rather than widen the
+   page; headings are already covered in theme.css. */
+.page-foot-title,
+.edition-index-title,
+.edition-index-path,
+.running-head span,
+.enquiry-aside-list li,
+.catalog-table th a,
+.mag-caption,
+.ledger-source a {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.cover-masthead > *,
+.cover-stage > * {
+  min-width: 0;
+}
+.cover-description,
+.cover-deck,
+.portrait-deck,
+.article-hero-standfirst,
+.ledger-intro {
+  overflow-wrap: anywhere;
+}

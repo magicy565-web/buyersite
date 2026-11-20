@@ -1,0 +1,77 @@
+---
+// The edition cover. Three compositions, chosen by the layout plan rather than by a palette:
+//   split        -- masthead over a type column beside an uncovered picture. For a strong image
+//                   that should be seen, not darkened behind type.
+//   immersive    -- the picture runs full-bleed and the story sits on a band at its foot, so
+//                   the scrim covers the type band only and the upper frame stays clean.
+//   typographic  -- no picture on the cover. For editions whose media is weak or abstract:
+//                   a large headline and the edition's own facts carry the page.
+// The wordmark is the page's single H1 in every composition.
+import { Image } from 'astro:assets';
+import type { Item } from '../../lib/content';
+import { buyerEnquiryHref, type BuyerBrief } from '../../lib/buyer-brief';
+import { formatDay } from '../../lib/edition';
+import { site } from '../../config';
+import { t } from '../../i18n';
+import '../../styles/magazine.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lead: Item;
+  brief?: BuyerBrief | null;
+  layout?: 'split' | 'immersive' | 'typographic';
+  facts: { facts: number; sources: number; latest: string | null };
+  label?: string;
+}
+const { title, description, lead, brief, layout = 'split', facts, label } = Astro.props;
+const ui = t(Astro.currentLocale ?? site.locale);
+const enquiryHref = brief ? buyerEnquiryHref(brief) : '/enquiry?from=' + encodeURIComponent(lead.href);
+const checked = formatDay(facts.latest, site.locale);
+const long = title.length > 28;
+// A single very long word cannot wrap at masthead size without breaking mid-word.
+const longest = Math.max(...title.split(/s+/).map((word) => word.length));
+const longWord = longest > 14;
+---
+
+<section class:list={['cover', 'cover--' + layout, long && 'cover--long-name', longWord && 'cover--long-word']} data-editorial-block="cover" data-layout={layout} aria-labelledby="edition-title">
+  <div class="mag-container cover-masthead">
+    <h1 id="edition-title" class="cover-wordmark" style={longWord ? `--longest-word: ${longest}` : undefined}>{title}</h1>
+    <div class="cover-meta">
+      {description && <p class="cover-description">{description}</p>}
+      <p class="cover-dateline">
+        {checked && <span>{ui.magazine.sourcesChecked(checked)}</span>}
+        {facts.facts > 0 && <span>{ui.magazine.factsLine(facts.facts, facts.sources)}</span>}
+      </p>
+    </div>
+  </div>
+  <div class:list={['cover-stage', layout !== 'typographic' && 'cover-stage--media']}>
+    {layout !== 'typographic' && (
+      <figure class="cover-media">
+        <Image
+          src={lead.data.hero}
+          alt={lead.data.heroAlt}
+          widths={[640, 960, 1400, 1800]}
+          format="avif"
+          sizes={layout === 'immersive' ? '100vw' : '(min-width: 64rem) 58vw, 100vw'}
+          loading="eager"
+          fetchpriority="high"
+          style={`object-position: ${lead.data.heroFocus} center`}
+        />
+        <figcaption class="mag-caption">
+          {lead.data.heroCaption && <span>{lead.data.heroCaption} </span>}
+          <span>{lead.data.heroCredit}</span>
+        </figcaption>
+      </figure>
+    )}
+    <div class="cover-story">
+      <p class="mag-kicker">{label ?? ui.magazine.leadLabel} · {lead.desk.data.name}</p>
+      <h2 class="cover-headline"><a href={lead.href}>{lead.data.title}</a></h2>
+      <p class="cover-deck">{lead.data.deck}</p>
+      <div class="cover-cta">
+        <a class="mag-button" href={lead.href}>{ui.magazine.readReview}</a>
+        <a class="mag-button mag-button--quiet" href={enquiryHref} data-buyer-context={brief?.page_path ?? lead.href}>{ui.prepareEnquiry}</a>
+      </div>
+    </div>
+  </div>
+</section>

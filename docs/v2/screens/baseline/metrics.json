@@ -1,0 +1,226 @@
+[
+  {
+    "route": "/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 3793,
+    "h1": "Material Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/materials/silver-wool-fabric/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4899,
+    "h1": "Silver wool fabric: establish the specification",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/burel-factory/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4708,
+    "h1": "Burel Factory: a mill to evaluate for your project",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/burel-project-brief/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 4812,
+    "h1": "Specify the application before comparing offers",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 3547,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 2839,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/search/",
+    "width": 1440,
+    "overflowX": false,
+    "height": 1125,
+    "h1": "Find a material, source or buying question",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4396,
+    "h1": "Material Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/materials/silver-wool-fabric/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4700,
+    "h1": "Silver wool fabric: establish the specification",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/burel-factory/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4551,
+    "h1": "Burel Factory: a mill to evaluate for your project",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/burel-project-brief/",
+    "width": 768,
+    "overflowX": false,
+    "height": 4613,
+    "h1": "Specify the application before comparing offers",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 768,
+    "overflowX": false,
+    "height": 3519,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 768,
+    "overflowX": false,
+    "height": 2812,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/search/",
+    "width": 768,
+    "overflowX": false,
+    "height": 1081,
+    "h1": "Find a material, source or buying question",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 390,
+    "overflowX": false,
+    "height": 4706,
+    "h1": "Material Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/materials/silver-wool-fabric/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5578,
+    "h1": "Silver wool fabric: establish the specification",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/burel-factory/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5040,
+    "h1": "Burel Factory: a mill to evaluate for your project",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/burel-project-brief/",
+    "width": 390,
+    "overflowX": false,
+    "height": 5433,
+    "h1": "Specify the application before comparing offers",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 390,
+    "overflowX": false,
+    "height": 4366,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 390,
+    "overflowX": false,
+    "height": 3290,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/search/",
+    "width": 390,
+    "overflowX": false,
+    "height": 1301,
+    "h1": "Find a material, source or buying question",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/",
+    "width": 360,
+    "overflowX": false,
+    "height": 4852,
+    "h1": "Material Notes",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/materials/silver-wool-fabric/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5767,
+    "h1": "Silver wool fabric: establish the specification",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/suppliers/burel-factory/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5193,
+    "h1": "Burel Factory: a mill to evaluate for your project",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/guides/burel-project-brief/",
+    "width": 360,
+    "overflowX": false,
+    "height": 5701,
+    "h1": "Specify the application before comparing offers",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/sources/",
+    "width": 360,
+    "overflowX": false,
+    "height": 4603,
+    "h1": "The source notebook",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/enquiry/",
+    "width": 360,
+    "overflowX": false,
+    "height": 3360,
+    "h1": "Prepare your enquiry",
+    "firstCtaY": 0
+  },
+  {
+    "route": "/search/",
+    "width": 360,
+    "overflowX": false,
+    "height": 1334,
+    "h1": "Find a material, source or buying question",
+    "firstCtaY": 0
+  }
+]
