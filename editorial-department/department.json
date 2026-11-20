@@ -42,7 +42,8 @@
       ],
       "capabilityIds": [
         "mission.plan-issue",
-        "editorial.plan-outline"
+        "editorial.plan-outline",
+        "editorial.write-outline"
       ],
       "decisionRights": [
         "propose-issue-angle",
@@ -155,7 +156,8 @@
         "visual.plan",
         "media.verify-rights",
         "media.materialize",
-        "media.review"
+        "media.review",
+        "visual.propose-art-direction"
       ],
       "decisionRights": [
         "propose-layout-and-crop",
@@ -233,7 +235,8 @@
         "editorial.validate-issue",
         "media.review",
         "production.visual-review",
-        "production.verify-output"
+        "production.verify-output",
+        "editorial.standards-review"
       ],
       "decisionRights": [
         "pass-or-block-review-gates",
@@ -270,7 +273,8 @@
       "capabilityIds": [
         "audience.read-feedback",
         "audience.source-guide",
-        "distribution.prepare"
+        "distribution.prepare",
+        "audience.prepare-distribution"
       ],
       "decisionRights": [
         "recommend-next-issue-topics",
@@ -515,6 +519,54 @@
       "effect": "secret-access",
       "implementation": null,
       "requiredApprovals": []
+    },
+    {
+      "id": "editorial.write-outline",
+      "status": "implemented-gated",
+      "effect": "model-generated-editorial-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertEditorialOutline"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "visual.propose-art-direction",
+      "status": "implemented-gated",
+      "effect": "model-generated-visual-plan",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertArtDirection"
+      },
+      "requiredApprovals": []
+    },
+    {
+      "id": "editorial.standards-review",
+      "status": "implemented-gated",
+      "effect": "independent-editorial-review",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "assertReviewArtifact"
+      },
+      "requiredApprovals": [
+        "aiReviewAuthorized"
+      ]
+    },
+    {
+      "id": "audience.prepare-distribution",
+      "status": "implemented-gated",
+      "effect": "unpublished-channel-draft",
+      "implementation": {
+        "kind": "module-export",
+        "path": "editorial-department/artifact-contract.mjs",
+        "export": "validateTaskArtifact"
+      },
+      "requiredApprovals": [
+        "human-channel-approval"
+      ]
     }
   ],
   "missionPolicy": {
