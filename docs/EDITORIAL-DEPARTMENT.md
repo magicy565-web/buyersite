@@ -18,6 +18,17 @@ Role briefs live in \`skills/editorial-department/seats/\`. All seats reuse the 
 
 The manifest targets the existing section-based OpenMausBot Team Map: one department section named BuyerSite Editorial Department, with Editor-in-Chief as the intended Chief of Staff and seven role Bots. It also records six logical work areas (Editorial Room, Research Library, Creative Studio, Production Floor, Standards Desk, and Audience & Growth) for a future pixel-office layout. The current Team Map does not render those six areas as separate rooms; this PR does not claim that UI exists. Presence must be derived from durable task events. Idle movement may be decorative only when no task is active; it must never imply work is running.
 
+### Verified OpenMausBot mapping
+
+The OpenMausBot source was inspected before defining the adapter boundary:
+- Team Map groups existing Bot records by `BotRecord.section`; a section has one optional Chief of Staff and its members.
+- Bot cards expose role title plus the existing `busy` and `activity` states.
+- Collaboration edges come from `GET /api/team-map` and distinguish queued/running handoffs.
+- Department-wide instructions can be stored in the existing `/api/section-context` facility.
+- The importable `openmaus.team/v2` manifest seeds persona fields (name, title, description, soul and appearance). It does not install the department's Skills, choose a model, or grant MCP/connector tools.
+
+Therefore the intended mapping is one BuyerSite Editorial Department section with seven role Bots, with Editor-in-Chief designated Chief of Staff through the supported owner/admin flow. Skills must be installed separately and explicitly; model and tool permissions remain the workspace owner's choice. This PR records the contract only and does not create bots or claim that the map has been visually redesigned.
+
 ## Capability model
 \`editorial-department/department.json\` is the machine-readable contract. Each capability is marked:
 - \`implemented\`: repository implementation exists;
