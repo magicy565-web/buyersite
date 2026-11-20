@@ -29,6 +29,12 @@ The OpenMausBot source was inspected before defining the adapter boundary:
 
 Therefore the intended mapping is one BuyerSite Editorial Department section with seven role Bots, with Editor-in-Chief designated Chief of Staff through the supported owner/admin flow. Skills must be installed separately and explicitly; model and tool permissions remain the workspace owner's choice. This PR records the contract only and does not create bots or claim that the map has been visually redesigned.
 
+## Installable OpenMausBot package
+
+`editorial-department/openmaus.package.json` is an OpenMausBot package-format v2 team package. It defines seven Bots in one new department section, sets Editor-in-Chief as the team's Chief of Staff, and assigns the department, shared Buyersite production and seat-specific Skills. The package contains no MCP connections, connected apps, routines, presets or hard-coded model selection; the workspace's default model is used.
+
+The package turns off the five built-in tool groups (Meetings, Data, Pages and apps, Images, Email) to keep the imported profiles lean. OpenMausBot documents this as a tool-definition trim, **not a security boundary**. It does not restrict browser/computer capabilities or substitute for a host-side capability policy. The BuyerSite capability bridge is not connected by this PR, so imported Bots are role profiles with Skills, not yet authorized production workers. Do not enable external operations or treat them as operational until the next runtime integration adds server-enforced seat allowlists and approval checks.
+
 ## Capability model
 \`editorial-department/department.json\` is the machine-readable contract. Each capability is marked:
 - \`implemented\`: repository implementation exists;
