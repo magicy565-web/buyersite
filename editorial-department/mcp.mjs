@@ -168,7 +168,7 @@ export function createEditorialMcpHandler({
         requireSeatTask(seatId,args,'research-editor','compile-enterprise');
         const job=runtime.getJob(args.missionId);
         const sourceBytes=await runtime.readSourceBytes(args.missionId);
-        const captureArtifact=await runtime.getArtifact(args.missionId,'capture-source',seatId,'compile-enterprise');
+        const captureArtifact=await runtime.getArtifact(args.missionId,'capture-source',seatId,'compile-enterprise',args.taskAccessToken);
         const compiledResult=await compileStudioEdition(job,sourceBytes,{websiteSnapshot:captureArtifact.snapshot});
         const outline=planMagazineOutline(compiledResult.compiled);
         return complete(seatId,args,{
@@ -183,8 +183,8 @@ export function createEditorialMcpHandler({
           const job=runtime.getJob(args.missionId);
           const sourceBytes=await runtime.readSourceBytes(args.missionId);
           const snapshot=JSON.parse(sourceBytes.toString('utf8'));
-          const compiledArtifact=await runtime.getArtifact(args.missionId,'compile-enterprise',seatId,'prepare-media');
-          const artDirection=await runtime.getArtifact(args.missionId,'art-direction',seatId,'prepare-media');
+          const compiledArtifact=await runtime.getArtifact(args.missionId,'compile-enterprise',seatId,'prepare-media',args.taskAccessToken);
+          const artDirection=await runtime.getArtifact(args.missionId,'art-direction',seatId,'prepare-media',args.taskAccessToken);
           const compiled=compiledArtifact.compiled;
           const visualPlan={...compiled.visualPlan,art_direction:artDirection.visualDNA};
           const articlesDir=join(runtime.getDirectory(args.missionId),'media-assets');
@@ -214,8 +214,8 @@ export function createEditorialMcpHandler({
       }
       case 'buyersite_issue_compile':{
         requireSeatTask(seatId,args,'production-editor','compile-issue');
-        const compiledArtifact=await runtime.getArtifact(args.missionId,'compile-enterprise',seatId,'compile-issue');
-        const draft=await runtime.getArtifact(args.missionId,'draft-editorial-copy',seatId,'compile-issue');
+        const compiledArtifact=await runtime.getArtifact(args.missionId,'compile-enterprise',seatId,'compile-issue',args.taskAccessToken);
+        const draft=await runtime.getArtifact(args.missionId,'draft-editorial-copy',seatId,'compile-issue',args.taskAccessToken);
         const mediaReport=JSON.parse(await readFile(join(runtime.getDirectory(args.missionId),'media-report.json'),'utf8'));
         const issue=compileMagazineIssueFromEnterprise({
           compiled:compiledArtifact.compiled,outline:compiledArtifact.outline,
@@ -238,9 +238,9 @@ export function createEditorialMcpHandler({
         const work=async()=>{
           const job=runtime.getJob(args.missionId);
           const sourceBytes=await runtime.readSourceBytes(args.missionId);
-          const captureArtifact=await runtime.getArtifact(args.missionId,'capture-source',seatId,'build-private-preview');
-          const draft=await runtime.getArtifact(args.missionId,'draft-editorial-copy',seatId,'build-private-preview');
-          const artDirection=await runtime.getArtifact(args.missionId,'art-direction',seatId,'build-private-preview');
+          const captureArtifact=await runtime.getArtifact(args.missionId,'capture-source',seatId,'build-private-preview',args.taskAccessToken);
+          const draft=await runtime.getArtifact(args.missionId,'draft-editorial-copy',seatId,'build-private-preview',args.taskAccessToken);
+          const artDirection=await runtime.getArtifact(args.missionId,'art-direction',seatId,'build-private-preview',args.taskAccessToken);
           const result=await buildJob({
             job,sourceBytes,jobDir:runtime.getDirectory(args.missionId),projectRoot,
             websiteSnapshot:captureArtifact.snapshot,editorialDraft:draft,artDirection,
