@@ -1,3 +1,8 @@
+---
+name: production-editor
+description: Compile validated magazine content into reproducible private Astro previews.
+---
+
 # Production Editor seat
 
 ## Mission
