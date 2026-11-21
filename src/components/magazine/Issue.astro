@@ -1,0 +1,24 @@
+---
+import Spread from './Spread.astro';
+import '../../styles/magazine-issue.css';
+import { assertMagazineIssue } from '../../magazine/issue-contract.mjs';
+interface Props { issue: any; }
+const {issue}=Astro.props;
+assertMagazineIssue(issue);
+const assets=Object.fromEntries(issue.assets.map((asset:any)=>[asset.id,asset]));
+---
+<div class="mi-root">
+  <p class="mi-prototype-banner">PRIVATE DESIGN PROTOTYPE · Concept artwork only · No verified supplier claims</p>
+  <nav class="mi-nav" aria-label="Magazine navigation"><a class="mi-brand" href="#cover">{issue.brand}</a><div><a href="#contents">Contents</a><a href="#story">Story</a><a href="#craft">Craft</a><a href="#gallery">Gallery</a><a href="#notes">Buyer notes</a></div><a class="mi-sourcing-link" href="#sourcing">Sourcing ↗</a></nav>
+  <main id="main" class="mi-main">{issue.spreads.map((spread:any)=><Spread spread={spread} assets={assets} brand={issue.brand}/>)}</main>
+  <footer class="mi-footer"><b>{issue.brand}</b><span>Private editorial concept. No product, manufacturing or commercial claims are verified.</span><a href="#cover">Back to cover ↑</a></footer>
+</div>
+<script>
+  document.querySelector('#mi-prepare')?.addEventListener('click',()=>{
+    const input=document.querySelector('#mi-brief');
+    const output=document.querySelector('#mi-result');
+    if(!(input instanceof HTMLTextAreaElement)||!(output instanceof HTMLOutputElement)||!input.value.trim())return;
+    output.textContent='LOCAL DRAFT — NOT SUBMITTED\n'+input.value.trim()+'\n\nQuestions to confirm: product details, quantity, target market, MOQ, price, lead time and logistics.';
+    output.hidden=false;
+  });
+</script>

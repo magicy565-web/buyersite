@@ -1,0 +1,177 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "chongker-concept",
+  "brand": "CHONGKER",
+  "title": "Lifelike Companions",
+  "deck": "A private design study of character, texture and buyer-focused storytelling.",
+  "publicationStatus": "concept-private",
+  "visualProfile": "chongker-editorial-v1",
+  "assets": [
+    {
+      "id": "cat",
+      "kind": "ai-concept",
+      "src": "/magazine-concepts/chongker/cat.svg",
+      "alt": "A soft plush-like cat silhouette on a dark burgundy background",
+      "credit": "AI concept illustration · not Chongker product photography"
+    },
+    {
+      "id": "dog",
+      "kind": "ai-concept",
+      "src": "/magazine-concepts/chongker/dog.svg",
+      "alt": "A puppy-shaped companion illustration in warm terracotta colors",
+      "credit": "AI concept illustration · not Chongker product photography"
+    },
+    {
+      "id": "detail",
+      "kind": "ai-concept",
+      "src": "/magazine-concepts/chongker/detail.svg",
+      "alt": "Abstract fur texture and pink paw pads as illustrative craft study",
+      "credit": "AI concept illustration · not Chongker product photography"
+    },
+    {
+      "id": "portrait",
+      "kind": "ai-concept",
+      "src": "/magazine-concepts/chongker/portrait.svg",
+      "alt": "Two softly lit companion silhouettes on cream editorial paper",
+      "credit": "AI concept illustration · not Chongker product photography"
+    },
+    {
+      "id": "sourcing",
+      "kind": "ai-concept",
+      "src": "/magazine-concepts/chongker/sourcing.svg",
+      "alt": "A character peeking from a soft packaging motif",
+      "credit": "AI concept illustration · not Chongker product photography"
+    }
+  ],
+  "spreads": [
+    {
+      "id": "cover",
+      "kind": "cover",
+      "kicker": "BUYER MAGAZINE · CONCEPT ISSUE 01",
+      "title": "Lifelike Companions",
+      "deck": "An illustrated editorial exploration, not a product catalogue.",
+      "assetIds": [
+        "cat"
+      ],
+      "folio": "01"
+    },
+    {
+      "id": "contents",
+      "kind": "contents",
+      "kicker": "THE ISSUE",
+      "title": "Inside this issue",
+      "deck": "A story designed to be read, not just browsed.",
+      "assetIds": [
+        "dog"
+      ],
+      "folio": "02–03",
+      "chapters": [
+        {
+          "number": "01",
+          "title": "A world of companionship",
+          "target": "story"
+        },
+        {
+          "number": "02",
+          "title": "The language of detail",
+          "target": "craft"
+        },
+        {
+          "number": "03",
+          "title": "Portraits of character",
+          "target": "gallery"
+        },
+        {
+          "number": "04",
+          "title": "Questions for buyers",
+          "target": "notes"
+        },
+        {
+          "number": "05",
+          "title": "From reading to sourcing",
+          "target": "sourcing"
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "kind": "story",
+      "kicker": "01 · THE STORY",
+      "title": "A world of companionship",
+      "deck": "Editorial narrative shaped by character, emotion and close observation.",
+      "assetIds": [
+        "portrait"
+      ],
+      "folio": "04–05",
+      "paragraphs": [
+        "This is a visual design prototype. The final chapter must use Chongker's approved brand story, attributed statements and properly licensed photography.",
+        "The magazine is arranged to invite a slower reading experience before presenting a sourcing decision."
+      ]
+    },
+    {
+      "id": "craft",
+      "kind": "craft",
+      "kicker": "02 · THE CRAFT",
+      "title": "The language of detail",
+      "deck": "A study in expression, surfaces and texture.",
+      "assetIds": [
+        "detail",
+        "cat"
+      ],
+      "folio": "06–07",
+      "paragraphs": [
+        "Concept images explore a possible craft chapter. They are not evidence of actual manufacturing methods."
+      ]
+    },
+    {
+      "id": "gallery",
+      "kind": "gallery",
+      "kicker": "03 · IMAGE PORTFOLIO",
+      "title": "Portraits of character",
+      "deck": "Image-led editorial sequences replace the generic product card grid.",
+      "assetIds": [
+        "cat",
+        "dog",
+        "portrait",
+        "detail"
+      ],
+      "folio": "08–09"
+    },
+    {
+      "id": "notes",
+      "kind": "notes",
+      "kicker": "04 · BUYER'S DESK",
+      "title": "Questions worth asking",
+      "deck": "Separate approved evidence from unknown buying conditions.",
+      "assetIds": [
+        "detail"
+      ],
+      "folio": "10–11",
+      "questions": [
+        {
+          "title": "Product specifications",
+          "body": "Specifications and samples need source-backed confirmation."
+        },
+        {
+          "title": "Commercial terms",
+          "body": "MOQ, price, lead time and delivery are not verified in this concept."
+        },
+        {
+          "title": "Media provenance",
+          "body": "All assets on this route are original editorial concept illustrations."
+        }
+      ]
+    },
+    {
+      "id": "sourcing",
+      "kind": "sourcing",
+      "kicker": "05 · THE NEXT STEP",
+      "title": "From reading to sourcing",
+      "deck": "A zero-form local brief starts with the buyer's question.",
+      "assetIds": [
+        "sourcing"
+      ],
+      "folio": "12"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { assertMagazineIssue } from './issue-contract.mjs';
+import issue from '../../src/data/magazine-issues/chongker-concept.json' with {type:'json'};
+const fresh=()=>structuredClone(issue);
+test('Chongker concept passes versioned contract',()=>assert.equal(assertMagazineIssue(fresh()).spreads.length,7));
+test('No injected layout',()=>{const x=fresh();x.spreads[2].kind='raw-html';assert.throws(()=>assertMagazineIssue(x),/unsupported layout/);});
+test('No unlicensed photograph',()=>{const x=fresh();x.assets[0].kind='supplier-photo';assert.throws(()=>assertMagazineIssue(x),/unlicensed/);});
+test('Every image needs alt, credit and bound asset',()=>{const x=fresh();x.assets[0].credit='';assert.throws(()=>assertMagazineIssue(x),/alt and disclosure/);const y=fresh();y.spreads[0].assetIds=['missing'];assert.throws(()=>assertMagazineIssue(y),/unapproved media/);});
+test('Contents references existing chapters',()=>{const x=fresh();x.spreads[1].chapters[0].target='missing';assert.throws(()=>assertMagazineIssue(x),/contents target/);});
+test('Concept cannot silently become public',()=>{const x=fresh();x.publicationStatus='published';assert.throws(()=>assertMagazineIssue(x),/concept-preview only/);});
