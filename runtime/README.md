@@ -78,6 +78,8 @@ The owner-only `GET /api/buyer/admin/feedback?days=30` response includes `market
 - Each outbox item is signed as HMAC-SHA256 over `timestamp + "." + rawBody`, sent in `X-Maus-Timestamp` and `X-Maus-Signature`. MausBot acknowledges durable persistence with HTTP 202. Retries reuse the same event ID; MausBot deduplicates them. A mismatched replay payload is rejected rather than reassigned.
 - The outbox never claims supplier contact, quote delivery, an order or revenue. The Buyer Site's existing enquiry receipt still states `supplier_sent:false`; routing buyer contact details to the virtual Sales/Sourcing department is a separate, consented integration.
 
+Dispatch claims only the configured `siteSlug`, including expired leases. SQLite's monotonically increasing `attempts` counter and each `lease_until` value fence the completion update against a reclaimed lease; each row is claimed just before sending instead of leasing a whole sequential batch. Reclaimed deliveries may be attempted more than once, so MausBot event-ID deduplication remains required. Runtime tests exercise this with an in-memory SQLite D1 adapter and injected HTTP responses only; no real marketing endpoint is called.
+
 If the endpoint is missing, malformed or not HTTPS, the outbox remains pending and the status is `needs_connection`; it never reports a successful handoff. If a provider returns a permanent 4xx, the item moves to `dead` for owner review rather than being retried forever.
 
 ## Build and deployment

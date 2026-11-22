@@ -79,25 +79,36 @@ async function sign(secret, timestamp, raw) {
 }
 
 export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, now = Date.now(), limit = 10 } = {}) {
-  if (!env?.DB || typeof env.DB.prepare !== 'function') return { status: 'unavailable', claimed: 0, delivered: 0, retried: 0, dead: 0 };
+  const empty = { status: 'unavailable', claimed: 0, delivered: 0, retried: 0, dead: 0 };
+  // Fail closed: an edition must never dispatch a shared D1 queue without an owner scope.
+  if (!env?.DB || typeof env.DB.prepare !== 'function' || typeof config?.siteSlug !== 'string' || !config.siteSlug) return empty;
   const target = connection(env);
-  if (!target) return { status: 'needs_connection', claimed: 0, delivered: 0, retried: 0, dead: 0 };
+  if (!target) return { ...empty, status: 'needs_connection' };
   const safeLimit = Math.max(1, Math.min(25, Math.trunc(limit)));
-  const leaseUntil = now + 60_000;
-  const claimed = await env.DB.prepare("UPDATE buyer_marketing_outbox " +
-    "SET status='sending', attempts=attempts+1, lease_until=?, updated_at=? " +
-    'WHERE id IN (SELECT id FROM buyer_marketing_outbox ' +
-    "WHERE (status='pending' AND next_attempt_at<=?) OR (status='sending' AND lease_until<=?) " +
-    'ORDER BY created_at ASC LIMIT ?) ' +
-    'RETURNING id, payload_json, attempts')
-    .bind(leaseUntil, new Date(now).toISOString(), now, now, safeLimit).all();
-  const rows = claimed?.results ?? [];
-  let delivered = 0, retried = 0, dead = 0;
-  for (const row of rows) {
+  const startedAt = Date.now();
+  const currentNow = () => now + Math.max(0, Date.now() - startedAt);
+  let claimedCount = 0, delivered = 0, retried = 0, dead = 0;
+
+  // Claim just before each send. Leasing an entire sequential batch up front lets
+  // later items expire while earlier HTTP requests are still in flight.
+  for (let index = 0; index < safeLimit; index++) {
+    const claimedAt = currentNow();
+    const leaseUntil = claimedAt + 60_000;
+    const claimed = await env.DB.prepare("UPDATE buyer_marketing_outbox " +
+      "SET status='sending', attempts=attempts+1, lease_until=?, updated_at=? " +
+      'WHERE site_slug=? AND id IN (SELECT id FROM buyer_marketing_outbox ' +
+      "WHERE site_slug=? AND ((status='pending' AND next_attempt_at<=?) OR (status='sending' AND lease_until<=?)) " +
+      'ORDER BY created_at ASC LIMIT 1) ' +
+      'RETURNING id, payload_json, attempts')
+      .bind(leaseUntil, new Date(claimedAt).toISOString(), config.siteSlug, config.siteSlug, claimedAt, claimedAt).all();
+    const row = claimed?.results?.[0];
+    if (!row) break;
+    claimedCount++;
+
     let outcome = 'retry', httpStatus = null, errorCode = 'network_error', deliveredAt = null;
     try {
       const raw = row.payload_json;
-      const timestamp = String(now);
+      const timestamp = String(claimedAt);
       const signature = await sign(target.secret, timestamp, raw);
       const response = await fetchFn(target.url.toString(), {
         method: 'POST', redirect: 'error', signal: AbortSignal.timeout(10_000),
@@ -108,7 +119,7 @@ export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, no
       let body = null;
       try { body = await response.json(); } catch {}
       if ((response.status === 200 || response.status === 202) && body?.accepted === true) {
-        outcome = 'delivered'; deliveredAt = new Date(now).toISOString(); errorCode = null;
+        outcome = 'delivered'; errorCode = null;
       } else if (response.status >= 500 || [408, 425, 429].includes(response.status)) {
         outcome = 'retry'; errorCode = 'http_' + response.status;
       } else {
@@ -120,16 +131,24 @@ export async function dispatchMarketingOutbox(env, config, { fetchFn = fetch, no
     const attempts = Number(row.attempts) || 1;
     if (outcome === 'retry' && attempts >= 10) { outcome = 'dead'; errorCode = 'retry_limit'; }
     const status = outcome === 'retry' ? 'pending' : outcome;
+    const completedAt = currentNow();
+    if (outcome === 'delivered') deliveredAt = new Date(completedAt).toISOString();
     const delay = Math.min(6 * 60 * 60_000, 60_000 * (2 ** Math.min(8, Math.max(0, attempts - 1))));
-    await env.DB.prepare('UPDATE buyer_marketing_outbox ' +
+
+    // attempts is the monotonic claim generation; lease_until identifies this
+    // exact lease. An expired owner cannot complete after another claim advances it.
+    const completed = await env.DB.prepare('UPDATE buyer_marketing_outbox ' +
       'SET status=?, next_attempt_at=?, lease_until=NULL, updated_at=?, delivered_at=?, last_http_status=?, last_error=? ' +
-      "WHERE id=? AND status='sending'")
-      .bind(status, now + delay, new Date(now).toISOString(), deliveredAt, httpStatus, errorCode, row.id).run();
+      "WHERE id=? AND site_slug=? AND status='sending' AND attempts=? AND lease_until=? " +
+      'RETURNING id')
+      .bind(status, completedAt + delay, new Date(completedAt).toISOString(), deliveredAt,
+        httpStatus, errorCode, row.id, config.siteSlug, row.attempts, leaseUntil).all();
+    if (!(completed?.results?.length)) continue; // A newer owner has reclaimed this item.
     if (outcome === 'delivered') delivered++;
     else if (outcome === 'retry') retried++;
     else dead++;
   }
-  return { status: 'configured', claimed: rows.length, delivered, retried, dead };
+  return { status: 'configured', claimed: claimedCount, delivered, retried, dead };
 }
 
 export async function marketingOutboxStatus(env, config) {

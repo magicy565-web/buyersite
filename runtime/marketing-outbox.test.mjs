@@ -100,3 +100,114 @@ test('invalid or non-canonical Campaign ids are not attributed and cannot trigge
   assert.equal(await enqueueMarketingEvent(env, config, event({ utm: { source: 'linkedin', medium: 'social', campaign: campaignId, private: 'x' } })), false);
   assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM buyer_marketing_outbox').get().count, 0);
 });
+
+test('shared SQLite D1 isolates pending and expired-lease claims by siteSlug', async (t) => {
+  const { sqlite, env } = setup(t);
+  const siteA = { siteSlug: 'site-a' };
+  const siteB = { siteSlug: 'site-b' };
+  const bPending = event({ eventId: 'buyersite:site-b:inquiry:' + crypto.randomUUID() });
+  const bExpired = event({ eventId: 'buyersite:site-b:inquiry:' + crypto.randomUUID() });
+  const aPending = event({ eventId: 'buyersite:site-a:inquiry:' + crypto.randomUUID() });
+  // Insert the other edition first to detect a global queue scan.
+  await enqueueMarketingEvent(env, siteB, bPending);
+  await enqueueMarketingEvent(env, siteB, bExpired);
+  await enqueueMarketingEvent(env, siteA, aPending);
+  const base = Date.now() + 1_000;
+  sqlite.prepare("UPDATE buyer_marketing_outbox SET status='sending', attempts=1, lease_until=? WHERE site_slug='site-b' AND event_id=?")
+    .run(base - 1, bExpired.eventId);
+  const connected = { ...env, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/marketing/events/site-a', MAUSBOT_MARKETING_WEBHOOK_SECRET: secret };
+  let callsA = 0;
+  const aResult = await dispatchMarketingOutbox(connected, siteA, {
+    now: base,
+    fetchFn: async (url, init) => {
+      callsA++;
+      assert.equal(url, connected.MAUSBOT_MARKETING_WEBHOOK_URL);
+      assert.equal(JSON.parse(init.body).eventId, aPending.eventId);
+      return Response.json({ accepted: true }, { status: 202 });
+    },
+  });
+  assert.equal(aResult.claimed, 1);
+  assert.equal(aResult.delivered, 1);
+  assert.equal(callsA, 1);
+  assert.equal(sqlite.prepare('SELECT status FROM buyer_marketing_outbox WHERE event_id=?').get(bPending.eventId).status, 'pending');
+  assert.equal(sqlite.prepare('SELECT status FROM buyer_marketing_outbox WHERE event_id=?').get(bExpired.eventId).status, 'sending');
+  assert.equal((await marketingOutboxStatus(connected, siteA)).delivered, 1);
+  assert.equal((await marketingOutboxStatus(connected, siteB)).delivered, 0);
+
+  const bEvents = new Set();
+  const connectedB = { ...connected, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/marketing/events/site-b' };
+  const bResult = await dispatchMarketingOutbox(connectedB, siteB, {
+    now: base,
+    fetchFn: async (url, init) => {
+      assert.equal(url, connectedB.MAUSBOT_MARKETING_WEBHOOK_URL);
+      bEvents.add(JSON.parse(init.body).eventId);
+      return Response.json({ accepted: true }, { status: 202 });
+    },
+  });
+  assert.equal(bResult.delivered, 2);
+  assert.deepEqual(bEvents, new Set([bPending.eventId, bExpired.eventId]));
+  assert.equal(sqlite.prepare('SELECT attempts FROM buyer_marketing_outbox WHERE event_id=?').get(bExpired.eventId).attempts, 2);
+  assert.equal((await marketingOutboxStatus(connectedB, siteB)).delivered, 2);
+
+  const noScope = await dispatchMarketingOutbox(connected, {}, {
+    fetchFn: async () => { assert.fail('missing siteSlug must not send'); },
+  });
+  assert.equal(noScope.status, 'unavailable');
+  assert.equal(noScope.claimed, 0);
+});
+
+test('reclaimed SQLite lease fences stale completions and preserves new owner acknowledgement', async (t) => {
+  const { sqlite, env } = setup(t);
+  await enqueueMarketingEvent(env, config, event());
+  const connected = { ...env, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/marketing/events/tenant-a', MAUSBOT_MARKETING_WEBHOOK_SECRET: secret };
+  let startedOld, releaseOld;
+  const oldStarted = new Promise((resolve) => { startedOld = resolve; });
+  const oldReleased = new Promise((resolve) => { releaseOld = resolve; });
+  const base = Date.now() + 1_000;
+  const oldDispatch = dispatchMarketingOutbox(connected, config, {
+    now: base,
+    fetchFn: async () => {
+      startedOld();
+      await oldReleased;
+      return new Response('permanent failure from old owner', { status: 400 });
+    },
+  });
+  await oldStarted;
+  assert.deepEqual(sqlite.prepare('SELECT status, attempts FROM buyer_marketing_outbox').get(), { status: 'sending', attempts: 1 });
+  const newer = await dispatchMarketingOutbox(connected, config, {
+    now: base + 60_001,
+    fetchFn: async () => Response.json({ accepted: true }, { status: 202 }),
+  });
+  assert.equal(newer.claimed, 1);
+  assert.equal(newer.delivered, 1);
+  releaseOld();
+  const stale = await oldDispatch;
+  assert.equal(stale.claimed, 1);
+  assert.equal(stale.dead, 0);
+  assert.equal(stale.retried, 0);
+  const persisted = sqlite.prepare('SELECT status, attempts, delivered_at, last_error FROM buyer_marketing_outbox').get();
+  assert.equal(persisted.status, 'delivered');
+  assert.equal(persisted.attempts, 2);
+  assert.equal(persisted.last_error, null);
+  assert.ok(persisted.delivered_at);
+});
+
+test('sequential delivery takes a fresh lease for each SQLite row', async (t) => {
+  const { sqlite, env } = setup(t);
+  await enqueueMarketingEvent(env, config, event());
+  await enqueueMarketingEvent(env, config, event());
+  const connected = { ...env, MAUSBOT_MARKETING_WEBHOOK_URL: 'https://maus.example/marketing/events/tenant-a', MAUSBOT_MARKETING_WEBHOOK_SECRET: secret };
+  const leaseTimes = [];
+  const result = await dispatchMarketingOutbox(connected, config, {
+    now: Date.now() + 1_000, limit: 2,
+    fetchFn: async (_url, init) => {
+      const eventId = JSON.parse(init.body).eventId;
+      leaseTimes.push(sqlite.prepare('SELECT lease_until FROM buyer_marketing_outbox WHERE event_id=?').get(eventId).lease_until);
+      if (leaseTimes.length === 1) await new Promise((resolve) => setTimeout(resolve, 20));
+      return Response.json({ accepted: true }, { status: 202 });
+    },
+  });
+  assert.equal(result.claimed, 2);
+  assert.equal(result.delivered, 2);
+  assert.ok(leaseTimes[1] > leaseTimes[0], 'later rows must not inherit an earlier claim time');
+});
