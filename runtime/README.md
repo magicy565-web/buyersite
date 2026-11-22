@@ -64,7 +64,7 @@ The Buyer Site can forward **campaign-attributed aggregate events** to the exist
 2. Configure these server-only Worker secrets:
    - `MAUSBOT_MARKETING_WEBHOOK_URL`: the exact HTTPS endpoint returned by MausBot.
    - `MAUSBOT_MARKETING_WEBHOOK_SECRET`: the one-time secret returned by MausBot (minimum 32 characters).
-3. Apply migration `0003_marketing_outbox` to the same D1 database used by this edition.
+3. In an isolated D1 database, verify the **shared migration sequence** `0000`–`0002` → `0003_marketing_outbox` → `0004_supplier_quote_submissions` before any remote upgrade. Both PR #17 and PR #18 include byte-identical migration SQL and journal files. Check the target database's current migration ledger and existing tables; if an older supplier `0003` was manually recorded, stop and reconcile history. Do not apply migrations to production D1 without acceptance.
 4. Configure a Cloudflare Worker Cron Trigger such as `*/5 * * * *` so the exported `scheduled` handler retries pending deliveries. Immediate delivery is attempted with `ctx.waitUntil`; the durable outbox and scheduled trigger recover transient failures, worker restarts and timeouts.
 
 The owner-only `GET /api/buyer/admin/feedback?days=30` response includes `marketing_delivery` with `connection`, `pending`, `sending`, `delivered` and `dead` counts. `needs_connection` means no valid endpoint/secret pair is configured. Pending does not mean delivered.
