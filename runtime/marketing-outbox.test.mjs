@@ -173,7 +173,9 @@ test('reclaimed SQLite lease fences stale completions and preserves new owner ac
     },
   });
   await oldStarted;
-  assert.deepEqual(sqlite.prepare('SELECT status, attempts FROM buyer_marketing_outbox').get(), { status: 'sending', attempts: 1 });
+  const claimedRow = sqlite.prepare('SELECT status, attempts FROM buyer_marketing_outbox').get();
+  assert.equal(claimedRow.status, 'sending');
+  assert.equal(claimedRow.attempts, 1);
   const newer = await dispatchMarketingOutbox(connected, config, {
     now: base + 60_001,
     fetchFn: async () => Response.json({ accepted: true }, { status: 202 }),
