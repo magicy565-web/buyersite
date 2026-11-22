@@ -6,7 +6,7 @@ const briefs = site.analyticsEnabled ? loadBuyerBriefs() : [];
 ---
 {site.analyticsEnabled && <span id="journey-config" data-site={site.slug} data-paths={JSON.stringify(buyerNavigationPaths(briefs))} data-articles={JSON.stringify(briefs.map((brief) => brief.page_path))} hidden></span>}
 <script>
-  import { captureJourney, clearJourney, privacyOptOut } from '../../lib/buyer-journey.mjs';
+  import { captureJourney, clearJourney, privacyOptOut, readJourney } from '../../lib/buyer-journey.mjs';
   const config=document.querySelector<HTMLElement>('#journey-config');
   const storage=()=>{try{return window.sessionStorage;}catch{return null;}};
   const optedOut=()=>privacyOptOut(navigator);
@@ -20,7 +20,8 @@ const briefs = site.analyticsEnabled ? loadBuyerBriefs() : [];
     if(!names.has(name))return;
     const path=location.pathname;
     // No free text, search terms, email, IP, user ID or full referrer is sent.
-    const event={name,path};
+    const saved=readJourney(storage(),config.dataset.site!,JSON.parse(config.dataset.paths!),JSON.parse(config.dataset.articles!),false);
+    const event={eventId:crypto.randomUUID(),name,path,...(saved?.campaign?.campaign?{campaign:saved.campaign,landingPath:saved.landing_path}:{})};
     void fetch('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event),keepalive:true}).catch(()=>{});
     const umami=(window as Window & {umami?:{track:(name:string,props:Record<string,string>)=>void}}).umami;
     umami?.track(name,{path});

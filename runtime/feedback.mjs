@@ -1,5 +1,6 @@
 import { authorizedOwner } from './gateway.mjs';
 import { sanitizeCampaign } from '../src/lib/buyer-journey.mjs';
+import { marketingOutboxStatus } from './marketing-outbox.mjs';
 
 const EVENT_ROW_LIMIT = 20_000;
 const PAGE_ROW_LIMIT = 5_000;
@@ -106,6 +107,7 @@ export async function handleFeedback(request, env, config, { now = new Date() } 
         rows_truncated: eventRows.length > EVENT_ROW_LIMIT,
         row_limit: EVENT_ROW_LIMIT,
       },
+      marketing_delivery: await marketingOutboxStatus(env, config),
       enquiries: {
         counts: counts(result[2].results?.[0]),
         by_day: (result[3].results ?? []).map((row) => ({ day: row.day, ...counts(row) })),
@@ -122,6 +124,7 @@ export async function handleFeedback(request, env, config, { now = new Date() } 
       definitions: {
         events: 'Browser-reported action counts, including repeated actions. They are not unique visitor counts and may include automated traffic.',
         enquiries: 'Persisted enquiries created during this period, grouped by their current review status. Client-reported enquiry_submitted events do not determine these totals.',
+      marketing_delivery: 'Durable outbox counts for campaign-attributed events. Pending is not delivered; delivered means the MausBot webhook acknowledged persistence, not that a buyer was contacted or an order was placed.',
         page: 'The page on which the enquiry was submitted. Legacy records may contain an article path; this field does not establish the original landing page.',
         originating_article: 'An article selected by the buyer and resolved against the server-owned published catalog. It is brief context, not proof of reading or causal acquisition. Null means no article was linked.',
         attribution: 'Landing paths and bounded campaign labels are browser-reported session context, validated by the server but not independently verified. DNT/GPC or buyer removal withholds visit context. Null or empty labels mean unavailable or withheld; unsafe legacy labels are suppressed.',

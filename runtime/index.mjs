@@ -1,6 +1,7 @@
 import { createGateway } from './gateway.mjs';
 import { handleAnalytics } from './analytics.mjs';
 import { handleFeedback } from './feedback.mjs';
+import { dispatchMarketingOutbox } from './marketing-outbox.mjs';
 import config from '../.generated/runtime-config.json';
 const gateway=createGateway(config);
 export default {
@@ -14,5 +15,8 @@ export default {
     if(config.publication!=='public'||path.startsWith('/api/'))headers.set('X-Robots-Tag','noindex, nofollow');
     if(path.startsWith('/api/'))headers.set('Cache-Control','no-store');
     return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
+  },
+  async scheduled(_event,env,ctx){
+    ctx.waitUntil(dispatchMarketingOutbox(env,config));
   }
 };

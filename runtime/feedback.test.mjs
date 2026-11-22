@@ -12,7 +12,7 @@ const now = new Date('2026-11-18T13:30:00.000Z');
 function setup(t) {
   const sqlite = new DatabaseSync(':memory:');
   t.after(() => sqlite.close());
-  for (const file of ['0000_buyer_enquiries.sql', '0001_buyer_events.sql', '0002_enquiry_context.sql']) sqlite.exec(readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'));
+  for (const file of ['0000_buyer_enquiries.sql', '0001_buyer_events.sql', '0002_enquiry_context.sql', '0003_marketing_outbox.sql']) sqlite.exec(readFileSync(new URL('../drizzle/' + file, import.meta.url), 'utf8'));
   const DB = {
     prepare(sql) {
       let values = [];
@@ -68,6 +68,7 @@ test('feedback uses real SQL aggregates, separates submitted events from persist
   assert.equal(data.period.start_date, '2026-10-20');
   assert.equal(data.period.end_date, '2026-11-18');
   assert.equal(data.period.time_zone, 'UTC');
+  assert.deepEqual(data.marketing_delivery, { connection: 'needs_connection', pending: 0, sending: 0, delivered: 0, dead: 0 });
   assert.deepEqual(data.enquiries.counts, { total: 3, new: 1, qualified: 1, archived: 1 });
   assert.equal(data.events.totals.find((row) => row.event === 'enquiry_submitted').count, 99);
   assert.equal(data.events.totals.find((row) => row.event === 'page_view').count, 16);
