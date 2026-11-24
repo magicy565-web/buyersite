@@ -4,6 +4,7 @@ import { Font } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import '../styles/global.css';
 import Assistant from '../components/buyer/Assistant.astro';
+import MerchantSupport from '../components/buyer/MerchantSupport.astro';
 import SEO from '../components/common/SEO.astro';
 import Analytics from '../components/common/Analytics.astro';
 import ThemeToggle from '../components/common/ThemeToggle.astro';
@@ -111,6 +112,7 @@ const themeCredit = 'https://ondelva.com/themes/halftone';
       <slot />
       <div class="max-w-wide mx-auto px-4 py-8">
         <Assistant />
+        {!site.privatePreview && <MerchantSupport siteSlug={site.slug} />}
       </div>
     </main>
 
