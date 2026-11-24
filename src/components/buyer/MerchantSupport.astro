@@ -1,0 +1,84 @@
+---
+interface Props { siteSlug: string }
+const { siteSlug } = Astro.props;
+---
+<section data-merchant-support data-site-slug={siteSlug} hidden class="mt-8 border-border border-t pt-5 font-ui" aria-label="Merchant customer support" data-pagefind-ignore>
+  <h2 class="text-lg font-semibold">Merchant customer support</h2>
+  <p class="text-muted mt-2 text-sm" data-merchant-name></p>
+  <p class="text-muted mt-2 text-sm">Open a separate support conversation with the merchant. An AI assistant or an authorized support representative may respond. Opening chat loads the merchant's external chat service. <a href="/privacy">Privacy information</a>.</p>
+  <button type="button" class="bg-foreground text-background mt-3 rounded px-4 py-3 text-sm font-semibold" data-support-open>Open customer support</button>
+  <p role="status" aria-live="polite" class="text-muted mt-2 text-sm" data-support-status></p>
+</section>
+<script>
+  type SupportConfig = {
+    enabled: boolean; site_slug?: string; base_url?: string; website_token?: string; merchant_name?: string;
+  };
+  type ChatWindow = Window & {
+    chatwootSettings?: { hideMessageBubble: boolean; position: string; locale: string };
+    chatwootSDK?: { run: (options: { websiteToken: string; baseUrl: string }) => void };
+    $chatwoot?: { toggle: (state: 'open' | 'close') => void };
+  };
+  const cw = window as ChatWindow;
+  async function mountSupport(root: HTMLElement) {
+    const button = root.querySelector<HTMLButtonElement>('[data-support-open]');
+    const status = root.querySelector<HTMLElement>('[data-support-status]');
+    const name = root.querySelector<HTMLElement>('[data-merchant-name]');
+    if (!button || !status || !name) return;
+    let cfg: SupportConfig;
+    try {
+      const response = await fetch('/api/buyer/support/config', { cache: 'no-store', credentials: 'same-origin' });
+      if (!response.ok) return;
+      cfg = await response.json();
+    } catch { return; }
+    if (!cfg.enabled || cfg.site_slug !== root.dataset.siteSlug || !cfg.base_url || !cfg.website_token || !cfg.merchant_name) return;
+    let base: URL;
+    try { base = new URL(cfg.base_url); } catch { return; }
+    if (base.protocol !== 'https:' || base.username || base.password || base.origin !== cfg.base_url || !/^[A-Za-z0-9_-]{8,256}$/.test(cfg.website_token)) return;
+    const websiteToken = cfg.website_token;
+    name.textContent = cfg.merchant_name;
+    root.hidden = false;
+    let loading = false;
+    let attempted = false;
+    button.addEventListener('click', () => {
+      if (cw.$chatwoot) { cw.$chatwoot.toggle('open'); return; }
+      if (loading || attempted) return;
+      attempted = true;
+      loading = true;
+      button.disabled = true;
+      status.textContent = 'Connecting to customer support…';
+      cw.chatwootSettings = { hideMessageBubble: false, position: 'right', locale: 'en' };
+      const sdk = document.createElement('script');
+      sdk.src = base.origin + '/packs/js/sdk.js';
+      sdk.async = true;
+      sdk.referrerPolicy = 'no-referrer';
+      let timer = 0;
+      const finish = (ready: boolean) => {
+        if (!loading) return;
+        loading = false;
+        window.clearTimeout(timer);
+        window.removeEventListener('chatwoot:ready', onReady);
+        if (ready && cw.$chatwoot) {
+          button.disabled = false;
+          status.textContent = '';
+          cw.$chatwoot.toggle('open');
+        } else {
+          sdk.remove();
+          status.textContent = 'Customer support is unavailable. Reload to try again, or use the enquiry form.';
+        }
+      };
+      const onReady = () => finish(Boolean(cw.$chatwoot));
+      window.addEventListener('chatwoot:ready', onReady);
+      sdk.onerror = () => finish(false);
+      sdk.onload = () => {
+        if (!loading) return;
+        try {
+          if (!cw.chatwootSDK) throw new Error('SDK missing');
+          cw.chatwootSDK.run({ websiteToken, baseUrl: base.origin });
+        } catch { finish(false); }
+      };
+      timer = window.setTimeout(() => finish(false), 20_000);
+      document.head.appendChild(sdk);
+    });
+  }
+  document.querySelectorAll<HTMLElement>('[data-merchant-support]').forEach(root => { void mountSupport(root); });
+</script>

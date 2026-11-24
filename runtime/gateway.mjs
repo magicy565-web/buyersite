@@ -1,4 +1,5 @@
 import { buildSourceGuideReply } from './source-guide.mjs';
+import { handleChatwootSupport } from './chatwoot-support.mjs';
 import { findPublishedContext, normalizeKnownPath, sanitizeCampaign } from '../src/lib/buyer-journey.mjs';
 
 /**
@@ -407,6 +408,7 @@ export async function handleBuyerRequest(request, env, config, { fetchFn = fetch
     if (!config || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(config.siteSlug)) {
       throw new HttpError(503, 'SITE_NOT_CONFIGURED', 'This edition is not configured.');
     }
+    if (pathname === '/api/buyer/support/config') return handleChatwootSupport(request, env, config);
     if (pathname === '/api/buyer/config' && request.method === 'GET') {
       return json({
         site_slug: config.siteSlug,
