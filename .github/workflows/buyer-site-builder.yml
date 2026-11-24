@@ -49,7 +49,7 @@ jobs:
       - name: Install Chromium for browser acceptance
         run: pnpm exec playwright install --with-deps chromium
       - name: Verify conversion and aggregate feedback
-        run: pnpm test:runtime && pnpm test:knowledge
+        run: pnpm test:runtime && pnpm test:knowledge && node --test scripts/merchant-support.test.mjs && pnpm check:merchant-migration
       - name: Verify the reviewed magazine release
         run: pnpm check && pnpm build && pnpm verify:output && pnpm check:release
       - name: Review magazine browser behavior

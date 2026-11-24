@@ -30,7 +30,11 @@
     "dev:astro": "astro dev",
     "test:runtime": "node --test runtime/*.test.mjs",
     "test:knowledge": "node --test scripts/public-knowledge.test.mjs",
-    "check:release": "node scripts/check-release.mjs"
+    "check:release": "node scripts/check-release.mjs",
+    "merchant:admin": "node scripts/merchant-support.mjs",
+    "merchant:migration": "node scripts/merchant-migration.mjs",
+    "check:merchant-migration": "node scripts/merchant-migration.mjs --check",
+    "test:merchant": "node --test runtime/merchant*.test.mjs scripts/merchant-support.test.mjs"
   },
   "dependencies": {
     "@assistant-ui/react": "0.15.36",
