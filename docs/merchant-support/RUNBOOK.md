@@ -115,14 +115,22 @@ Configure the Chatwoot AgentBot outgoing URL as the canonical webhook route.
 The webhook verifies timestamp and exact raw-body HMAC before parsing. A 202 means
 the job was stored, not that an answer was sent. Intake performs no model calls.
 Where the host supports `ctx.waitUntil`, it starts one background drain after durable
-acceptance. The Worker also exports `scheduled` to process at most three jobs per tick.
+acceptance. The Worker also exports `scheduled` to process at most three merchant jobs
+per tick and dispatch the marketing outbox independently (up to ten events per tick).
+A failure in one queue does not stop the other; the handler returns separate queue
+results and logs only a fixed queue-specific error on worker failure. The existing
+merchant enablement gate remains unchanged. Marketing dispatch requires a public
+edition, a server-owned site slug and the configured marketing webhook secrets;
+private editions do not send marketing events externally. The outbox scheduler does
+not itself implement campaign event capture or enquiry attribution (see PR #18).
 
 The repository's existing hosting configuration does not provision a cron trigger.
-The deployment must attach a supported scheduler to the Worker `scheduled` handler,
-or run an authenticated job that POSTs `{}` to the owner `/drain` endpoint. Configure
-that job in the server environment; do not expose its owner token to ChatGPT or the
-browser. A one-minute cadence is a starting operational choice, not a provisioned job.
-Without a scheduler, process crashes and retry backoff need manual draining.
+The deployment must attach a supported scheduler to the Worker `scheduled` handler
+to drain both queues. An authenticated job that POSTs `{}` to the owner `/drain`
+endpoint is an alternative for merchant jobs only. Configure that job in the server
+environment; do not expose its owner token to ChatGPT or the browser. A one-minute
+cadence is a starting operational choice, not a provisioned job. Without a scheduler,
+process crashes and retry backoff need manual draining.
 
 Monitor counts of queued, processing, unknown and dead jobs, and uncertain support
 operations from owner diagnostics. An external monitor must alert an actual operator;

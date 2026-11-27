@@ -2,6 +2,8 @@ import { createGateway } from './gateway.mjs';
 import { handleAnalytics } from './analytics.mjs';
 import { handleFeedback } from './feedback.mjs';
 import { createMerchantRoutes } from './merchant-routes.mjs';
+import { dispatchMarketingOutbox } from './marketing-outbox.mjs';
+import { createScheduledHandler } from './scheduled.mjs';
 import config from '../.generated/runtime-config.json';
 const gateway=createGateway(config);
 const merchantRoutes=createMerchantRoutes(config);
@@ -18,9 +20,8 @@ export default {
     if(path.startsWith('/api/')||path==='/mcp'||path.startsWith('/.well-known/oauth-'))headers.set('Cache-Control','no-store');
     return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
   },
-  async scheduled(_event,env,ctx){
-    const work=merchantRoutes.scheduled(env);
-    if(typeof ctx?.waitUntil==='function')ctx.waitUntil(work);
-    return await work;
-  },
+  scheduled:createScheduledHandler(config,{
+    drainMerchant:merchantRoutes.scheduled,
+    dispatchMarketing:dispatchMarketingOutbox,
+  }),
 };
