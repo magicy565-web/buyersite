@@ -1,5 +1,6 @@
 // Public website widget configuration only. Never expose Chatwoot API tokens,
 // webhook secrets, agent identifiers, or customer data.
+import { readMerchantBinding } from './merchant-binding.mjs';
 function origin(value) {
   if (typeof value !== 'string') return null;
   try {
@@ -10,6 +11,14 @@ function origin(value) {
 }
 export function getChatwootSupport(request, env, config) {
   const disabled = { enabled: false };
+  if (env?.BUYERSITE_MERCHANT_CONFIG !== undefined || env?.BUYERSITE_MERCHANT_SUPPORT_ENABLED !== undefined) {
+    const merchant = readMerchantBinding(config, env);
+    const token = env.BUYERSITE_CHATWOOT_WEBSITE_TOKEN;
+    if (!merchant?.chatwoot || new URL(request.url).origin !== merchant.origin || env.BUYERSITE_CHATWOOT_ENABLED !== 'true' ||
+        typeof token !== 'string' || !/^[A-Za-z0-9_-]{8,256}$/.test(token)) return disabled;
+    return { enabled: true, site_slug: merchant.siteSlug, merchant_id: merchant.merchantId, base_url: merchant.chatwoot.baseUrl,
+      website_token: token, merchant_name: merchant.name, privacy_url: merchant.privacyUrl };
+  }
   if (config?.publication !== 'public' ||
       env?.BUYERSITE_CHATWOOT_ENABLED !== 'true' ||
       env?.BUYERSITE_CHATWOOT_MERCHANT_AUTHORIZED !== 'true' ||

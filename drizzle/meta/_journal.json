@@ -1,1 +1,55 @@
-{"version":"7","dialect":"sqlite","entries":[{"idx":0,"version":"6","when":1795000000000,"tag":"0000_buyer_enquiries","breakpoints":true},{"idx":1,"version":"6","when":1795000001000,"tag":"0001_buyer_events","breakpoints":true},{"idx":2,"version":"6","when":1795000002000,"tag":"0002_enquiry_context","breakpoints":true}]}
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1795000000000,
+      "tag": "0000_buyer_enquiries",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795000001000,
+      "tag": "0001_buyer_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795000002000,
+      "tag": "0002_enquiry_context",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1795000003000,
+      "tag": "0003_marketing_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795000004000,
+      "tag": "0004_supplier_quote_submissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795000005000,
+      "tag": "0005_sourcing_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795000006000,
+      "tag": "0006_merchant_support",
+      "breakpoints": true
+    }
+  ]
+}

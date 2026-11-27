@@ -47,3 +47,17 @@ test('configuration is GET-only and never cached', async () => {
   assert.equal(rejected.status,405);
   assert.equal(rejected.headers.get('Allow'),'GET');
 });
+
+test('unified merchant binding owns widget identity and an explicit disabled flag cannot fall back to legacy configuration', () => {
+  const unified = { ...env, BUYERSITE_MERCHANT_SUPPORT_ENABLED: 'true', BUYERSITE_MERCHANT_CONFIG: JSON.stringify({
+    version: 1, authorized: true, merchantId: 'merchant-id', siteSlug: config.siteSlug, name: 'Authorized merchant', origin: config.origin,
+    privacyUrl: config.origin + '/privacy', authorizationRef: 'approval-1',
+    chatwoot: { baseUrl: 'https://bound-support.example', accountId: 1, websiteInboxId: 2, apiInboxId: 3 },
+  }) };
+  const publicConfig = getChatwootSupport(request, unified, config);
+  assert.equal(publicConfig.merchant_name, 'Authorized merchant'); assert.equal(publicConfig.base_url, 'https://bound-support.example');
+  assert.equal(publicConfig.merchant_id, 'merchant-id');
+  for (const secret of ['approval-1', 'accountId', 'apiInboxId', 'must-never-expose']) assert.equal(JSON.stringify(publicConfig).includes(secret), false);
+  assert.deepEqual(getChatwootSupport(request, { ...unified, BUYERSITE_MERCHANT_SUPPORT_ENABLED: 'false' }, config), { enabled: false });
+  assert.deepEqual(getChatwootSupport(request, { ...unified, BUYERSITE_MERCHANT_CONFIG: '{}' }, config), { enabled: false });
+});

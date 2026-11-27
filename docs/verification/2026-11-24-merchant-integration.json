@@ -1,0 +1,51 @@
+{
+  "schema_version": "merchant-integration-verification-v1",
+  "date": "2026-11-24",
+  "timezone": "Asia/Shanghai",
+  "status": "PRIVATE_INTEGRATION_TESTED_PENDING_BROWSER_AND_LIVE_ACCEPTANCE",
+  "branch": "integration/merchant-support",
+  "base": "784ef7df7ad648e39054331d1c83b48847c2f7a2",
+  "source_sha256": "ccdbcd2fa0edce655bfbcc267a1107f80c7d0c463d02c34c980cd681c2d6dcc1",
+  "is_publication_approval": false,
+  "publication_mode": "private",
+  "runtime": { "node": "24.22.3", "pnpm": "11.25.0" },
+  "automated_tests": {
+    "command": "node --test runtime/*.test.mjs scripts/public-knowledge.test.mjs scripts/merchant-support.test.mjs site-builder/*.test.mjs",
+    "passed": 289,
+    "failed": 0,
+    "skipped": 0,
+    "storage": "Real SQLite, including persistence, transaction and concurrency cases",
+    "providers": "Explicit fake HTTP fixtures and locally generated JWTs; no live merchant or model calls"
+  },
+  "type_check": { "command": "pnpm check", "passed": true, "errors": 0, "warnings": 0, "existing_hints": 2 },
+  "build": { "command": "pnpm build", "passed": true, "generated_pages": 13, "static_files": 79, "worker_bundle": true },
+  "static_output": { "command": "pnpm verify:output", "passed": true, "core_routes": 4, "html_files": 13 },
+  "release_gate": { "command": "pnpm check:release", "passed_for_private_mode": true, "public_release_approved": false },
+  "migration_check": { "command": "pnpm check:merchant-migration", "passed": true, "journal_entries": 7 },
+  "browser": {
+    "command": "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium pnpm test:browser",
+    "status": "BLOCKED_BEFORE_PAGE_LAUNCH",
+    "reason": "Chromium process_singleton socket() failed with Operation not permitted (1)",
+    "tests_scheduled": 48,
+    "launch_failures": 1,
+    "tests_not_run": 47,
+    "ui_pass_claimed": false,
+    "next_gate": "Run the existing GitHub Actions browser acceptance on the integrated branch"
+  },
+  "live_acceptance": {
+    "chatwoot_connected": false,
+    "answer_provider_connected": false,
+    "oauth_login_in_chatgpt": false,
+    "business_hub_claim_submitted": false,
+    "persona_verified": false,
+    "native_business_agent_published": false,
+    "deployment_performed": false,
+    "scheduler_provisioned": false
+  },
+  "review_links": {
+    "widget": "https://github.com/magicy565-web/buyersite/pull/19",
+    "chatwoot": "https://github.com/magicy565-web/buyersite/pull/20",
+    "knowledge_claims": "https://github.com/magicy565-web/buyersite/pull/21",
+    "chatgpt_channel": "https://github.com/magicy565-web/buyersite/pull/22"
+  }
+}
