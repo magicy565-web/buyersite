@@ -44,17 +44,17 @@ Unsupported formats request a converter or a readable substitute. Old binary Off
 | --------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | Source file           | 1 byte–25 MiB; included remote ASR upload limit is 25,000,000 bytes                                                |
 | Extracted text        | 250,000 characters and at most 10,000 stored segments per parse                                                    |
-| PDF                   | 40 pages; split larger brochures before import                                                                     |
+| PDF                   | 80 pages; use a text export or split larger brochures before import                                                                     |
 | Raster images         | 25 million pixels per frame, 20 frames, 50 million pixels across frames                                            |
 | Office ZIP expansion  | 100 MiB total, 3,000 entries, 40 MiB per entry; compression-ratio checks                                           |
 | Spreadsheet           | 30 sheets, 10,000 rows per sheet, 256 columns, 100,000 processed cells total                                       |
-| Local document worker | 60 seconds, 4 MiB output; individual OCR operations have a 20-second budget                                        |
+| Local document worker | 60 seconds (155 for PDF), 4 MiB output; 20 seconds per OCR call; PDF raster work capped at 350 million pixels and starts no new OCR after 115 seconds                                        |
 | Provider              | 90-second default request timeout; configurable from 1 to 120 seconds; 2 MiB response cap                          |
 | Semantic extraction   | 20,000-character batches, up to 30 batches; final validation accepts at most 100 facts and 20 questions per source |
 | Fact and evidence     | Value up to 2,000 characters; one to eight quotations, each up to 4,000 characters                                 |
 | Library reads         | 20-second request timeout, 2 MiB metadata response, 10,000 documents per listing                                   |
 
-Oversized results are rejected with a reason; document tails are not silently discarded. The provider is instructed to return at most 50 facts and 10 questions per batch. Source-wide validation can still require splitting a dense document. The parser does not execute document macros, recalculate formulas or follow document links.
+PDF pages skipped by the OCR time or pixel budget are reported by original page number as partial. The entire original remains the source; extracted text is not treated as an analysis of images or as a verified factual record. Oversized results are rejected with a reason; document tails are not silently discarded. The provider is instructed to return at most 50 facts and 10 questions per batch. Source-wide validation can still require splitting a dense document. The parser does not execute document macros, recalculate formulas or follow document links.
 
 ## Install local processors
 
@@ -225,6 +225,8 @@ Local source IDs use `local:<relative-path>`; revisions default to the byte hash
 Operational errors print a JSON error and return nonzero. A successful command may still report missing processors, unconfirmed facts or `ready: false`; inspect the returned state rather than treating process success as business approval.
 
 ## Local acceptance and limits of the evidence
+
+See [Pilot acceptance](PILOT-READINESS.md) before treating this module as ready for an authenticated internal rollout.
 
 ```sh
 pnpm test:collection

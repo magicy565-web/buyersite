@@ -36,9 +36,17 @@ document.save(path('embedded.pdf'))
 document.close()
 
 document = fitz.open()
-for _ in range(41): document.new_page()
+for _ in range(81): document.new_page()
 document.save(path('too-many-pages.pdf'))
 document.close()
+
+document = fitz.open()
+for i in range(1, 59):
+    page = document.new_page()
+    page.insert_text((60, 72), f'Brochure evidence on page {i}')
+document.save(path('brochure-58.pdf'))
+document.close()
+
 
 image = Image.new('RGB', (1400, 360), 'white')
 draw = ImageDraw.Draw(image)
@@ -318,6 +326,45 @@ test('missing OCR language and missing Python are explicit and generate no inven
   assert.equal(withoutPython.status, 'needs_processor');
   assert.deepEqual(withoutPython.missing_processors, ['python']);
   assert.deepEqual(withoutPython.segments, []);
+});
+
+test('keeps original page locators through a 58-page brochure', async () => {
+  const result = await fixture('brochure-58.pdf');
+  assert.equal(result.status, 'ready');
+  assert.equal(result.segments.length, 58);
+  assert.equal(result.segments[31].id, 'p32');
+  assert.deepEqual(result.segments.at(-1).locator, { kind: 'page', page: 58 });
+  assert.match(result.segments.at(-1).text, /evidence on page 58/);
+});
+
+test('an exhausted PDF OCR budget is partial, preserves embedded pages and names skipped pages', async () => {
+  const document = await readFile(join(directory, 'mixed.pdf'));
+  const result = JSON.parse(
+    execFileSync(
+      python,
+      [
+        '-B',
+        '-c',
+        String.raw`
+import json, sys
+from collection.agent import parse_document
+parse_document.MAX_PDF_OCR_PIXELS = 1
+extractor = parse_document.Extractor("eng")
+parse_document.parse_pdf(sys.stdin.buffer.read(), extractor)
+print(json.dumps(extractor.finish()))
+`,
+      ],
+      { input: document, timeout: 10_000, maxBuffer: 128 * 1024 },
+    ),
+  );
+  assert.equal(result.status, 'partial');
+  assert.ok(result.segments.some((segment) => segment.method === 'embedded-text'));
+  assert.ok(result.segments.every((segment) => segment.method !== 'ocr'));
+  assert.ok(
+    result.warnings.some(
+      (warning) => warning.code === 'PDF_OCR_BUDGET' && /Page 2:/.test(warning.message),
+    ),
+  );
 });
 
 test('document limits reject overlong PDFs, expansion bombs, XML entities and huge image headers', async () => {

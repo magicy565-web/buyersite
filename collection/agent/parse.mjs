@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 export const PARSE_LIMITS = Object.freeze({
   inputBytes: 25 * 1024 * 1024,
   textCharacters: 250_000,
-  pdfPages: 40,
+  pdfPages: 80,
+  pdfSubprocessMilliseconds: 155_000,
   imagePixels: 25_000_000,
   expandedZipBytes: 100 * 1024 * 1024,
   subprocessMilliseconds: 60_000,
@@ -190,11 +191,14 @@ function runDocumentParser(asset, kind, options) {
       'OCR languages must be Tesseract language codes joined by +.',
     );
   }
+  const budget =
+    kind === 'pdf' ? PARSE_LIMITS.pdfSubprocessMilliseconds : PARSE_LIMITS.subprocessMilliseconds;
   return new Promise((resolve, reject) => {
     const child = spawn(executable, [SCRIPT, '--format', kind, '--ocr-language', language], {
       shell: false,
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
+      env: { ...process.env, OMP_THREAD_LIMIT: '1' },
       detached: process.platform !== 'win32',
     });
     let finished = false;
@@ -226,10 +230,10 @@ function runDocumentParser(asset, kind, options) {
       finish(
         new ParseError(
           'PARSER_TIMEOUT',
-          `Document parsing exceeded ${PARSE_LIMITS.subprocessMilliseconds} ms; split the source.`,
+          `Document parsing exceeded ${budget} ms; split the source.`,
         ),
       );
-    }, PARSE_LIMITS.subprocessMilliseconds);
+    }, budget);
     timer.unref();
     child.on('error', (error) => {
       if (error.code === 'ENOENT') {

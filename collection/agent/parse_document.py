@@ -21,7 +21,10 @@ import zipfile
 
 MAX_INPUT_BYTES = 25 * 1024 * 1024
 MAX_TEXT_CHARACTERS = 250_000
-MAX_PDF_PAGES = 40
+MAX_PDF_PAGES = 80
+# Leave time for the final OCR call and serialization before the outer watchdog.
+PDF_OCR_START_BUDGET_SECONDS = 115
+MAX_PDF_OCR_PIXELS = 350_000_000
 MAX_IMAGE_PIXELS = 25_000_000
 MAX_IMAGE_FRAMES = 20
 MAX_TOTAL_IMAGE_PIXELS = 50_000_000
@@ -232,6 +235,8 @@ def parse_pdf(data, extractor):
         if document.page_count > MAX_PDF_PAGES:
             raise ParseFailure("PDF_PAGE_LIMIT", f"PDF has {document.page_count} pages; the limit is {MAX_PDF_PAGES}. Split it before import.")
         image_module = None
+        ocr_deadline = time.monotonic() + PDF_OCR_START_BUDGET_SECONDS
+        ocr_pixels = 0
         for page_number, page in enumerate(document, start=1):
             locator = {"kind": "page", "page": page_number}
             try:
@@ -256,7 +261,14 @@ def parse_pdf(data, extractor):
                 continue
             # Render at 150 dpi. Reject pathological page sizes before allocating.
             scale = 150 / 72
-            check_pixels(max(1, int(page.rect.width * scale) + 1), max(1, int(page.rect.height * scale) + 1))
+            width = max(1, int(page.rect.width * scale) + 1)
+            height = max(1, int(page.rect.height * scale) + 1)
+            check_pixels(width, height)
+            pixels = width * height
+            if time.monotonic() >= ocr_deadline or ocr_pixels + pixels > MAX_PDF_OCR_PIXELS:
+                extractor.warn("PDF_OCR_BUDGET", f"Page {page_number}: skipped OCR because the document budget was exhausted. Supply a smaller excerpt or a text-based copy.", incomplete=True)
+                continue
+            ocr_pixels += pixels
             try:
                 bitmap = page.get_pixmap(matrix=fitz.Matrix(scale, scale), colorspace=fitz.csRGB, alpha=False)
                 image = image_module.frombytes("RGB", (bitmap.width, bitmap.height), bitmap.samples)
