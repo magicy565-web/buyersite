@@ -3,6 +3,8 @@
 This is the **only prioritized build path**. It is deliberately not a replacement
 OpenMausBot dashboard, standalone CRM or a second magazine authoring system.
 
+The underlying website capture is now provided by the [independent information collection module](../collection/README.md). Its private multi-source bundle can be projected to the existing website snapshot input after an explicit handoff. The existing default path below remains compatible.
+
 ## What the code now does
 
 1. Accept an authenticated enterprise snapshot from the existing OpenMausBot

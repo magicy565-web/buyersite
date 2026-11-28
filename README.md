@@ -4,6 +4,10 @@ Buyersite turns approved company facts and public sources into a buyer-facing ma
 
 The current foundation is **Astro 7 + Halftone + Tailwind 4**, with Markdown/MDX content and focused **React 19 / assistant-ui** islands. A small Cloudflare Worker wraps the static magazine with D1 enquiry storage and aggregate feedback. The default edition is the Burel Factory material research pilot; generated company editions remain isolated private previews.
 
+## Information collection (phase 1)
+
+The new [independent collection module](collection/README.md) preserves authorized website and document sources in private, hashed bundles before knowledge extraction or editorial production. Run `pnpm test:collection` for its standalone tests. Existing site generation and publication remain separate.
+
 ## Three-stage architecture
 
 | Stage | Implemented components | Main code |
