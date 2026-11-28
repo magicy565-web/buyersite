@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { setTimeout as delay } from 'node:timers/promises';
 import { createOpenAIProvider, EXTRACTION_SCHEMA } from './provider.mjs';
 
 const apiKey = 'synthetic-provider-test-secret-not-a-live-key';
@@ -109,6 +110,28 @@ test('mock Responses HTTP covers the complete long source, including its final s
       covered.every((value) => value === 1),
       `Source ${full.id} has no omitted character.`,
     );
+  }
+});
+
+test('one extraction deadline aborts a delayed second batch without returning earlier facts', async () => {
+  let calls = 0;
+  const instance = provider(async (_url, { signal }) => {
+    calls += 1;
+    if (calls !== 2) return json(completed(extraction));
+    await delay(3000, undefined, { signal });
+    return json(completed(extraction));
+  }, { timeoutMs: 5000, extractionTimeoutMs: 1000 });
+  const segments = [segment, ...Array.from({ length: 3 }, (_, i) => ({
+    ...segment, id: `batch-${i}`, text: 'x'.repeat(18_000),
+  }))];
+  await assert.rejects(instance.extract(request(segments)), { code: 'EXTRACTION_TIMEOUT' });
+  assert.equal(calls, 2, 'No further batch was sent');
+  assert.deepEqual(await instance.extract(request()), extraction, 'A later analysis can retry');
+});
+
+test('host rejects out-of-range aggregate extraction deadlines', () => {
+  for (const extractionTimeoutMs of [0, 999, 180001, 1000.5]) {
+    assert.throws(() => provider(async () => {}, { extractionTimeoutMs }), { code: 'INVALID_TIMEOUT' });
   }
 });
 

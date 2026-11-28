@@ -45,3 +45,21 @@ Record the repository SHA, environment, test identifiers, actual outcomes
 and a named operator for rollback. Mark missing permissions, providers or
 live test evidence as blocked; never mark those gates passed from mocks.
 Keep the public-site source review and existing managed CI untouched.
+
+### Provider deadline and data scope
+
+The built-in provider applies a single semantic extraction deadline across all
+batches (120 seconds by default, configurable by the host within 1–180
+seconds), in addition to its per-request timeout. A stalled later batch must
+not write earlier candidates; originals remain available for retry. This
+deadline does not cover library access, OCR, transcription or the ingress
+proxy. Before enabling the host route, test a delayed multibatch request and
+a disconnect through the actual proxy and verify retry behavior. Do not
+assume that a client-side abort cancels work already received upstream.
+
+For approval of outbound fields, separately inventory source text, filenames,
+entity and version identifiers, confirmed facts and examples of human
+corrections sent with semantic extraction, and original file bytes sent to
+vision or audio services. Confirm actual provider-project retention settings;
+a request with response storage disabled does not establish zero retention.
+Use synthetic pilot files until that scope is approved.

@@ -115,26 +115,45 @@ export function createOpenAIProvider({
   transcriptionModel,
   fetchImpl = fetch,
   timeoutMs = 90000,
+  extractionTimeoutMs = 120000,
 }) {
   requireText(apiKey, 'apiKey', 4096);
   requireText(model, 'model', 100);
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1000 || timeoutMs > 120000)
     throw new KnowledgeError('INVALID_TIMEOUT', 'Provider timeout must be 1–120 seconds');
-  async function request(path, body, multipart = false) {
+  if (
+    !Number.isInteger(extractionTimeoutMs) ||
+    extractionTimeoutMs < 1000 ||
+    extractionTimeoutMs > 180000
+  )
+    throw new KnowledgeError('INVALID_TIMEOUT', 'Extraction timeout must be 1–180 seconds');
+  const extractionTimeout = () =>
+    new KnowledgeError(
+      'EXTRACTION_TIMEOUT',
+      'Analysis exceeded its total time budget; split the source or retry a smaller document',
+    );
+  async function request(path, body, { multipart = false, deadline } = {}) {
+    const signal = deadline
+      ? AbortSignal.any([deadline, AbortSignal.timeout(timeoutMs)])
+      : AbortSignal.timeout(timeoutMs);
     try {
+      signal.throwIfAborted();
       const response = await fetchImpl(`https://api.openai.com/v1/${path}`, {
         method: 'POST',
         redirect: 'error',
-        signal: AbortSignal.timeout(timeoutMs),
+        signal,
         headers: {
           Authorization: `Bearer ${apiKey}`,
           ...(multipart ? {} : { 'Content-Type': 'application/json' }),
         },
         body: multipart ? body : JSON.stringify(body),
       });
-      return await boundedJson(response);
+      const result = await boundedJson(response);
+      signal.throwIfAborted();
+      return result;
     } catch (error) {
-      if (error instanceof KnowledgeError) throw error;
+      if (deadline?.aborted) throw extractionTimeout();
+      if (!signal.aborted && error instanceof KnowledgeError) throw error;
       throw new KnowledgeError(
         'PROVIDER_UNAVAILABLE',
         'Provider request failed or timed out; retry with the configured service',
@@ -143,43 +162,48 @@ export function createOpenAIProvider({
   }
   const provider = {
     async extract({ entity, source, segments, learning, requirements }) {
+      const deadline = AbortSignal.timeout(extractionTimeoutMs);
       const combined = { facts: [], questions: [] };
       for (const batch of chunkSegments(segments)) {
-        const response = await request('responses', {
-          model,
-          store: false,
-          instructions: EXTRACTION_INSTRUCTIONS,
-          input: [
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'input_text',
-                  text: JSON.stringify({
-                    entity,
-                    source: {
-                      source_id: source.source_id,
-                      filename: source.filename,
-                      revision: source.revision,
-                    },
-                    requirements: requirements ?? null,
-                    learning,
-                    segments: batch,
-                  }),
-                },
-              ],
+        const response = await request(
+          'responses',
+          {
+            model,
+            store: false,
+            instructions: EXTRACTION_INSTRUCTIONS,
+            input: [
+              {
+                role: 'user',
+                content: [
+                  {
+                    type: 'input_text',
+                    text: JSON.stringify({
+                      entity,
+                      source: {
+                        source_id: source.source_id,
+                        filename: source.filename,
+                        revision: source.revision,
+                      },
+                      requirements: requirements ?? null,
+                      learning,
+                      segments: batch,
+                    }),
+                  },
+                ],
+              },
+            ],
+            text: {
+              format: {
+                type: 'json_schema',
+                name: 'enterprise_knowledge',
+                strict: true,
+                schema: EXTRACTION_SCHEMA,
+              },
             },
-          ],
-          text: {
-            format: {
-              type: 'json_schema',
-              name: 'enterprise_knowledge',
-              strict: true,
-              schema: EXTRACTION_SCHEMA,
-            },
+            max_output_tokens: 10000,
           },
-          max_output_tokens: 10000,
-        });
+          { deadline },
+        );
         let result;
         try {
           result = JSON.parse(responseText(response));
@@ -251,7 +275,7 @@ export function createOpenAIProvider({
       const form = new FormData();
       form.set('model', transcriptionModel);
       form.set('file', new Blob([bytes], { type: media_type }), filename);
-      const result = await request('audio/transcriptions', form, true);
+      const result = await request('audio/transcriptions', form, { multipart: true });
       // Whole-recording transcripts have no fabricated timestamps. Compatible hosts
       // may return real timed segments; the parser validates their intervals.
       if (Array.isArray(result.segments) && result.segments.length) {
