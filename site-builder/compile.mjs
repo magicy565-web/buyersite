@@ -2,13 +2,8 @@ import { createHash } from 'node:crypto';
 import { planEditorialVisuals } from './visual-director.mjs';
 import { planMedia } from './media-policy.mjs';
 
-export class SiteInputError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.name = 'SiteInputError';
-    this.code = code;
-  }
-}
+import { SiteInputError } from '../collection/errors.mjs';
+export { SiteInputError } from '../collection/errors.mjs';
 
 const fail = (code, message) => { throw new SiteInputError(code, message); };
 const text = (value, label, max = 2000) => {

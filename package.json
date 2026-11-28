@@ -30,7 +30,10 @@
     "dev:astro": "astro dev",
     "test:runtime": "node --test runtime/*.test.mjs",
     "test:knowledge": "node --test scripts/public-knowledge.test.mjs",
-    "check:release": "node scripts/check-release.mjs"
+    "check:release": "node scripts/check-release.mjs",
+    "collection:run": "node collection/cli.mjs",
+    "collection:agent": "node collection/agent/cli.mjs",
+    "test:collection": "node --test collection/*.test.mjs collection/agent/*.test.mjs"
   },
   "dependencies": {
     "@assistant-ui/react": "0.15.36",

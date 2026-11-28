@@ -4,12 +4,18 @@ Buyersite turns approved company facts and public sources into a buyer-facing ma
 
 The current foundation is **Astro 7 + Halftone + Tailwind 4**, with Markdown/MDX content and focused **React 19 / assistant-ui** islands. A small Cloudflare Worker wraps the static magazine with D1 enquiry storage and aggregate feedback. The default edition is the Burel Factory material research pilot; generated company editions remain isolated private previews.
 
+## Enterprise knowledge collection (phase 1)
+
+The [independent knowledge intake agent](collection/README.md) reads the internal enterprise library and extracts evidence from text, voice, images, DOCX, spreadsheets and PDF brochures. It stores immutable source versions, candidate and human-confirmed facts, scoped correction memory and specific follow-up questions. Confirmed corrections are used in subsequent extraction; missing information and conflicting sources request answers or supplementary material. The Agent/MCP host controls identity and human review. Model-backed extraction, voice transcription and visual interpretation require explicitly configured providers.
+
+Run `pnpm collection:agent request.json` for the operator interface and `pnpm test:collection` for parsing, knowledge, learning, source adapter and compatibility tests. Website capture is retained as a site-builder utility. Knowledge collection, site generation and publication are separate modules; intake does not publish internal sources or automatically approve facts.
+
 ## Three-stage architecture
 
-| Stage | Implemented components | Main code |
-| --- | --- | --- |
-| 1. Editorial production | Source/evidence contracts, four reusable editorial blocks, three visual directions, authorized-photo selection or labelled AI concept generation, screenshot review and release checks | [site-builder](site-builder/README.md), [media and visual review](docs/MEDIA-AND-VISUAL-REVIEW.md), `src/components/editorial/` |
-| 2. Buyer conversion | Source-backed decision summaries, context-aware source search, editable brief handoff, server-bound article/product provenance, consented enquiries, durable receipts and owner review | [runtime contract](runtime/README.md), `src/components/buyer/`, `src/lib/buyer-brief.ts`, `runtime/gateway.mjs` |
+| Stage                       | Implemented components                                                                                                                                                                            | Main code                                                                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Editorial production     | Source/evidence contracts, four reusable editorial blocks, three visual directions, authorized-photo selection or labelled AI concept generation, screenshot review and release checks            | [site-builder](site-builder/README.md), [media and visual review](docs/MEDIA-AND-VISUAL-REVIEW.md), `src/components/editorial/`          |
+| 2. Buyer conversion         | Source-backed decision summaries, context-aware source search, editable brief handoff, server-bound article/product provenance, consented enquiries, durable receipts and owner review            | [runtime contract](runtime/README.md), `src/components/buyer/`, `src/lib/buyer-brief.ts`, `runtime/gateway.mjs`                          |
 | 3. Publication and feedback | Public source notebook and machine-readable evidence, Pagefind, canonical/robots/sitemap controls, Worker deployment, first-party aggregate events and article/landing/campaign enquiry reporting | `src/pages/buyer-data.json.ts`, `scripts/finalize-site.mjs`, `scripts/release-gate.mjs`, `runtime/analytics.mjs`, `runtime/feedback.mjs` |
 
 The image path distinguishes authorized commercial photos from unavailable imagery. Generated images carry concept-art labels and provenance; they are not evidence of a supplier's actual product, factory, certification or capacity. The pilot uses three reviewed AI concept images recorded in [concept-media.json](src/data/concept-media.json). Its media preparation verifies their hashes and visible disclosures and no longer downloads supplier photography.
